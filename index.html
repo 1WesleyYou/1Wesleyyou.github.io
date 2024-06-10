@@ -52,7 +52,7 @@
   isHome: true,
   isHighlightShrink: false,
   isToc: false,
-  postUpdate: '2024-06-10 17:15:30'
+  postUpdate: '2024-06-10 21:16:14'
 }</script><script>(win=>{
       win.saveToLocal = {
         set: (key, value, ttl) => {
@@ -149,134 +149,463 @@
         }
       }
       detectApple()
-    })(window)</script><meta name="generator" content="Hexo 7.2.0"><link href="https://cdn.bootcss.com/KaTeX/0.11.1/katex.min.css" rel="stylesheet" /></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.png#" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">24</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">5</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="page" id="body-wrap"><header class="full_page" id="page-header" style="background-image: url('/img/a.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="Who Am I's Zone"><img class="site-icon" src="/a.jpg"/><span class="site-name">Who Am I's Zone</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="site-info"><h1 id="site-title">Who Am I's Zone</h1><div id="site-subtitle"><span id="subtitle"></span></div></div><div id="scroll-down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout" id="content-inner"><div class="recent-posts" id="recent-posts"><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/06/10/Wesley's%20knowledge%20repo/none-linear_ODE_solution/Lyapunov_Stability/" title="Lyapunov_Stability">Lyapunov_Stability</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">更新于</span><time datetime="2024-06-10T08:23:21.030Z" title="更新于 2024-06-10 16:23:21">2024-06-10</time></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/ODE/">ODE</a></span></div><div class="content">稳定性
-研究方程
-dydt=g(t,y),y∈Rn\frac{dy}{dt} = g(t,y), y\in \mathbb R^n
-dtdy​=g(t,y),y∈Rn
-稳定和不稳定
-我们把邻近的解均趋于之的特解称为稳定，反之称为不稳定
-驻定和平衡解
-对于等式右边 (不包含 dx/dt) 如果不含 自变量 t, 我们称之为 驻定微分方程，再将 微分项设为 0得到的常数解，称之为 平衡解或者驻定解
-研究思路
-既然我们要研究特解和标准解的差异，故定义差异函数 x=y−ϕ(t)x = y - \phi(t)x=y−ϕ(t), 其中 ϕ(t)\phi(t)ϕ(t) 表示特解, 稳定函数会有 x→0x\to 0x→0 ; 不稳定函数会有 x→∞x\to\inftyx→∞.
-再定义函数 dxdt=f(t,x)\frac{dx}{dt} = f(t,x)dtdx​=f(t,x), 带回原方程得到
-f(t,x)=g(t,y)−dϕ(t)dt=g(t,x+ϕ(t))−g(t,ϕ(t))f(t,x) = g(t,y) - \frac{d\phi(t)}{dt} =g(t,x+\phi(t))-g(t,\ph ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/06/10/Wesley's%20knowledge%20repo/dynamic%20system/1.%20%E4%BA%8C%E9%98%B6%E7%BA%BF%E6%80%A7%E5%B8%B8%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E7%9A%84%E8%A7%A3/" title="1. 二阶线性常微分方程的解">1. 二阶线性常微分方程的解</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">更新于</span><time datetime="2024-06-10T06:09:34.349Z" title="更新于 2024-06-10 14:09:34">2024-06-10</time></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/dynamic/">dynamic</a></span></div><div class="content">形式
-Ax¨(t)+Bx˙(t)+Cx(t)=D(t)A \ddot x(t) + B \dot x(t) + Cx(t) = D(t)  
-Ax¨(t)+Bx˙(t)+Cx(t)=D(t)
-特征根法
-首先分为 齐次解 xhomx_{hom}xhom​ 和特解 xpartx_{part}xpart​, 对于齐次解，我们有: As2+Bs+C=0As^2 + Bs + C = 0As2+Bs+C=0
-对于此二次方程我们有 判别式 Δ=B2−4AC\Delta = B^2 - 4ACΔ=B2−4AC
-Δ&lt;0\Delta &lt; 0Δ&lt;0
-方程有两个虚数根，我们通解的形式是 eμt(Acos⁡(λt)+Bsin⁡(λt))e^{\mu t}(A \cos(\lambda t) + B \sin (\lambda t))eμt(Acos(λt)+Bsin(λt))
-这里我们可以将特征方程的解变成配凑形式 (s−σ)2+ωd2=0(s - \sigma)^2 + \omega_d^2 = 0(s−σ)2+ωd2​=0 其中，ωd=λ=2πT,σ=μ=1τ\omega_d = \la ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/06/10/Wesley's%20knowledge%20repo/dynamic%20system/0.%20%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/" title="0. 基本概念">0. 基本概念</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">更新于</span><time datetime="2024-06-10T06:09:27.206Z" title="更新于 2024-06-10 14:09:27">2024-06-10</time></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/dynamic/">dynamic</a></span></div><div class="content">系统的分类
-线性系统 linear system
-非线性系统
-线性时不变系统
-是本节课默认的最常见的基础系统，线性表示符合线性叠加原理；时不变性表示系统输入信号延迟了时间 T 但是对于输出结果也只是延迟了时间 TTT，输出效果没有影响
-公式表示
-线性系统: g(au(t)+bv(t))=ag(u(t))+bg(v(t))g(au(t) + b v(t))  = ag(u(t)) + bg(v(t))g(au(t)+bv(t))=ag(u(t))+bg(v(t))
-时不变系统: g(u(t−ΔT))=x(t−ΔT)g(u(t - \Delta T)) = x(t - \Delta T)g(u(t−ΔT))=x(t−ΔT)
-传递函数
-卷积的定义及其使用
-对于一个系统我们有输入量关于时间变化的函数 input function: u(t)u(t)u(t) 以及系统对应的输出量关于时间变化的函数 output function: h(t)h(t)h(t)
-由于 input function 很多时候是一个任意变化的值，那么我们就需要借助微积分的思路来计算其作用效果:
-微积分思想解决动态系统输入 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/06/10/Wesley's%20knowledge%20repo/discrete%20math/%E9%80%BB%E8%BE%91%E5%92%8C%E8%AF%81%E6%98%8E/" title="逻辑和证明">逻辑和证明</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">更新于</span><time datetime="2024-06-10T06:08:18.368Z" title="更新于 2024-06-10 14:08:18">2024-06-10</time></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/discrete-math/">discrete_math</a></span></div><div class="content">命题 proposition / statement
-陈述语句，要么逻辑真要么逻辑假，具有明确的真假属性
-
-x+1=2x + 1 = 2x+1=2 不是命题
-
-布伦变量 Boolean variable
-定义逻辑类集合为 B={⊤,⊥}\mathbb B = \{\top, \bot\}B={⊤,⊥}
-二元衔接运算符
-
-¬\neg¬ 表示反逻辑
-∧\wedge∧ 表示 与 conjunction
-∨\vee∨ 表示 或 disjunction
-→\to→ 表示蕴含 imply 注意这个不是推导关系, 更适合理解为受骗的情况，只有被骗是 0， 其他都没有被骗都可以是 1；表述为 p 仅当 q 逻辑, 通俗说法是 若 q 不为真则 p 也 不能为 真
-↔\leftrightarrow↔ 表示if and only if (实际上是同或，相同为 1，00 -&gt; 1 是虚真)
-XOR (exclusive or) 异或，不同 为 1， 相同为 0
-![[Pasted image 20240522104903.png]]
-
-特殊逻辑
-
-恒真 tautology
-恒假 contradicti ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/06/10/Wesley's%20knowledge%20repo/discrete%20math/%E8%A1%8C%E5%88%97%E5%BC%8F%E6%A6%82%E8%BF%B0/" title="行列式概述">行列式概述</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">更新于</span><time datetime="2024-06-10T06:08:10.565Z" title="更新于 2024-06-10 14:08:10">2024-06-10</time></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/discrete-math/">discrete_math</a></span></div><div class="content">余子式 cofactor
-划去 行列式 第 i 行与第 j 列的内容之后剩下部分的矩阵的行列式, 写作 MijM_{ij}Mij​.
-代数余子式 adjunct
-就是在余子式的基础上加上系数 (−1)i+jMij(-1)^{i + j} M_{ij}(−1)i+jMij​
-行列式展开
-∣A∣=a1rA1r+⋯+anrAnr|A| = a_{1r}A_{1r} + \cdots + a_{nr}A_{nr}
-∣A∣=a1r​A1r​+⋯+anr​Anr​
-这个公式在处理不复杂的行列式递推公式的时候很好用
-转置矩阵
-det⁡A=det⁡(A−1)\det A = \det (A^{-1})detA=det(A−1)
-常用性质
-
-三角行列式: 行列式值等于对角线乘积
-如果行列式某一行为 0, 则行列式的值为 0
-用常数 ccc 乘以行列式的某列或者某行的每一各元素，那么行列式整体乘以 ccc.
-行列式的两行或者两列对换位置，行列式的值变成相反数
-如果行列式的行或者列之间线性不独立，那么行列式的值为 0
-将行列式某一行(列)的值乘以 ccc 之后加到另一个 行(列)上面去，行列式的值不变
-
-分 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/06/10/Wesley's%20knowledge%20repo/discrete%20math/%E8%8C%83%E5%BC%8F/" title="范式">范式</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">更新于</span><time datetime="2024-06-10T08:22:22.079Z" title="更新于 2024-06-10 16:22:22">2024-06-10</time></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/discrete-math/">discrete_math</a></span></div><div class="content">语义等价、满足性和有效性
-真值表一致并不能表明我们的逻辑语义就是等价的，比如我们有 蕴含关系， 这和 ¬p∨q\neg p \lor q¬p∨q 是不等价的
-定义
-对于命题逻辑公式 ϕ\phiϕ 和 ψ\psiψ, 我们称二者语义等价，当且仅当 ϕ⊨ψ∧ψ⊨ϕ\phi\models \psi \land \psi \models \phiϕ⊨ψ∧ψ⊨ϕ 成立，记为 ϕ≡ψ\phi \equiv \psiϕ≡ψ. 进一步, 如果 ⊨ϕ\models \phi⊨ϕ 成立，我们称 ϕ\phiϕ 是有效的
-引理
-命题逻辑公式 ϕ1⋯ϕn⊨ψ\phi_1\cdots\phi_n\models \psiϕ1​⋯ϕn​⊨ψ成立，当且仅当 ⊨ϕ1→(ϕ2⋯→(ϕn→ψ))\models\phi_1\to(\phi_2\cdots\to(\phi_n \to \psi))⊨ϕ1​→(ϕ2​⋯→(ϕn​→ψ))
-这个引理用于将命题变成完全不包含 →\to→ 的形式 （使用 ¬p∨q≡p→q\neg p\lor q\equiv p\to q¬p∨q≡p→q tautology)
-通过将 →\to→ 变成一般 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/06/10/Wesley's%20knowledge%20repo/discrete%20math/%E8%87%AA%E7%84%B6%E6%BC%94%E7%BB%8E%E6%B3%95/" title="自然演绎法">自然演绎法</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">更新于</span><time datetime="2024-06-10T06:07:45.499Z" title="更新于 2024-06-10 14:07:45">2024-06-10</time></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/discrete-math/">discrete_math</a></span></div><div class="content">基本概念
-我们需要有一组规则，每一条都允许我们在特定的前提下得到下一个结论
-推断 infer
-前提 premise ϕ1,⋯ ,ϕn\phi_1 ,\cdots,\phi_nϕ1​,⋯,ϕn​
-结论 conclusion ψ\psiψ
-矢列 sequent
-文字 literal: 原子命题或其否定
-子句 clause: CNF 的每一个析取向
-自然演绎规则
-合取引入规则 conjunctive introduction
-在分别得到结论 ϕ\phiϕ 和结论 ψ\psiψ 的前提 下推导出结论 ϕ∧ψ\phi \land \psiϕ∧ψ. 这个规则写为 ∧e\wedge e∧e
-前提是证明两个结论各自分别正确
-合取消去规则 conjunctive elimination
-在已知 ϕ∧ψ\phi \wedge \psiϕ∧ψ 的条件下有 ϕ\phiϕ 与 ψ\psiψ 各自成立，分别写作 ∧e1,∧e2\wedge e_1, \wedge e_2∧e1​,∧e2​
-双重否定规则 double negative rule
-对于双重否定我们可以得到其本身
-蕴含消去规则 modus ponens ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/06/10/Wesley's%20knowledge%20repo/discrete%20math/%E6%95%B0%E5%88%97%E9%80%92%E5%BD%92%E5%92%8C%E7%9F%A9%E9%98%B5/" title="数列递归和矩阵">数列递归和矩阵</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">更新于</span><time datetime="2024-06-10T06:07:39.866Z" title="更新于 2024-06-10 14:07:39">2024-06-10</time></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/discrete-math/">discrete_math</a></span></div><div class="content">从斐波那契说起
-对于斐波那契公式，我们有 an+1=an+an−1a_{n+1} = a_n + a_{n -1}an+1​=an​+an−1​ 那么我们可以写成矩阵形式:
-[an+1an]=[1110][anan−1]\begin{bmatrix}a_{n+1}\\a_{n}\end{bmatrix} = \begin{bmatrix}1 &amp;1\\1&amp; 0\end{bmatrix}\begin{bmatrix}a_n\\a_{n -1}\end{bmatrix}
-[an+1​an​​]=[11​10​][an​an−1​​]
-设 vn+1=[an+1an]v_{n+1} = \begin{bmatrix}a_{n+1}\\a_n\end{bmatrix}vn+1​=[an+1​an​​] 且我们有 A=[1110]A = \begin{bmatrix}1 &amp; 1 \\ 1 &amp; 0\end{bmatrix}A=[11​10​]
-那么应用递推我们得到的是 vn+k=Akvnv_{n + k}  = A^k v_nvn+k​=Akvn​ 我们自然而然就会想到 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/06/10/Wesley's%20knowledge%20repo/discrete%20math/%E5%9F%BA%E6%9C%AC%E7%BB%93%E6%9E%84%EF%BC%9A%E9%9B%86%E5%90%88%E3%80%81%E5%87%BD%E6%95%B0%E3%80%81%E5%BA%8F%E5%88%97%E3%80%81%E6%B1%82%E5%92%8C%E3%80%81%E7%9F%A9%E9%98%B5/" title="基本结构：集合、函数、序列、求和、矩阵">基本结构：集合、函数、序列、求和、矩阵</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">更新于</span><time datetime="2024-06-10T06:07:29.133Z" title="更新于 2024-06-10 14:07:29">2024-06-10</time></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/discrete-math/">discrete_math</a></span></div><div class="content">集合
-集合的特性
-
-集合元素各不相同
-
-对于多集合 multiset 是可以存在重复的集合内元素的
+    })(window)</script><meta name="generator" content="Hexo 7.2.0"><link href="https://cdn.bootcss.com/KaTeX/0.11.1/katex.min.css" rel="stylesheet" /></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.png#" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">105</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">15</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="page" id="body-wrap"><header class="full_page" id="page-header" style="background-image: url('/img/a.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="Who Am I's Zone"><img class="site-icon" src="/a.jpg"/><span class="site-name">Who Am I's Zone</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="site-info"><h1 id="site-title">Who Am I's Zone</h1><div id="site-subtitle"><span id="subtitle"></span></div></div><div id="scroll-down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout" id="content-inner"><div class="recent-posts" id="recent-posts"><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/06/10/Wesley's%20knowledge%20repo/mubu/thermal_dynamics/thermal_second_law/" title="thermal_second_law">thermal_second_law</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">更新于</span><time datetime="2024-06-10T11:31:57.769Z" title="更新于 2024-06-10 19:31:57">2024-06-10</time></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/thermal/">thermal</a></span></div><div class="content">5. 热力学第二定律
 
 
-元素没有顺序区别
-两种表示法可以相互转化 (枚举/描述)
+可逆过程的常见情况
 
-集合之间的关系
-包含(子集) Inclusion (subset)
-符号: ⊆\subseteq⊆ 或者 ⊂\subset⊂
-定义: A⊂B⇔∀x∈A→x∈BA\subset B \Leftrightarrow \forall x \in A\to x\in BA⊂B⇔∀x∈A→x∈B
-不包含: ⊄\not\subset​⊂ 或者 ⊈\not\subseteq​⊆, 定义 ∃x∈A,x∄B⇒A⊈B\exists x \in A, x\not\exists B \Rightarrow A\not\subseteq B∃x∈A,x​∃B⇒A​⊆B
-性质
 
-A⊆AA\subseteq AA⊆A 集合包含自身
-若 A⊆BA \subseteq BA⊆B 且 A≠BA\not= BA​=B 则 B⊈AB\not\subseteq AB​⊆A:  这里定义了集合的等号 A=B⇔A⊆B∧B⊆AA = B \Left ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/06/10/Wesley's%20knowledge%20repo/cpp%20basic/%E6%A8%A1%E6%9D%BF%20template/" title="模板 template">模板 template</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">更新于</span><time datetime="2024-06-10T06:06:34.052Z" title="更新于 2024-06-10 14:06:34">2024-06-10</time></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/cpp-basic/">cpp_basic</a></span></div><div class="content">容器 container
-功能：包含一定数据或者对象，没有本质定义
-多次重复的使用某些代码，对象是不同的数据类型，我们称其为 polymorphism 或者 polymorphic
-因此我们需要使用一个叫做 template 的东西
-模板 template
-每一个模板只能使用一个数据类型的数据，但是模板可以有多种数据类型的应用。
-这个的处理是将类型名称作为编译过程的一个参数，同时这是一个参数泛化的一个实现
-实现代码如下:
-12345template &lt;class T&gt;  // 前面我们学过了，class 就是一种 ADT，或者说 c++ 就是将 type 认作是 ADT 的一种class List&#123;// 在这里面我们可以用 T 表示任何数据类型	void foo(T a);  // 但是 declaration 里并不需要 List&lt;T&gt;&#125;;
-接下来我们需要讨论的就是每一个成员函数的定义了，如何实现？
-1234// 每一个成员函数前面 (如果该函数用到了 template) 都要写 template 这一行template &lt;class ...</div></div></div><nav id="pagination"><div class="pagination"><span class="page-number current">1</span><a class="page-number" href="/page/2/#content-inner">2</a><a class="page-number" href="/page/3/#content-inner">3</a><a class="extend next" rel="next" href="/page/2/#content-inner"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.png#" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Wesley You</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">24</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">5</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/1WesleyYou"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/06/10/Wesley's%20knowledge%20repo/none-linear_ODE_solution/Lyapunov_Stability/" title="Lyapunov_Stability">Lyapunov_Stability</a><time datetime="2024-06-10T06:10:00.000Z" title="发表于 2024-06-10 14:10:00">2024-06-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/06/10/Wesley's%20knowledge%20repo/dynamic%20system/1.%20%E4%BA%8C%E9%98%B6%E7%BA%BF%E6%80%A7%E5%B8%B8%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E7%9A%84%E8%A7%A3/" title="1. 二阶线性常微分方程的解">1. 二阶线性常微分方程的解</a><time datetime="2024-06-10T06:09:31.000Z" title="发表于 2024-06-10 14:09:31">2024-06-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/06/10/Wesley's%20knowledge%20repo/dynamic%20system/0.%20%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/" title="0. 基本概念">0. 基本概念</a><time datetime="2024-06-10T06:09:13.000Z" title="发表于 2024-06-10 14:09:13">2024-06-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/06/10/Wesley's%20knowledge%20repo/discrete%20math/%E9%80%BB%E8%BE%91%E5%92%8C%E8%AF%81%E6%98%8E/" title="逻辑和证明">逻辑和证明</a><time datetime="2024-06-10T06:08:15.000Z" title="发表于 2024-06-10 14:08:15">2024-06-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/06/10/Wesley's%20knowledge%20repo/discrete%20math/%E8%A1%8C%E5%88%97%E5%BC%8F%E6%A6%82%E8%BF%B0/" title="行列式概述">行列式概述</a><time datetime="2024-06-10T06:08:06.000Z" title="发表于 2024-06-10 14:08:06">2024-06-10</time></div></div></div></div><div class="card-widget card-tags"><div class="item-headline"><i class="fas fa-tags"></i><span>标签</span></div><div class="card-tag-cloud"><a href="/tags/ODE/" style="font-size: 1.1em; color: #999">ODE</a> <a href="/tags/cpp-basic/" style="font-size: 1.37em; color: #99a4b2">cpp_basic</a> <a href="/tags/test/" style="font-size: 1.1em; color: #999">test</a> <a href="/tags/discrete-math/" style="font-size: 1.5em; color: #99a9bf">discrete_math</a> <a href="/tags/dynamic/" style="font-size: 1.23em; color: #999ea6">dynamic</a></div></div><div class="card-widget card-archives"><div class="item-headline"><i class="fas fa-archive"></i><span>归档</span></div><ul class="card-archive-list"><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/06/"><span class="card-archive-list-date">六月 2024</span><span class="card-archive-list-count">15</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/05/"><span class="card-archive-list-date">五月 2024</span><span class="card-archive-list-count">9</span></a></li></ul></div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>网站资讯</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">文章数目 :</div><div class="item-count">24</div></div><div class="webinfo-item"><div class="item-name">本站访客数 :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">本站总访问量 :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">最后更新时间 :</div><div class="item-count" id="last-push-date" data-lastPushDate="2024-06-10T09:15:30.072Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By Wesley You</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>window.typedJSFn = {
+热量传播于两个有无穷小温差的物体之间
+
+没有热量转移（绝热）的温度变化就可逆
+恒定温度膨胀可逆（温度差无限小）
+
+
+
+膨胀体积功的外压等于内压
+
+
+没有摩擦力
+
+
+自发的化学过程
+
+
+不同物质的混合混乱过程
+
+
+
+
+热力学第二定律表述
+
+
+
+在没有外力做功的条件下热不能自发的从低温物体转向高温物体 ——克劳修斯
+
+
+在外力做功下可以实现热能从低温物体转向高温物体： heat pump/ refrigerator
+
+
+
+
+热机不可能将所有吸收的热量完全转化为做功 ——开尔文/普朗克
+
+
+否定了第二类永动机：将能量从A转向B再由B转向A而没有损耗
+
+
+
+效果参数 coefficient of performance (COP)
+
+refrigerator: $COP_r = \frac{Q_c}{W_{in}} $
+heat pump: COPhp=QhWinCOP_{hp} = \frac{Q_h}{W_{in}}COPhp​=Win​Qh​​
+
+
+
+
+
+卡诺热机
+
+
+
+
+
+能量输出 ΔEcv=QH−Wout−Qc=0\Delta E_{ ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/06/10/Wesley's%20knowledge%20repo/mubu/thermal_dynamics/thermal_cycle/" title="thermal_cycle">thermal_cycle</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">更新于</span><time datetime="2024-06-10T11:31:49.820Z" title="更新于 2024-06-10 19:31:49">2024-06-10</time></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/thermal/">thermal</a></span></div><div class="content">7. 热力循环 thermal cycle
+
+
+布雷顿循环 Brayton Cycle
+
+
+前提：CV 系统
+
+
+特点：
+
+
+
+
+
+
+四冲程：
+
+1-2：等熵压缩
+2-3：恒压膨胀
+3-4：等熵膨胀
+4-1：恒压压缩
+
+
+
+压缩比 rP=P2P1r_P = \frac{P_2}{P_1}rP​=P1​P2​​
+
+
+效率公式 η=1−rP1k−1\eta = 1- r_P^{\frac 1 k -1}η=1−rPk1​−1​
+
+
+
+
+标准理想气体假设 air-standard assumption
+
+
+
+流体永远是理想气体 ideal gas
+
+
+
+
+所有 process 是可逆的 reversible
+
+
+
+
+点燃看作是高温热源向内传热
+
+
+
+
+排气冲程看作是 恢复最初状态
+
+
+
+
+过程中理想气体的 cV cP 看作是常数
+
+
+
+
+
+奥托循环 Otto Cycle
+
+
+前提：内燃机 CM 系统
+
+
+特点：
+
+
+
+
+
+
+
+
+压缩之后通过点火进行放热
+
+要求燃料燃烧效果很好
+
+
+
+点燃过程恒容过程
+
+
+
+
+四冲程：
+
+1-2：压缩气体， isentropic
+2-3：点燃，恒容 CV
+3- ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/06/10/Wesley's%20knowledge%20repo/mubu/thermal_dynamics/rankine/" title="rankine">rankine</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">更新于</span><time datetime="2024-06-10T11:31:42.483Z" title="更新于 2024-06-10 19:31:42">2024-06-10</time></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/thermal/">thermal</a></span></div><div class="content">6. 朗肯循环 Rankine Cycle
+
+原理图 schematic
+
+
+
+
+T-s 图像
+
+
+
+
+
+d→cd\to cd→c turbine
+
+isentropic 做功通过查表得到焓变
+
+
+
+c→bc\to bc→b condensor 等压降温
+
+
+c→ac\to ac→a pump
+
+liquid →\to→ saturated liquid
+isentropic 做功 wrev=∫vdP=v(P2−P1)w_{rev} = \int vdP = v(P_2 - P_1)wrev​=∫vdP=v(P2​−P1​) , 默认液体 vvv 是一个常数
+
+
+
+a→da\to da→d boiler 等压升温
+
+
+
+
+</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/06/10/Wesley's%20knowledge%20repo/mubu/thermal_dynamics/introduction/" title="introduction">introduction</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">更新于</span><time datetime="2024-06-10T11:31:35.713Z" title="更新于 2024-06-10 19:31:35">2024-06-10</time></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/thermal/">thermal</a></span></div><div class="content">0. 绪论
+
+
+热力系统 system:
+
+
+系统 system：被选为研究对象的一定量的物质或者区域
+
+
+外界 surrounding：系统外的物质或者区域，能和系统发生质能交换
+
+
+边界 boundary：系统和外界之间的分界面
+
+特点：可以固定不动，也可以变形或者位移；可以实际存在，也可以假想
+
+
+
+系统的分类：
+
+
+a. 只有能量交换没有物质交换：闭口系统 closed system; 兼有物质能量交换 open system
+
+
+注：区分关键在于是否有物质穿过了边界，而不是质量守恒（min=moutm_{in}=m_{out}min​=mout​ 不属于closed）
+
+
+open 例子：compressor压缩机；turbine涡轮；nozzle管口
+
+
+涡轮
+
+作用：压缩空气使得氧气浓度提升，是内燃机燃烧效率更高，用于汽车和飞机发动机内部
+原理：和压气机对称使用，涡轮通过类似蜗牛外壳的装置将管道横截面积逐渐变小，根据伯努利连续性原理，汽车排出的废气会在这个管道中不断加速，在最中心位置经过一个风扇转变为轴的转动动能，而轴的另一端与压气机相连，压气机工作原理与涡轮完全相反，管 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/06/10/Wesley's%20knowledge%20repo/mubu/thermal_dynamics/internal_combustion_machine/" title="internal_combustion_machine">internal_combustion_machine</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">更新于</span><time datetime="2024-06-10T11:31:28.190Z" title="更新于 2024-06-10 19:31:28">2024-06-10</time></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/thermal/">thermal</a></span></div><div class="content">2. 内燃机模型
+
+
+四个流程
+
+
+
+
+
+
+充气（0→10\to 10→1）
+
+
+通过加入反应气体增大体积（压强没有明显变化）
+内部气压应略低于外部大气压
+
+
+
+
+加压（1→21\to 21→2）
+
+
+通过主动加压力将气体液化
+接近于绝热压缩过程
+
+
+
+
+点火（2→3→42\to 3\to 42→3→4）
+
+
+通过引燃放热使得内能转换为机械能将活塞推出
+接近竖直的线表明燃烧的速度非常快导致活塞位移很小，可以视为定容燃烧
+
+
+
+4.排气（1→01\to 01→0）
+
+
+将产生的气体排出
+
+
+由于反应可以认为已经结束，可以理解为绝热膨胀过程
+
+就是 Q=0Q = 0Q=0, ΔE=W\Delta E = WΔE=W 即体积功
+
+
+
+
+
+
+
+止点 Dead Center
+
+
+
+上止点 top dead center (TDC)
+
+
+体积最小的情况
+
+
+
+
+下止点 bottom dead center （BDC）
+
+
+体积最大的情况
+
+
+
+
+
+压缩比 compress parameter
+
+ϵ=vBDCvTDC\epsilon = \frac{v_{BDC}}{v_{TDC}}ϵ=vTDC​v ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/06/10/Wesley's%20knowledge%20repo/mubu/thermal_dynamics/ideal_small_room/" title="ideal_small_room">ideal_small_room</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">更新于</span><time datetime="2024-06-10T11:31:15.137Z" title="更新于 2024-06-10 19:31:15">2024-06-10</time></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/thermal/">thermal</a></span></div><div class="content">2. 理想气体小室模型.h
+
+
+真空-理想气体模型
+
+对于一个一部分装有理想气体的小室，我们抽去中间的隔板
+
+
+能量关系：对于没有热量和做功的情况，整体的 u 不变
+
+
+
+
+温度关系：u 不变 →\rightarrow→ 温度不变
+
+
+
+
+熵变: $\Delta s = \int_1^2\frac PTdv = \int_1^2\frac Rvdv =R\ln\frac {v_2}{v_1} $
+
+
+
+
+
+理想气体等熵过程
+
+
+Tds=du+PdvTds = du + PdvTds=du+Pdv
+
+
+Tds=dh−vdPTds = dh - vdPTds=dh−vdP
+
+
+在等熵过程中有 du+Pdv=0du + Pdv = 0du+Pdv=0 所以 ∫cVdT=−∫Pdv⇒cVln⁡T2T1=−Rln⁡V2V1\int c_VdT = -\int Pdv\Rightarrow c_V\ln\frac{T_2}{T_1} = -R\ln\frac{V_2}{V_1}∫cV​dT=−∫Pdv⇒cV​lnT1​T2​​=−RlnV1​V2​​
+
+对上式进行变换得到 (T2T1)cV=(V2 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/06/10/Wesley's%20knowledge%20repo/mubu/thermal_dynamics/ideal_gas/" title="ideal_gas">ideal_gas</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">更新于</span><time datetime="2024-06-10T11:31:07.771Z" title="更新于 2024-06-10 19:31:07">2024-06-10</time></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/thermal/">thermal</a></span></div><div class="content">3. 理想气体
+
+
+状态方程
+
+PV=nRTPV = nRTPV=nRT
+
+
+
+怎么判断理想气体？
+
+
+贵元曰：“看着像就是”
+
+
+定义： 在压强不太大，温度不太高的情况下视为理想气体
+
+
+对比参数 reduced parameter
+
+reduced temperature 对比温度 TR=TTcriticalT_R = \frac{T}{T_{critical}}TR​=Tcritical​T​
+reduced pressure 对比压强 PR=PPcriticalP_R = \frac{P}{P_{critical}}PR​=Pcritical​P​
+reduced volume 对比比体积 vR=vvcriticalv_R = \frac{v}{v_{critical}}vR​=vcritical​v​
+critical point 临界条件： 在该点处饱和气体就是饱和液体
+
+
+
+对应状态方程 principle of corresponding states
+
+对于不同的气体，如果有两个对比参数（压力、体积、温度）相同，则第三个对比参数必定大致相同。此时称这些气体处于相同的对 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/06/10/Wesley's%20knowledge%20repo/mubu/thermal_dynamics/cv_model/" title="cv_model">cv_model</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">更新于</span><time datetime="2024-06-10T11:30:57.761Z" title="更新于 2024-06-10 19:30:57">2024-06-10</time></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/thermal/">thermal</a></span></div><div class="content">4. CV模型
+
+
+恒稳流 steady flow
+
+
+dmdt=0\frac{dm}{dt} = 0dtdm​=0
+
+
+dECVdt=0\frac{dE_{CV}}{dt} = 0dtdECV​​=0
+
+
+净进给质量
+
+
+dmCVdt=dmi−dmedt=mi˙−me˙\frac{dm_{CV}}{dt} = \frac{dm_i-dm_e}{dt} = \dot{m_i}-\dot{m_e}dtdmCV​​=dtdmi​−dme​​=mi​˙​−me​˙​
+
+
+速度表达式
+
+m˙=ρavg⋅v⃗avg⋅Ai\dot{m} = \rho_{avg}\cdot \vec{v}_{avg}\cdot A_im˙=ρavg​⋅vavg​⋅Ai​ 可以看作一个常数
+一定要注意 ρ\rhoρ 是在经过边界的状态
+
+
+
+
+
+净进给能量
+
+
+dECVdt=Q˙in+W˙in+mi˙ei\frac{dE_{CV}}{dt}=\dot{Q}_{in}+\dot{W}_{in}+\dot{m_i}e_idtdECV​​=Q˙​in​+W˙in​+mi​˙​ei​
+
+eie_iei​ 是 specific ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/06/10/Wesley's%20knowledge%20repo/mubu/thermal_dynamics/closed_sys_energy/" title="closed_sys_energy">closed_sys_energy</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">更新于</span><time datetime="2024-06-10T11:30:49.845Z" title="更新于 2024-06-10 19:30:49">2024-06-10</time></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/thermal/">thermal</a></span></div><div class="content">1. 闭合系统的能量
+
+
+动边界体积功
+
+δW=Fds=PAds=PdV\delta W = Fds = PAds = PdVδW=Fds=PAds=PdV
+要么 rigid tank，要么恒压扩容
+图像分析：在 P−vP-vP−v 图中曲线与 vvv 轴围成的面积
+
+
+
+多方过程 polytropic process
+
+
+满足 PVn=ConstantPV^n = ConstantPVn=Constant
+
+
+做功 Wb=∫12PdV=∫12CV−ndV=1(1−n)CV1−n∣12W_b = \int _1^2 PdV = \int_1^2CV^{-n}dV = \frac 1 {(1-n)} CV^{1-n}|_1^2Wb​=∫12​PdV=∫12​CV−ndV=(1−n)1​CV1−n∣12​
+
+
+绝热指数 γ\gammaγ
+
+等压热容 cPc_PcP​ 和等容热容的比值 cVc_VcV​ γ=cPcV\gamma = \frac{c_P}{c_V}γ=cV​cP​​
+对于理想气体而言 cP=cV+Rc_P = c_V + RcP​=cV​+R, 即γ=1+RcV\gamma  ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/06/10/Wesley's%20knowledge%20repo/mubu/probability/decision_tree/" title="decision_tree">decision_tree</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">更新于</span><time datetime="2024-06-10T11:30:33.132Z" title="更新于 2024-06-10 19:30:33">2024-06-10</time></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/probability/">probability</a></span></div><div class="content">决策论 Decision Theory
+
+
+决策树 Decision Tree （不是 ai 的）
+
+
+多种数据选择标准
+
+
+概率未知类
+
+
+maxmin criterion
+
+找到最小值里面最大的，也就是最保险 （conservative）的做法
+
+
+
+minimax regret criterion
+
+opportunity loss: 机会损失，选择了 A 就不能选择 B
+计算方法：找到该条件 (列) 的最大值, 用其减去该列各行内容获得新的矩阵，这个矩阵就是 regret 矩阵
+目标应该是找 regret 矩阵里面每个选择最大的项进行比较找到最小值
+也就是找到机会成本相对小的矩阵
+
+
+
+maxmax criterion
+
+找到所有最大的 ( optimistic )
+
+
+
+Hurwicz criterion
+
+人工给定一个概率 α\alphaα, 然后期望为 αp(x)+(1−α)p(y)\alpha p(x) + (1-\alpha)p( y )αp(x)+(1−α)p(y)
+
+
+
+Laplace criterion
+
+默认 概率为等分的，也就是在每项期望除以state 可能 ...</div></div></div><nav id="pagination"><div class="pagination"><span class="page-number current">1</span><a class="page-number" href="/page/2/#content-inner">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/#content-inner">11</a><a class="extend next" rel="next" href="/page/2/#content-inner"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.png#" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Wesley You</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">105</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">15</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/1WesleyYou"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/06/10/Wesley's%20knowledge%20repo/mubu/thermal_dynamics/thermal_second_law/" title="thermal_second_law">thermal_second_law</a><time datetime="2024-06-10T11:31:53.000Z" title="发表于 2024-06-10 19:31:53">2024-06-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/06/10/Wesley's%20knowledge%20repo/mubu/thermal_dynamics/thermal_cycle/" title="thermal_cycle">thermal_cycle</a><time datetime="2024-06-10T11:31:44.000Z" title="发表于 2024-06-10 19:31:44">2024-06-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/06/10/Wesley's%20knowledge%20repo/mubu/thermal_dynamics/rankine/" title="rankine">rankine</a><time datetime="2024-06-10T11:31:37.000Z" title="发表于 2024-06-10 19:31:37">2024-06-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/06/10/Wesley's%20knowledge%20repo/mubu/thermal_dynamics/introduction/" title="introduction">introduction</a><time datetime="2024-06-10T11:31:30.000Z" title="发表于 2024-06-10 19:31:30">2024-06-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/06/10/Wesley's%20knowledge%20repo/mubu/thermal_dynamics/internal_combustion_machine/" title="internal_combustion_machine">internal_combustion_machine</a><time datetime="2024-06-10T11:31:17.000Z" title="发表于 2024-06-10 19:31:17">2024-06-10</time></div></div></div></div><div class="card-widget card-tags"><div class="item-headline"><i class="fas fa-tags"></i><span>标签</span></div><div class="card-tag-cloud"><a href="/tags/field/" style="font-size: 1.1em; color: #999">field</a> <a href="/tags/linear-algebra/" style="font-size: 1.15em; color: #999b9e">linear_algebra</a> <a href="/tags/discrete-math/" style="font-size: 1.3em; color: #99a1ac">discrete_math</a> <a href="/tags/multi-variable-function/" style="font-size: 1.2em; color: #999da3">multi-variable_function</a> <a href="/tags/mse/" style="font-size: 1.5em; color: #99a9bf">mse</a> <a href="/tags/machine-learning/" style="font-size: 1.3em; color: #99a1ac">machine_learning</a> <a href="/tags/test/" style="font-size: 1.1em; color: #999">test</a> <a href="/tags/complex-analysis/" style="font-size: 1.4em; color: #99a5b6">complex_analysis</a> <a href="/tags/cpp-basic/" style="font-size: 1.25em; color: #999fa7">cpp_basic</a> <a href="/tags/thermal/" style="font-size: 1.4em; color: #99a5b6">thermal</a> <a href="/tags/dynamic/" style="font-size: 1.15em; color: #999b9e">dynamic</a> <a href="/tags/ODE/" style="font-size: 1.3em; color: #99a1ac">ODE</a> <a href="/tags/deep-learning/" style="font-size: 1.45em; color: #99a7ba">deep_learning</a> <a href="/tags/dynamics/" style="font-size: 1.35em; color: #99a3b1">dynamics</a> <a href="/tags/probability/" style="font-size: 1.2em; color: #999da3">probability</a></div></div><div class="card-widget card-archives"><div class="item-headline"><i class="fas fa-archive"></i><span>归档</span></div><ul class="card-archive-list"><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/06/"><span class="card-archive-list-date">六月 2024</span><span class="card-archive-list-count">96</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/05/"><span class="card-archive-list-date">五月 2024</span><span class="card-archive-list-count">9</span></a></li></ul></div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>网站资讯</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">文章数目 :</div><div class="item-count">105</div></div><div class="webinfo-item"><div class="item-name">本站访客数 :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">本站总访问量 :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">最后更新时间 :</div><div class="item-count" id="last-push-date" data-lastPushDate="2024-06-10T13:16:14.546Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By Wesley You</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>window.typedJSFn = {
   init: (str) => {
     window.typed = new Typed('#subtitle', Object.assign({
       strings: str,
