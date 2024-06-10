@@ -1,0 +1,168 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Lyapunov_Stability | Who Am I's Zone</title><meta name="author" content="Wesley You"><meta name="copyright" content="Wesley You"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="稳定性研究方程$$\frac{dy}{dt} &#x3D; g(t,y), y\in \mathbb R^n$$ 稳定和不稳定我们把邻近的解均趋于之的特解称为稳定，反之称为不稳定 驻定和平衡解对于等式右边 (不包含 dx&#x2F;dt) 如果不含 自变量 t, 我们称之为 驻定微分方程，再将 微分项设为 0得到的常数解，称之为 平衡解或者驻定解 研究思路既然我们要研究特解和标准解的差异，故定义差">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Lyapunov_Stability">
+<meta property="og:url" content="http://example.com/2024/06/10/Wesley's%20knowledge%20repo/none-linear_ODE_solution/Lyapunov_Stability/index.html">
+<meta property="og:site_name" content="Who Am I&#39;s Zone">
+<meta property="og:description" content="稳定性研究方程$$\frac{dy}{dt} &#x3D; g(t,y), y\in \mathbb R^n$$ 稳定和不稳定我们把邻近的解均趋于之的特解称为稳定，反之称为不稳定 驻定和平衡解对于等式右边 (不包含 dx&#x2F;dt) 如果不含 自变量 t, 我们称之为 驻定微分方程，再将 微分项设为 0得到的常数解，称之为 平衡解或者驻定解 研究思路既然我们要研究特解和标准解的差异，故定义差">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png">
+<meta property="article:published_time" content="2024-06-10T06:10:00.000Z">
+<meta property="article:modified_time" content="2024-06-10T06:10:18.034Z">
+<meta property="article:author" content="Wesley You">
+<meta property="article:tag" content="ODE">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2024/06/10/Wesley's%20knowledge%20repo/none-linear_ODE_solution/Lyapunov_Stability/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Lyapunov_Stability',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-06-10 14:10:18'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 7.2.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">24</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">5</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><hr class="custom-hr"/></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="Who Am I's Zone"><span class="site-name">Who Am I's Zone</span></a></span><div id="menus"><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Lyapunov_Stability</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-06-10T06:10:00.000Z" title="发表于 2024-06-10 14:10:00">2024-06-10</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-06-10T06:10:18.034Z" title="更新于 2024-06-10 14:10:18">2024-06-10</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Lyapunov_Stability"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="稳定性"><a href="#稳定性" class="headerlink" title="稳定性"></a>稳定性</h2><h3 id="研究方程"><a href="#研究方程" class="headerlink" title="研究方程"></a>研究方程</h3><p>$$\frac{dy}{dt} &#x3D; g(t,y), y\in \mathbb R^n$$</p>
+<h3 id="稳定和不稳定"><a href="#稳定和不稳定" class="headerlink" title="稳定和不稳定"></a>稳定和不稳定</h3><p>我们把邻近的解均趋于之的特解称为稳定，反之称为不稳定</p>
+<h4 id="驻定和平衡解"><a href="#驻定和平衡解" class="headerlink" title="驻定和平衡解"></a>驻定和平衡解</h4><p>对于等式右边 (不包含 dx&#x2F;dt) 如果不含 自变量 t, 我们称之为 驻定微分方程，再将 微分项设为 0得到的常数解，称之为 平衡解或者驻定解</p>
+<h3 id="研究思路"><a href="#研究思路" class="headerlink" title="研究思路"></a>研究思路</h3><p>既然我们要研究特解和标准解的差异，故定义差异函数 $x &#x3D; y - \phi(t)$, 其中 $\phi(t)$ 表示特解, 稳定函数会有 $x\to 0$ ; 不稳定函数会有 $x\to\infty$.<br>再定义函数 $\frac{dx}{dt} &#x3D; f(t,x)$, 带回原方程得到<br>$$f(t,x) &#x3D; g(t,y) - \frac{d\phi(t)}{dt} &#x3D;g(t,x+\phi(t))-g(t,\phi(t))$$ 对于函数 $f$, 我们有特解 $f(t,0) &#x3D; 0$, 即稳定性等同于趋于 0 的趋势</p>
+<h3 id="epsilon-语言定义"><a href="#epsilon-语言定义" class="headerlink" title="$\epsilon$ 语言定义"></a>$\epsilon$ 语言定义</h3><p><strong>稳定</strong>：对于 $\forall \epsilon &gt; 0$, 存在 $\delta &gt; 0$ s.t. $\forall ||x_0|| &lt; \delta$ 的时候，方程组 $\frac{dx}{dt} &#x3D; f(t,x)$ 的由初值 $x(t_0) &#x3D; x_0$ 确定的解 $x(t)$ 对一切 $t \ge t_0$ 均有 $||x(t)|| &lt; \epsilon$ , 则称 $x &#x3D; 0$ 是稳定的<br>**渐进稳定**：对于 $x&#x3D; 0$ 解稳定且存在 $\delta_0 &gt; 0$ 使得 $||x_0|| &lt; \delta_0$ 的时候满足初值 $x_0$ 的解 $x(t)$ 均有 $\lim_{t\to\infty}x(t) &#x3D; 0$<br><strong>渐进稳定域</strong>：如果 $x_0$ 渐进稳定，且存在域 $D_0$ 当且仅当 $x_0\in D_0$ 的时候满足初值条件 $x(t_0) &#x3D; x_0$ 的解 $x(t)$ 均有 $\lim_{t\to\infty} x(t) &#x3D; 0$ 则称域 $D_0$ 是渐进稳定域或者吸引域，若 $\delta_0 &#x3D; \infty$ 则称为全局稳定</p>
+<h4 id="定理-1-线性稳定证明"><a href="#定理-1-线性稳定证明" class="headerlink" title="定理 1 (线性稳定证明)"></a>定理 1 (线性稳定证明)</h4><p>对常系数线性微分方程组 $\dot x &#x3D; Ax$ 若其特征方程 $\det(A - \lambda E) &#x3D; 0$ 具有负实部则方程零解渐近稳定; 若具有正实部根，不稳定; 若由零实部根，可能稳定也可能不稳定</p>
+<h4 id="定理-2-非线性算子稳定证明"><a href="#定理-2-非线性算子稳定证明" class="headerlink" title="定理 2 (非线性算子稳定证明)"></a>定理 2 (非线性算子稳定证明)</h4><p>对于非线性微分方程组 $\dot x &#x3D; Ax + R(x)$ 且 $R(0) &#x3D; 0, \lim_{||x||\to 0} \frac{||R(x)||}{||x||} &#x3D; 0$, 若特征方程没有零实部根，则在方程的零解的稳定性和 $\dot x &#x3D; Ax$ 的一致，若有负实部根，稳定; 正实部，不稳定.</p>
+<h3 id="V-函数-李雅普诺夫第二方法"><a href="#V-函数-李雅普诺夫第二方法" class="headerlink" title="V 函数 (李雅普诺夫第二方法)"></a>V 函数 (李雅普诺夫第二方法)</h3><h4 id="V-函数定义"><a href="#V-函数定义" class="headerlink" title="V 函数定义"></a>V 函数定义</h4><p>假设 $V(x)$ 在 $||x|| \le H$ 内定义的实连续可微函数 $V(0) &#x3D; 0$, 若在此域内有 $V(x)&gt;0$ 恒成立，称 $V$ 常正; 若 $x \not&#x3D; 0$ 时有 $V(x)&gt;0$ 称 $V$ 定正<br>求导等式<br>$$\frac{dV}{dt} &#x3D; \sum \frac{\partial V}{\partial x_i} \frac{dx_i}{dt} &#x3D; \sum\frac{\partial V}{\partial x_i}\cdot f_i \equiv \frac{\partial V}{\partial x_i} \cdot f$$ </p>
+<h4 id="李雅普诺夫定理"><a href="#李雅普诺夫定理" class="headerlink" title="李雅普诺夫定理"></a>李雅普诺夫定理</h4><ol>
+<li>如果对微分方程 $\frac{dx}{dt} &#x3D; f(x)$ 存在定正函数 $V(x)$ 且 $\frac{dV}{dt}$ 是常负函数或者恒定为 0， 则该方程组稳定</li>
+<li>如果 $\frac{dV}{dt}$ 是定负的，那么零解渐进稳定</li>
+</ol>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="http://example.com">Wesley You</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2024/06/10/Wesley's%20knowledge%20repo/none-linear_ODE_solution/Lyapunov_Stability/">http://example.com/2024/06/10/Wesley's%20knowledge%20repo/none-linear_ODE_solution/Lyapunov_Stability/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://example.com" target="_blank">Who Am I's Zone</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/ODE/">ODE</a></div><div class="post_share"><div class="social-share" data-image="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2024/06/10/Wesley's%20knowledge%20repo/dynamic%20system/1.%20%E4%BA%8C%E9%98%B6%E7%BA%BF%E6%80%A7%E5%B8%B8%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E7%9A%84%E8%A7%A3/" title="1. 二阶线性常微分方程的解"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">1. 二阶线性常微分方程的解</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Wesley You</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">24</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">5</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A8%B3%E5%AE%9A%E6%80%A7"><span class="toc-number">1.</span> <span class="toc-text">稳定性</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A0%94%E7%A9%B6%E6%96%B9%E7%A8%8B"><span class="toc-number">1.1.</span> <span class="toc-text">研究方程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A8%B3%E5%AE%9A%E5%92%8C%E4%B8%8D%E7%A8%B3%E5%AE%9A"><span class="toc-number">1.2.</span> <span class="toc-text">稳定和不稳定</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%A9%BB%E5%AE%9A%E5%92%8C%E5%B9%B3%E8%A1%A1%E8%A7%A3"><span class="toc-number">1.2.1.</span> <span class="toc-text">驻定和平衡解</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A0%94%E7%A9%B6%E6%80%9D%E8%B7%AF"><span class="toc-number">1.3.</span> <span class="toc-text">研究思路</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#epsilon-%E8%AF%AD%E8%A8%80%E5%AE%9A%E4%B9%89"><span class="toc-number">1.4.</span> <span class="toc-text">$\epsilon$ 语言定义</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9A%E7%90%86-1-%E7%BA%BF%E6%80%A7%E7%A8%B3%E5%AE%9A%E8%AF%81%E6%98%8E"><span class="toc-number">1.4.1.</span> <span class="toc-text">定理 1 (线性稳定证明)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9A%E7%90%86-2-%E9%9D%9E%E7%BA%BF%E6%80%A7%E7%AE%97%E5%AD%90%E7%A8%B3%E5%AE%9A%E8%AF%81%E6%98%8E"><span class="toc-number">1.4.2.</span> <span class="toc-text">定理 2 (非线性算子稳定证明)</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#V-%E5%87%BD%E6%95%B0-%E6%9D%8E%E9%9B%85%E6%99%AE%E8%AF%BA%E5%A4%AB%E7%AC%AC%E4%BA%8C%E6%96%B9%E6%B3%95"><span class="toc-number">1.5.</span> <span class="toc-text">V 函数 (李雅普诺夫第二方法)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#V-%E5%87%BD%E6%95%B0%E5%AE%9A%E4%B9%89"><span class="toc-number">1.5.1.</span> <span class="toc-text">V 函数定义</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9D%8E%E9%9B%85%E6%99%AE%E8%AF%BA%E5%A4%AB%E5%AE%9A%E7%90%86"><span class="toc-number">1.5.2.</span> <span class="toc-text">李雅普诺夫定理</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/06/10/Wesley's%20knowledge%20repo/none-linear_ODE_solution/Lyapunov_Stability/" title="Lyapunov_Stability">Lyapunov_Stability</a><time datetime="2024-06-10T06:10:00.000Z" title="发表于 2024-06-10 14:10:00">2024-06-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/06/10/Wesley's%20knowledge%20repo/dynamic%20system/1.%20%E4%BA%8C%E9%98%B6%E7%BA%BF%E6%80%A7%E5%B8%B8%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E7%9A%84%E8%A7%A3/" title="1. 二阶线性常微分方程的解">1. 二阶线性常微分方程的解</a><time datetime="2024-06-10T06:09:31.000Z" title="发表于 2024-06-10 14:09:31">2024-06-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/06/10/Wesley's%20knowledge%20repo/dynamic%20system/0.%20%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/" title="0. 基本概念">0. 基本概念</a><time datetime="2024-06-10T06:09:13.000Z" title="发表于 2024-06-10 14:09:13">2024-06-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/06/10/Wesley's%20knowledge%20repo/discrete%20math/%E9%80%BB%E8%BE%91%E5%92%8C%E8%AF%81%E6%98%8E/" title="逻辑和证明">逻辑和证明</a><time datetime="2024-06-10T06:08:15.000Z" title="发表于 2024-06-10 14:08:15">2024-06-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/06/10/Wesley's%20knowledge%20repo/discrete%20math/%E8%A1%8C%E5%88%97%E5%BC%8F%E6%A6%82%E8%BF%B0/" title="行列式概述">行列式概述</a><time datetime="2024-06-10T06:08:06.000Z" title="发表于 2024-06-10 14:08:06">2024-06-10</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By Wesley You</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

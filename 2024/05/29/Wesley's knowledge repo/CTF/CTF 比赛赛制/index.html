@@ -1,0 +1,158 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Who Am I's Zone | Who Am I's Zone</title><meta name="author" content="Wesley You"><meta name="copyright" content="Wesley You"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="解题模式在线比赛，解出题目获得flag得分 攻防模式现场比赛，存在快速攻击目标主机并且获取主机的权限 题目分类web 安全逆向工程 reverse漏洞挖掘和漏洞利用 PWN密码学 crypto调查取证 misc移动安全 mobile练习网站http:&#x2F;&#x2F;www.shiyanba.com&#x2F;ctf&#x2F;practice 易http:&#x2F;&#x2F;ctf.bugku.com&#x2F;login 易https:&#x2F;&#x2F;www.ic">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Who Am I&#39;s Zone">
+<meta property="og:url" content="http://example.com/2024/05/29/Wesley's%20knowledge%20repo/CTF/CTF%20%E6%AF%94%E8%B5%9B%E8%B5%9B%E5%88%B6/index.html">
+<meta property="og:site_name" content="Who Am I&#39;s Zone">
+<meta property="og:description" content="解题模式在线比赛，解出题目获得flag得分 攻防模式现场比赛，存在快速攻击目标主机并且获取主机的权限 题目分类web 安全逆向工程 reverse漏洞挖掘和漏洞利用 PWN密码学 crypto调查取证 misc移动安全 mobile练习网站http:&#x2F;&#x2F;www.shiyanba.com&#x2F;ctf&#x2F;practice 易http:&#x2F;&#x2F;ctf.bugku.com&#x2F;login 易https:&#x2F;&#x2F;www.ic">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png">
+<meta property="article:published_time" content="2024-05-29T04:30:13.614Z">
+<meta property="article:modified_time" content="2024-05-29T04:37:54.462Z">
+<meta property="article:author" content="Wesley You">
+<meta property="article:tag" content="Coder, UMich, SJTU, CS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2024/05/29/Wesley's%20knowledge%20repo/CTF/CTF%20%E6%AF%94%E8%B5%9B%E8%B5%9B%E5%88%B6/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Who Am I\'s Zone',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-05-29 12:37:54'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 7.2.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">24</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">5</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><hr class="custom-hr"/></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="Who Am I's Zone"><span class="site-name">Who Am I's Zone</span></a></span><div id="menus"><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">无题</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-05-29T04:30:13.614Z" title="发表于 2024-05-29 12:30:13">2024-05-29</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-05-29T04:37:54.462Z" title="更新于 2024-05-29 12:37:54">2024-05-29</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="解题模式"><a href="#解题模式" class="headerlink" title="解题模式"></a>解题模式</h2><p>在线比赛，解出题目获得flag得分</p>
+<h2 id="攻防模式"><a href="#攻防模式" class="headerlink" title="攻防模式"></a>攻防模式</h2><p>现场比赛，存在快速攻击目标主机并且获取主机的权限</p>
+<h2 id="题目分类"><a href="#题目分类" class="headerlink" title="题目分类"></a>题目分类</h2><h3 id="web-安全"><a href="#web-安全" class="headerlink" title="web 安全"></a>web 安全</h3><h3 id="逆向工程-reverse"><a href="#逆向工程-reverse" class="headerlink" title="逆向工程 reverse"></a>逆向工程 reverse</h3><h3 id="漏洞挖掘和漏洞利用-PWN"><a href="#漏洞挖掘和漏洞利用-PWN" class="headerlink" title="漏洞挖掘和漏洞利用 PWN"></a>漏洞挖掘和漏洞利用 PWN</h3><h3 id="密码学-crypto"><a href="#密码学-crypto" class="headerlink" title="密码学 crypto"></a>密码学 crypto</h3><h3 id="调查取证-misc"><a href="#调查取证-misc" class="headerlink" title="调查取证 misc"></a>调查取证 misc</h3><h3 id="移动安全-mobile"><a href="#移动安全-mobile" class="headerlink" title="移动安全 mobile"></a>移动安全 mobile</h3><h2 id="练习网站"><a href="#练习网站" class="headerlink" title="练习网站"></a>练习网站</h2><h3 id="http-www-shiyanba-com-ctf-practice-易"><a href="#http-www-shiyanba-com-ctf-practice-易" class="headerlink" title="http://www.shiyanba.com/ctf/practice 易"></a><a target="_blank" rel="noopener" href="http://www.shiyanba.com/ctf/practice">http://www.shiyanba.com/ctf/practice</a> 易</h3><h3 id="http-ctf-bugku-com-login-易"><a href="#http-ctf-bugku-com-login-易" class="headerlink" title="http://ctf.bugku.com/login 易"></a><a target="_blank" rel="noopener" href="http://ctf.bugku.com/login">http://ctf.bugku.com/login</a> 易</h3><h3 id="https-www-ichunqiu-com-competition-难"><a href="#https-www-ichunqiu-com-competition-难" class="headerlink" title="https://www.ichunqiu.com/competition 难"></a><a target="_blank" rel="noopener" href="https://www.ichunqiu.com/competition">https://www.ichunqiu.com/competition</a> 难</h3></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="http://example.com">Wesley You</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2024/05/29/Wesley's%20knowledge%20repo/CTF/CTF%20%E6%AF%94%E8%B5%9B%E8%B5%9B%E5%88%B6/">http://example.com/2024/05/29/Wesley's%20knowledge%20repo/CTF/CTF%20%E6%AF%94%E8%B5%9B%E8%B5%9B%E5%88%B6/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://example.com" target="_blank">Who Am I's Zone</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2024/05/29/Wesley's%20knowledge%20repo/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/" title=""><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info"></div></div></a></div><div class="next-post pull-right"><a href="/2024/05/29/Wesley's%20knowledge%20repo/CTF/%E7%9B%B8%E5%85%B3%E4%BF%A1%E6%81%AF%E6%BA%90/" title=""><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info"></div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Wesley You</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">24</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">5</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%A8%A1%E5%BC%8F"><span class="toc-number">1.</span> <span class="toc-text">解题模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%94%BB%E9%98%B2%E6%A8%A1%E5%BC%8F"><span class="toc-number">2.</span> <span class="toc-text">攻防模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E5%88%86%E7%B1%BB"><span class="toc-number">3.</span> <span class="toc-text">题目分类</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#web-%E5%AE%89%E5%85%A8"><span class="toc-number">3.1.</span> <span class="toc-text">web 安全</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B-reverse"><span class="toc-number">3.2.</span> <span class="toc-text">逆向工程 reverse</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98%E5%92%8C%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8-PWN"><span class="toc-number">3.3.</span> <span class="toc-text">漏洞挖掘和漏洞利用 PWN</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%86%E7%A0%81%E5%AD%A6-crypto"><span class="toc-number">3.4.</span> <span class="toc-text">密码学 crypto</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B0%83%E6%9F%A5%E5%8F%96%E8%AF%81-misc"><span class="toc-number">3.5.</span> <span class="toc-text">调查取证 misc</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A7%BB%E5%8A%A8%E5%AE%89%E5%85%A8-mobile"><span class="toc-number">3.6.</span> <span class="toc-text">移动安全 mobile</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0%E7%BD%91%E7%AB%99"><span class="toc-number">4.</span> <span class="toc-text">练习网站</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#http-www-shiyanba-com-ctf-practice-%E6%98%93"><span class="toc-number">4.1.</span> <span class="toc-text">http:&#x2F;&#x2F;www.shiyanba.com&#x2F;ctf&#x2F;practice 易</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#http-ctf-bugku-com-login-%E6%98%93"><span class="toc-number">4.2.</span> <span class="toc-text">http:&#x2F;&#x2F;ctf.bugku.com&#x2F;login 易</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#https-www-ichunqiu-com-competition-%E9%9A%BE"><span class="toc-number">4.3.</span> <span class="toc-text">https:&#x2F;&#x2F;www.ichunqiu.com&#x2F;competition 难</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/06/10/Wesley's%20knowledge%20repo/none-linear_ODE_solution/Lyapunov_Stability/" title="Lyapunov_Stability">Lyapunov_Stability</a><time datetime="2024-06-10T06:10:00.000Z" title="发表于 2024-06-10 14:10:00">2024-06-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/06/10/Wesley's%20knowledge%20repo/dynamic%20system/1.%20%E4%BA%8C%E9%98%B6%E7%BA%BF%E6%80%A7%E5%B8%B8%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E7%9A%84%E8%A7%A3/" title="1. 二阶线性常微分方程的解">1. 二阶线性常微分方程的解</a><time datetime="2024-06-10T06:09:31.000Z" title="发表于 2024-06-10 14:09:31">2024-06-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/06/10/Wesley's%20knowledge%20repo/dynamic%20system/0.%20%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/" title="0. 基本概念">0. 基本概念</a><time datetime="2024-06-10T06:09:13.000Z" title="发表于 2024-06-10 14:09:13">2024-06-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/06/10/Wesley's%20knowledge%20repo/discrete%20math/%E9%80%BB%E8%BE%91%E5%92%8C%E8%AF%81%E6%98%8E/" title="逻辑和证明">逻辑和证明</a><time datetime="2024-06-10T06:08:15.000Z" title="发表于 2024-06-10 14:08:15">2024-06-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/06/10/Wesley's%20knowledge%20repo/discrete%20math/%E8%A1%8C%E5%88%97%E5%BC%8F%E6%A6%82%E8%BF%B0/" title="行列式概述">行列式概述</a><time datetime="2024-06-10T06:08:06.000Z" title="发表于 2024-06-10 14:08:06">2024-06-10</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By Wesley You</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
