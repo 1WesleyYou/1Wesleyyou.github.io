@@ -52,7 +52,7 @@
   isHome: true,
   isHighlightShrink: false,
   isToc: false,
-  postUpdate: '2024-07-04 15:42:08'
+  postUpdate: '2024-07-14 22:54:50'
 }</script><script>(win=>{
       win.saveToLocal = {
         set: (key, value, ttl) => {
@@ -149,281 +149,423 @@
         }
       }
       detectApple()
-    })(window)</script><meta name="generator" content="Hexo 7.2.0"><link href="https://cdn.bootcss.com/KaTeX/0.11.1/katex.min.css" rel="stylesheet" /></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/me.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">126</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">21</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">6</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="page" id="body-wrap"><header class="full_page" id="page-header" style="background-image: url('/img/a.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="Yuchen You"><img class="site-icon" src="/img/avatar.png"/><span class="site-name">Yuchen You</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> Search</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="site-info"><h1 id="site-title">Yuchen You</h1><div id="site-subtitle"><span id="subtitle"></span></div><div id="site_social_icons"><a class="social-icon" href="https://github.com/1Wesleyyou" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yuchenxr@umich.edu" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://www.linkedin.com/in/yuchen-you-a74940314/?locale=en_US" target="_blank" title="LinkedIn"><i class="fab fa-linkedin" style="color: #4a4dbe;"></i></a><a class="social-icon" href="/Resume.pdf" target="_blank" title="CV"><i class="fas fa-address-card" style="color: #251456;"></i></a></div></div><div id="scroll-down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout" id="content-inner"><div class="recent-posts" id="recent-posts"><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/06/10/Wesley's%20knowledge%20repo/mubu/complex_analysis/complex_differentiation/" title="complex_differentiation">complex_differentiation</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2024-06-10T15:38:01.074Z" title="Updated 2024-06-10 23:38:01">2024-06-10</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/math/">math</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/complex-analysis/">complex_analysis</a></span></div><div class="content">1. 复数求导性质 Complex Differentiability
+    })(window)</script><meta name="generator" content="Hexo 7.2.0"><link href="https://cdn.bootcss.com/KaTeX/0.11.1/katex.min.css" rel="stylesheet" /></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/me.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">151</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">22</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">7</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="page" id="body-wrap"><header class="full_page" id="page-header" style="background-image: url('/img/a.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="Yuchen You"><img class="site-icon" src="/img/avatar.png"/><span class="site-name">Yuchen You</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> Search</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="site-info"><h1 id="site-title">Yuchen You</h1><div id="site-subtitle"><span id="subtitle"></span></div><div id="site_social_icons"><a class="social-icon" href="https://github.com/1Wesleyyou" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yuchenxr@umich.edu" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://www.linkedin.com/in/yuchen-you-a74940314/?locale=en_US" target="_blank" title="LinkedIn"><i class="fab fa-linkedin" style="color: #4a4dbe;"></i></a><a class="social-icon" href="/Resume.pdf" target="_blank" title="CV"><i class="fas fa-address-card" style="color: #251456;"></i></a></div></div><div id="scroll-down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout" id="content-inner"><div class="recent-posts" id="recent-posts"><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/06/10/Wesley's%20knowledge%20repo/mubu/dynamics/dynamic_euler/" title="dynamic_euler">dynamic_euler</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2024-06-10T15:41:46.907Z" title="Updated 2024-06-10 23:41:46">2024-06-10</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/physics/">physics</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/dynamics/">dynamics</a></span></div><div class="content">2. 动力学欧拉方法
 
 
-复数可导性 holomorphic/ complex differentiable
+欧拉第一定律
 
 
-全纯函数定义 f′(z):=lim⁡h→0,h∈Cf(z+h)−f(z)h{f&#x27;(z) : = }\lim_{h\to 0, h\in \mathbb{C}}\frac{f(z+h)-f(z)}{h}f′(z):=limh→0,h∈C​hf(z+h)−f(z)​
+欧拉第一定律是牛顿第二定律的离散粒子集合情况的表达
 
 
-全纯函数 holomorphic 例子
+公式 ΣiFi=Σmiai\Sigma_i F_i = \Sigma m_i a_iΣi​Fi​=Σmi​ai​
 
+如果是连续的物体我们可以写作 ΣF=∫a dm\Sigma F = \int a\ dmΣF=∫a dm
+离散情况代表空气等流体也符合欧拉的描述，当然一般刚体也满足欧拉方法
+这种情况下 FFF 只考虑外力，内力由于矢量相互作用等大反向可以抵消
 
-lim⁡h→0z+h‾−zˉh=lim⁡h→0hˉh\lim_{h\to 0 } \frac{\overline{z+h}-\bar{z}}{h} = \lim_{h\to 0}\frac{\bar{h}}{h}limh→0​hz+h​−zˉ​=limh→0​hhˉ​ 不是 holomorphic，因为解不存在（小量相除）
 
-可能存在实数和复数两个方向的解
-柯西黎曼定理就是为了解决这个问题
 
+质心
 
+r⃗OC=ΣmiRim\vec r_{OC} = \frac{\Sigma m_i R_i}{m}rOC​=mΣmi​Ri​​ , m=Σmim = \Sigma m_im=Σmi​
 
-holomorphic 的求导法则和实数函数求导法则完全相同
 
 
+这下我们可以用位移的二阶导表达 加速度：ΣF=md2r⃗OCdt2=ma⃗C\Sigma F = m \frac{d^2\vec r_{OC}}{dt^2} = m \vec a_CΣF=mdt2d2rOC​​=maC​
 
+也就是说，加速度可以只考虑质心点处的加速度
 
-对比复数求导和向量求导
 
 
-令函数 f(x+ ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/06/10/Wesley's%20knowledge%20repo/mubu/basic_ode/linear_ode_groups/" title="linear_ode_groups">linear_ode_groups</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2024-06-10T15:37:55.254Z" title="Updated 2024-06-10 23:37:55">2024-06-10</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/math/">math</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/ODE/">ODE</a></span></div><div class="content">7. 线性微分方程组
 
 
-微分方程解的唯一性
+欧拉第二定律
 
 
-皮卡迭代 Picard Iteration
+背景也是散点情况
 
-x(k+1)=x0+∫t0tF(x(k)(s),s)dsx^{(k+1)} = x_0+\int _{t_0}^t F(x^{(k)}(s),s)dsx(k+1)=x0​+∫t0​t​F(x(k)(s),s)ds, x(0)(t)=x0x^{(0)}(t) = x_0x(0)(t)=x0​ 是一个常数
-作用：通过皮卡迭代我们可以得到第 kkk 阶的微分方程拟合式，令k→∞k\to \inftyk→∞ 如果式子收敛则表明微分方程解具有唯一性
 
+动量公式 $\ve ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/06/10/Wesley's%20knowledge%20repo/mubu/deep_learning/models/unet/" title="unet">unet</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2024-06-10T15:41:40.650Z" title="Updated 2024-06-10 23:41:40">2024-06-10</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/ai/">ai</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/deep-learning/">deep_learning</a></span></div><div class="content">Unet
 
 
-Picard-Lindelof定理
+目标：解决生物医学图像方面的问题
 
-首先定义 Lipschitz estimate: 存在 L&gt;0L &gt; 0L&gt;0 使得 任意连续映射 FFF: ∣∣F(x,t)−F(y,t)∣∣≤L∣∣x−y∣∣||F(x,t) - F(y,t)||\le L||x - y||∣∣F(x,t)−F(y,t)∣∣≤L∣∣x−y∣∣
-若满足上述等式则有 dxdt=F(x,t),x(t0)=x0\frac{dx}{dt} = F(x,t), x(t_ ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/06/10/Wesley's%20knowledge%20repo/mubu/basic_ode/linear_ode/" title="linear_ode">linear_ode</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2024-06-10T15:37:48.928Z" title="Updated 2024-06-10 23:37:48">2024-06-10</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/math/">math</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/ODE/">ODE</a></span></div><div class="content">6. 线性常微分方程
 
+用于图像分割任务的深度学习架构
 
-可分离方程 separable function
 
 
-形式 y′=βy,y(0)=y0y&#x27; = \beta y, y(0) = y_0y′=βy,y(0)=y0​
+结构
 
 
-思路 将 y′y&#x27;y′ 看作是 dxdy\frac{dx}{dy}dydx​ 然后通过将微元部分放到正次数来，左右分别不定积分得到宏观表达式
+编码器（下采样部分）：
 
+包含一系列卷积层和池化层，用于降低输入图像的分辨率。
+每个下采样阶段都会减小特征图的大小，同时增加特征通道的数量，以提取图像的抽象特征。
 
-微分方程解的存在性定理
 
-对于 int point η\etaη, 满足 g(η)≠0g(\eta) \not = 0g(η)​=0, 则在 η\etaη 的一个相邻域中，对于 y′=f(x)g(y),y(ξ)=ηy&#x27; = f(x)g(y), y(\xi) = \etay′=f(x)g(y),y(ξ)=η, 有唯一解 y(x)y(x)y(x).
 
+中间连接：
 
+编码器和解码器之间存在一条直通的连接，将编码器的高级特征映射与解码器的特征图相结合。这有助于保留细节信息。
 
-不唯一解的情况： 本质上得到的是一组平行曲线，因为没有一个经过点导致无法具体确定曲线的位置，一般我们用initial value去解决这个问题
 
 
+解码器（上采样部分）：
 
+包含一系列反卷积（或转置卷积）层和跳跃连接，用于逐步增加分辨率。
+每个上采样阶段都会增加特征图的大小，减少通道数，并恢复原始图像的细节。
 
-齐次线性方程 homogeneous linear equation
 
 
-一阶线性微分方程形式 : a1(x)y′+a0 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/06/10/Wesley's%20knowledge%20repo/mubu/basic_ode/lagrange_multiplier/" title="lagrange_multiplier">lagrange_multiplier</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2024-06-10T15:37:32.071Z" title="Updated 2024-06-10 23:37:32">2024-06-10</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/math/">math</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/multi-variable-function/">multi-variable_function</a></span></div><div class="content">3. 拉格朗日乘子与约束方程
+跳跃连接：
 
+将编码器的特征图与解码器的对应特征图相连接，以传递更丰富的上下文信息。
+跳跃连接有助于减轻梯度消失问题，同时提高模型对局部细节的感知能力。
 
-约束方程 constraint set：
 
 
-形式就是一个隐函数，得到的也就应该是低维空间的一个曲线/面，令 F:Rn→RF : \R^n\to \RF:Rn→R
+最后的卷积层：
 
+在解码器的最后一层，使用一个卷积层将特征图映射到最终的分割结果。
+输出通道数量通常等于任务中的目标类别数。
 
-作用于 form 映射 fff 的约束方程：( f:Rn→Rf: \R^n\to \Rf:Rn→R )
 
-从康托面分析（俯视图），当约束方程的图形在 ξ\xiξ 处切线和 fff 康拓面在 ξ\xiξ 的切线重合则此处是 映射 fff 关于约束方程 FFF 的极值点
 
 
 
-注：fff 被 FFF 约束时得到低维曲线 （fff 是 n+1n+1n+1 维度的空间， FFF 是 n−mn-mn−m 维度的曲面）曲线与 F(x)=0F(x)=0F(x)=0 空间维度一致
+</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/06/10/Wesley's%20knowledge%20repo/mubu/deep_learning/models/transformer/" title="transformer">transformer</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2024-06-10T15:41:38.200Z" title="Updated 2024-06-10 23:41:38">2024-06-10</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/ai/">ai</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/deep-learning/">deep_learning</a></span></div><div class="content">自注意力模型 Transformer
 
 
-注：fff 作为一个 form 形式的映射，其求导得到的是方向导数， 即在康拓面内指向价值下降最快的地方，而不是在 n+1n+1n+1 维空间延梯度向下；而 Df∣ξDf|_\xiDf∣ξ​ 则表示一个梯度向量乘上另一个向量，结果是一个值, 即 R\RR， 在极值点处应为 0
+开山鼻祖：Attention is All You Need
 
-C={x∈Rn:F(x)=0}\mathsc ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/06/10/Wesley's%20knowledge%20repo/mubu/basic_ode/jordan_normal_form/" title="jordan_normal_form">jordan_normal_form</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2024-06-10T15:37:29.245Z" title="Updated 2024-06-10 23:37:29">2024-06-10</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/math/">math</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/linear-algebra/">linear_algebra</a></span></div><div class="content">5. 约旦标准型
 
+应用领域
 
-约旦标准型 Jordan Normal Form
+NLP 语言模型
+CV 界新秀
 
 
-引入
 
-对于任意一个 n×nn\times nn×n 的矩阵我们不一定能够拥有nnn 个特征向量，对于 几何重度小于代数重度的特征值 λi\lambda_iλi​ 我们可以构造 generalized eigenvector 满足 v⃗(2)∈ker⁡(A−λi1)2/ker⁡(A−λi1)\vec v^{(2)} \in \ker(A-\lambda_i \mathbb{1})^2 / \ker(A-\lambda_i\mathbb{1})v(2)∈ker(A−λi​1)2/ker(A−λi​1) 且这个满足了等式 Av⃗2=λv⃗2+v⃗1A\vec v_2 = \lambda \vec v_2 + \vec v_1Av2​=λv2​+v1​
-注意这里的 v⃗2\vec v_2v2​ 并不一定是任意 ker⁡(A−λi1)2\ker(A-\lambda_i 1)^2ker(A−λi​1)2, 应该和 v1v_1v1​ 保持联系
+解决问题
 
 
 
-形式
 
-diag(Jk(λi))⁡\operatorname{diag(J ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/06/10/Wesley's%20knowledge%20repo/mubu/basic_ode/inverse_map/" title="inverse_map">inverse_map</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2024-06-10T15:37:25.561Z" title="Updated 2024-06-10 23:37:25">2024-06-10</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/math/">math</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/multi-variable-function/">multi-variable_function</a></span></div><div class="content">1. 逆函数定理
 
+输入是一个序列，我们需要调用多个 encoder 来进行编码，同时需要多个 decoder 进行解码
 
-压缩映射 contraction mapping:
 
+encoder 之间结构相同；decoder 之间结构相同；参数各不相同；encoder 与 decoder 结构不同
 
-定义： 在complete normed vector sub space MMM 中， 对于一个函数 f:M→Mf: M \to Mf:M→M且有数C&lt;1C&lt;1C&lt;1 使得∣∣f(x)−f(y)∣∣≤C⋅∣∣x−y∣∣||f(x)-f(y)||\le C\cdot||x-y||∣∣f(x)−f(y)∣∣≤C⋅∣∣x−y∣∣对∀x,y,∈M\forall x,y, \in M∀x,y,∈M 则称这个映射为压缩映射
 
-引理：压缩映射一定连续
-注：压缩映射的映射目的地范围逐渐缩减，因此原空间一定存在更加疏松的结构来满足连续条件
+利用 self attention layer 同时计算出输出结果 （RNN 是分步骤算出来的）
 
 
+输入序列为 x1,x2,x3,x4x^1, x^2, x^3,x^4x1,x2,x3,x4 具有一定的联系
 
-压缩映射定理 contraction mapping principle：
 
+将输入子向量分为 q,k,vq,k,vq,k,v 三个部分向量
 
 
-在上述 MMM 中存在映射 f：M→Mf： M\to Mf：M→M 是一个压缩映射， 则存在唯一不动点 fixed point x0∈Mx_0 \in Mx0​∈M 即 f(x0)=x0f(x_0)=x_0f(x0​)=x0​.
+qqq: query 查找，来找到 xxx 和相邻几个向量的关系
 
+qi=Wqaiq^i = W^q a^iqi=Wqai
 
 
 
-对于序列 (an)(a_n)(an​) 满足 a ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/06/10/Wesley's%20knowledge%20repo/mubu/basic_ode/implicit_map/" title="implicit_map">implicit_map</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2024-06-10T15:37:22.698Z" title="Updated 2024-06-10 23:37:22">2024-06-10</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/math/">math</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/multi-variable-function/">multi-variable_function</a></span></div><div class="content">2. 隐函数定理
+kkk: key 向量，作为被查向量提供核心信息
 
+ki=Wkaik^i = W^k a^iki=Wkai
 
-隐函数 implicit mapping
 
 
-定义：对于一个含有 x,yx,yx,y 双变量的方程 (x∈D,y∈Ex\in D, y\in Ex∈D,y∈E) F(x,y)=0F(x,y)=0F(x,y)=0 的函数关系为隐函数
+vvv: 抽取出来的数据
 
+vi=Wvaiv^i = W^va^i ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/06/10/Wesley's%20knowledge%20repo/mubu/deep_learning/models/resnet/" title="resnet">resnet</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2024-06-10T15:41:35.877Z" title="Updated 2024-06-10 23:41:35">2024-06-10</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/ai/">ai</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/deep-learning/">deep_learning</a></span></div><div class="content">残差网络 Resnet
 
-注：不是每个隐函数都可以写作显函数形式， 首先双变量 x,yx,yx,y 不一定能分离，其次 对于确定的 xxx, 不一定只有唯一的 yyy 与之对应， 即不一定构成函数关系
 
-注：隐函数阶段我们讨论 F(x,y)F(x,y)F(x,y) 就已经不是linear form 了，而是找 变量关于某一个轴的变化率
+产生背景
 
+在深度神经网络建模的时候，我们经常会发现50层深度的网络训练效果不如20层的效果，这可能是因为过拟合，也有可能是反向传播中的梯度逐渐变小或变大导致的梯度爆炸问题
+由微软研究院的何恺明、张祥雨、任少卿、孙剑等人提出
+我们至少要保证，随着层数的叠加，我们的训练效果至少不能下降
 
 
-第一定理：在隐函数 F(x,y)=0F(x,y)=0F(x,y)=0 中存在点 (x0,y0)(x_0,y_0)(x0​,y0​) 满足 ∂F∂y≠0\frac{\partial F}{\partial y} \not =0∂y∂F​​=0, 则在 (x0,y0)(x_0,y_0)(x0​,y0​) 周围的一个矩形范围内函数有解
 
+模型 Model
 
-隐函数求导：g′(x)=−∂xf(x,g(x))∂g(x)f(x,g(x))g&#x ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/06/10/Wesley's%20knowledge%20repo/mubu/basic_ode/eigen/" title="eigen">eigen</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2024-06-10T15:37:19.778Z" title="Updated 2024-06-10 23:37:19">2024-06-10</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/math/">math</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/ODE/">ODE</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/linear-algebra/">linear_algebra</a></span></div><div class="content">4. 特征值与特征方程
 
+为了让训练效果不下降，我们需要将未来的内容加上当前的内容即 x+F(x)x + F(x)x+F(x)
 
-特征值 eigenvalue 与特征向量 eigenvector
 
 
-Lv=λvLv = \lambda vLv=λv
 
 
-本征空间: Vλ={v∈V:Lv=λv}V_\lambda =\{v\in V : Lv = \lambda v\}Vλ​={v∈V:Lv=λv}
+向前传播 forward
 
-几何重度 dim⁡Vλ\dim V_\lambdadimVλ​
-本征空间的另一种表述法 ker⁡(L−λ∘id⁡)\ker (L - \lambda \circ \operatorname{id})ker(L−λ∘id)
-每个本征空间只对应一个 λ\lambdaλ 值
 
+首先我们要确定当前的效果只能作用于下一个层，不多不少
 
+这样可以类似于马尔科夫链的效果逐层递推
 
-引理: 如果存在特征值集 $\lambda_1 \cdots \lambda_n \in \mathbb{F} $ 互不相等, 则 {v1,⋯ ,vn}\{v_1, \cdots, v_n\}{v1​,⋯,vn​} 是一组独立集合
 
-人话：特征值不同 ⇒\Rightarrow⇒ 本征空间互相线性无关
 
+递推尝试：
 
+F(xl+1)=F(xl)+xlF(x_{l+1}) = F(x_l)+x_lF(xl+1​)=F(xl​)+xl​
+F(xl+2)=F(xl+1)+xl+1=F(xl+1)+F(xl)+xlF(x_{l+2}) = F(x_{l+1}) + x_{l+1} = F(x_{l+1})+F(x_l)+x_lF(xl+2​)=F(xl+1​)+xl+1​=F(xl+1​)+F(xl​)+xl​
+总递推 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/06/10/Wesley's%20knowledge%20repo/mubu/deep_learning/models/gan/" title="gan">gan</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2024-06-10T15:41:33.744Z" title="Updated 2024-06-10 23:41:33">2024-06-10</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/ai/">ai</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/deep-learning/">deep_learning</a></span></div><div class="content">生成对抗网络 GAN
 
-推论：
 
-(iii) 一个 Fn→Fn\mathbb{F}^n\to \mathbb{F}^nFn→Fn 的 en ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/06/10/Wesley's%20knowledge%20repo/mubu/lesss/tests/test%20all%20formats/" title="Untitled">Untitled</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2024-06-10T11:11:33.197Z" title="Updated 2024-06-10 19:11:33">2024-06-10</time></span></div><div class="content">test all formats
+定义与原理
 
 
-这是一个测试！
+目标：GAN 可以通过自动生成数据之后进行监督学习，以自动生成虚假数据
 
 
-这是 加粗 。
+我们需要一个 判别网络 来判断图片是否是真的
 
+判别网络越强，最后 ai 生成的图片越来越能以假乱真，也就是说效果越好
 
-这是 斜体 。
 
 
-这是 删除 。
+顺序及数学表达
 
 
-这是链接： cjlworld/mubu-to-md-converter (github.com)
+首先通过 ai 自动生成一张图片，其必然具有噪声 noice，获取的数据集是 G(x)G(x)G(x)
 
 
-这是 行内代码 python mubu_converter.py &lt; your_mubu_export_file.html &gt; md_name.md。
+事实上的数据集是 xxx
 
 
-LaTeX 测试：
+检测函数满足 D(x)→1D(x)\to 1D(x)→1 也就是说要让标准的判断结果接近全对
 
-浮点数： (−1)s×2exp−1023×1.frac(-1)^s\times 2^{exp-1023} \times1.frac(−1)s×2exp−1023×1.frac
-牛顿迭代：f(x)=0f(x) = 0f(x)=0 ，构造 x=g(x)=x−f(x)f′(x)x=g(x)=x-{f(x) \over f&#x27;(x)}x=g(x)=x−f′(x)f(x)​
 
+同时要满足相对于 GGG 而言 D(G(x))→1D(G(x))\to 1D(G(x))→1; 相对于 DDD 而言 D(G(x))→0D(G(x))\to 0D(G(x))→0
 
+注意两者目标不同，职能接近相反
+举例: 对于一个理想的生成网络，我们需要满足 D(x)=pdata(x)pdata(x)+pmodel(x)D(x) = \frac{p_{data}(x)}{p_{data}(x) + p_{model}(x)}D(x)=pdata​(x)+pmodel​(x)pdata​(x)​  ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/06/10/Wesley's%20knowledge%20repo/mubu/deep_learning/basic/rnn/" title="rnn">rnn</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2024-06-10T15:41:27.084Z" title="Updated 2024-06-10 23:41:27">2024-06-10</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/ai/">ai</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/deep-learning/">deep_learning</a></span></div><div class="content">循环神经网络 RNN
 
-图片！
 
+序列建模
 
+传统思维：给定一组相关属性，来推断最终的结果，但是不会考虑时间的属性，比如给你小名的成绩单，你只考虑他的几次考试的成绩，但是不考虑考试时间，那么期末成绩预测就不一定准确
+包含时间变量：类似于输入一句话，每个单词都有其顺序，所以顺序不同的话其对应的重要性应该也不能相同。输出也可以按照时间序列展开输出，例如chat回答问题不是一下子一整段话
+公式 $S_t = f(W_i X + W_S S_{t-1} + b) $
 
 
 
 
+常见示意图：
 
-一级缩进
 
+这里我们理解为通过一个 WhhW_{hh}Whh​ 矩阵不断更新隐藏层的状态，使得其带有上一帧的属性，具有一定的记忆力
 
-二级缩进
 
 
-三级缩进
 
 
-四级缩进
+反向传播
 
 
-五级缩进
+基于时间关系的逆向传播 Backpropagation Through Time
 
 
-六级缩进
+梯度爆炸问题：由于链式法则一路上乘了很多很大的矩阵，结果数据很大，很难看出要求的梯度
 
+通过梯度裁剪方法，缩放大梯度
 
-七级缩进
 
-八级缩进
 
+梯度消失问题：链式法则乘了很多很小的矩阵结果数据很小也难看出梯度
 
 
-七级缩进
 
+选择合适的激活函数
 
 
+例如 ReLUReLUReLU 函数的导数为 1 可以让导数不要衰减 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/06/10/Wesley's%20knowledge%20repo/mubu/deep_learning/basic/opencv-python/" title="opencv-python">opencv-python</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2024-06-24T04:55:46.776Z" title="Updated 2024-06-24 12:55:46">2024-06-24</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/ai/">ai</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/deep-learning/">deep_learning</a></span></div><div class="content">OpenCV-Python 框架
 
-六级缩进
 
+特别鸣谢：CodecWang 提供的cv教程 https://github.com/CodecWang/opencv-python-tutorial
 
 
+读图
 
-五级缩进
 
+imread() 是基本读图函数，其有两个参数
 
+filename：给出图片的绝对路径或者相对路径
+flags：指定读取图像的方式，可以为 cv2.IMREAD_COLOR 彩色图 (1), cv2.IMREAD_GRAYSCALE 灰度图 (0), cv2.IMREAD_UNCHANGED 包含透明通道的彩色图 (-1)
 
 
-四级缩进
 
+imshow() 是显示读入图片，有两个参数
 
+window_name：窗口的名称
+img：上文读入图片的变量
+窗口尺寸是自动给定的
 
 
-三 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/06/10/Wesley's%20knowledge%20repo/mubu/lesss/README/" title="Untitled">Untitled</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2024-06-10T11:11:33.187Z" title="Updated 2024-06-10 19:11:33">2024-06-10</time></span></div><div class="content">Mubu-To-MarkDown-Converter
-将 幕布 导出 的 html 文件转化为 markdown 格式。
-主要基于 markdownify 库：python-markdownify
-在此基础上预处理了 LaTex 公式，以及幕布 html 文档 的其他特殊部分。
-Installation
-1git clone https://github.com/cjlworld/mubu-to-md-converter.git
-Usage
-将幕布导出的 html 文件转换为 markdown：
-1python mubu_converter.py &lt; your_mubu_export_file.html &gt; md_name.md
-或者您可以 导入 MubuConverter 类：
-123from mubu_converter import MubuConverterMubuConverter().convert(html_content)
-Testing
-On Windows
-1./runtests.bat
-TODO
 
-处理公式中的 _ 以及 *
+waitKey() 是让窗口等待响应，0 是无限长等待，非零是等待该长度的 ms
 
-</div></div></div><nav id="pagination"><div class="pagination"><a class="extend prev" rel="prev" href="/page/10/#content-inner"><i class="fas fa-chevron-left fa-fw"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/#content-inner">10</a><span class="page-number current">11</span><a class="page-number" href="/page/12/#content-inner">12</a><a class="page-number" href="/page/13/#content-inner">13</a><a class="extend next" rel="next" href="/page/12/#content-inner"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/me.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Yuchen You (Wesley)</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">126</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">21</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">6</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/1WesleyYou"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/1Wesleyyou" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yuchenxr@umich.edu" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://www.linkedin.com/in/yuchen-you-a74940314/?locale=en_US" target="_blank" title="LinkedIn"><i class="fab fa-linkedin" style="color: #4a4dbe;"></i></a><a class="social-icon" href="/Resume.pdf" target="_blank" title="CV"><i class="fas fa-address-card" style="color: #251456;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/07/04/Wesley's%20knowledge%20repo/discrete%20math/7.%20%E5%81%8F%E5%BA%8F%E5%85%B3%E7%B3%BB/" title="7. 偏序关系">7. 偏序关系</a><time datetime="2024-07-04T05:21:28.000Z" title="Created 2024-07-04 13:21:28">2024-07-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/07/03/Wesley's%20knowledge%20repo/%E9%81%97%E4%BC%A0%E7%AE%97%E6%B3%95%20Genetic%20Algorithm%20(GA)/" title="遗传算法 Genetic Algorithm (GA)">遗传算法 Genetic Algorithm (GA)</a><time datetime="2024-07-03T08:52:13.000Z" title="Created 2024-07-03 16:52:13">2024-07-03</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/07/03/Wesley's%20knowledge%20repo/%E9%A2%9C%E8%89%B2%E5%A4%84%E7%90%86/" title="颜色处理">颜色处理</a><time datetime="2024-07-03T08:51:58.000Z" title="Created 2024-07-03 16:51:58">2024-07-03</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/06/25/Wesley's%20knowledge%20repo/discrete%20math/%E5%9F%BA%E6%9C%AC%E7%BB%93%E6%9E%84%EF%BC%9A%E9%9B%86%E5%90%88%E3%80%81%E5%87%BD%E6%95%B0%E3%80%81%E5%BA%8F%E5%88%97%E3%80%81%E6%B1%82%E5%92%8C%E3%80%81%E7%9F%A9%E9%98%B5/" title="Untitled">Untitled</a><time datetime="2024-06-25T14:28:13.047Z" title="Created 2024-06-25 22:28:13">2024-06-25</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/06/25/Wesley's%20knowledge%20repo/discrete%20math/%E8%87%AA%E7%84%B6%E6%BC%94%E7%BB%8E%E6%B3%95/" title="Untitled">Untitled</a><time datetime="2024-06-25T14:28:12.740Z" title="Created 2024-06-25 22:28:12">2024-06-25</time></div></div></div></div><div class="card-widget card-categories"><div class="item-headline">
+
+imwrite() 两个参数
+
+第一个是输出路径，包括对象名及其后缀
+第二个是图片变量
+
+
+
+cvtColor() 两个参数
+
+frame：图片对象变量
+tar_color：目标颜色，常见的有 灰度图 cv.COLOR_BGR2GRAY
+
+ ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/06/10/Wesley's%20knowledge%20repo/mubu/deep_learning/basic/loss_function/" title="loss_function">loss_function</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2024-06-10T15:39:16.466Z" title="Updated 2024-06-10 23:39:16">2024-06-10</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/ai/">ai</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/deep-learning/">deep_learning</a></span></div><div class="content">损失函数 Loss Function
+
+
+L1 损失
+
+就是火色特说的 ∣∣⋅∣∣1||\cdot||_1∣∣⋅∣∣1​ 损失，或者说是绝对值损失函数
+
+
+
+L2 损失
+
+
+就是色特说的 ∣∣⋅∣∣2||\cdot||_2∣∣⋅∣∣2​ 损失，或者说是平方损失函数
+
+
+Hubert Loss：修正主义，将L1和L2进行结合
+
+公式 HuberLoss={12(Yi−Yi′)2,∣Yi−Yi′∣≤αα(∣Yi−Yi′∣−12α),∣Yi−Yi′∣&gt;αHuber Loss = \begin{cases}\frac 1 2(Y_i - Y&#x27;_i)^2,&amp; |Y_i-Y_i&#x27;|\le\alpha\\\alpha(|Y_i - Y_i&#x27;|-\frac 1 2\alpha), &amp;|Y_i - Y_i&#x27;|&gt;\alpha\end{cases}HuberLoss={21​(Yi​−Yi′​)2,α(∣Yi​−Yi′​∣−21​α),​∣Yi​−Yi′​∣≤α∣Yi​−Yi′​∣&gt;α​ 曲线介于两者之间，在差小的时候损失较小，差大的 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/06/10/Wesley's%20knowledge%20repo/mubu/deep_learning/basic/dqn/" title="dqn">dqn</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2024-06-10T15:39:13.863Z" title="Updated 2024-06-10 23:39:13">2024-06-10</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/ai/">ai</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/deep-learning/">deep_learning</a></span></div><div class="content">强化学习网络 DQN
+
+
+目的：让机器学会打游戏
+
+在每一个对局中，情景各不相同，所以我们需要让机器当场学习
+应用：Alpha Go; 王者荣耀 ai
+
+
+
+特点
+
+
+
+没有监督数据，只有奖励 (reward) 信号
+
+
+例如围棋，可能性太多，一般不会通过已知情况进行计算
+
+
+
+
+奖励信号不一定是实时的，可能存在延迟
+
+
+不同于贪心算法，我们可能要放弃局部胜利而获得最终胜利
+
+
+
+
+时间是一个重要因素
+
+
+意思是样本之间存在时间维系的强关系
+
+
+
+
+智能体 (Agent) 但前的动作 (Action) 影响后续接收到的数据
+
+
+
+
+
+要素
+
+
+
+
+
+奖励： RtR_tRt​ 是一个反馈信号，是一个标量
+
+
+工作目标是：最大化累积奖励
+
+
+基于奖励假设：所有问题的目标都可以被描述为最大化期望的累积奖励
+
+期望表示平均水平高，用于避免“赌博”的训练结果，也就是要求在稳定高水平下找更好的
+
+
+
+
+
+序列决策 Sequential Decision Making
+
+
+目标：选择一定的动作序列以最大化未来的总体奖励（是一系列）
+
+因此奖励反馈是延迟的
+
+
+
+
+
+智能体 Agent
+
+
+输入： 观 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/06/10/Wesley's%20knowledge%20repo/mubu/deep_learning/basic/cnn/" title="cnn">cnn</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2024-06-24T04:58:31.123Z" title="Updated 2024-06-24 12:58:31">2024-06-24</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/ai/">ai</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/deep-learning/">deep_learning</a></span></div><div class="content">卷积神经网络 CNN
+
+
+应用：图像识别
+
+处理一张图片的时候我们首先要看这张图片具有哪些特征点，如果图片是人，那么特征可能就是眼睛鼻子
+特征 (feature) 应该是本类具有的，其他类不具有的；其次，我们也要和本类中其他特别的样本进行比较
+
+
+
+过滤器 Filter/ 补丁 Patch
+
+
+找到图像的某些特征之后，我们找其周围的一块像素点出来，将此设置为一个 filter 或者 patch
+
+
+从原图之中取出来进行卷积运算
+
+
+
+
+
+卷积运算思路
+
+在原图 m×mm\times mm×m 的像素矩阵中，我们有过滤器 n×nn\times nn×n，则卷积就是从原矩阵中抽出 n×nn\times nn×n 的尺寸的矩阵和过滤器做对应相乘相加求和就是结果了
+平移过滤器使其遍历原图即可获得特征谱 (feature map)
+由此我们也可以看出不同的 filter 矩阵对应的功能也不同
+事实上我们只需要指定卷积核的个数和尺寸就可以了，不需要具体指定卷积核的特征
+
+
+
+
+
+卷积神经网络
+
+
+边缘丢失问题：图像边缘特征由于图像处理时被降维处理，会出现特征丢失现象
+
+只需要提前扩充图片的边缘使之 ...</div></div></div><nav id="pagination"><div class="pagination"><a class="extend prev" rel="prev" href="/page/10/#content-inner"><i class="fas fa-chevron-left fa-fw"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/#content-inner">10</a><span class="page-number current">11</span><a class="page-number" href="/page/12/#content-inner">12</a><span class="space">&hellip;</span><a class="page-number" href="/page/16/#content-inner">16</a><a class="extend next" rel="next" href="/page/12/#content-inner"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/me.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Yuchen You (Wesley)</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">151</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">22</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/1WesleyYou"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/1Wesleyyou" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yuchenxr@umich.edu" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://www.linkedin.com/in/yuchen-you-a74940314/?locale=en_US" target="_blank" title="LinkedIn"><i class="fab fa-linkedin" style="color: #4a4dbe;"></i></a><a class="social-icon" href="/Resume.pdf" target="_blank" title="CV"><i class="fas fa-address-card" style="color: #251456;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/07/12/Wesley's%20knowledge%20repo/%E6%95%B0%E5%AD%A6%E5%BD%92%E7%BA%B3%E6%B3%95/" title="Untitled">Untitled</a><time datetime="2024-07-12T14:48:29.972Z" title="Created 2024-07-12 22:48:29">2024-07-12</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/07/12/Wesley's%20knowledge%20repo/%E8%A1%8C%E5%88%97%E5%BC%8F%E6%A6%82%E8%BF%B0/" title="Untitled">Untitled</a><time datetime="2024-07-12T14:48:29.455Z" title="Created 2024-07-12 22:48:29">2024-07-12</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/07/12/Wesley's%20knowledge%20repo/%E5%8D%8F%E6%96%B9%E5%B7%AE%E7%9F%A9%E9%98%B5/" title="Untitled">Untitled</a><time datetime="2024-07-12T14:48:29.328Z" title="Created 2024-07-12 22:48:29">2024-07-12</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/07/12/Wesley's%20knowledge%20repo/KL%20%E6%95%A3%E5%BA%A6/" title="Untitled">Untitled</a><time datetime="2024-07-12T14:48:28.749Z" title="Created 2024-07-12 22:48:28">2024-07-12</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/07/12/Wesley's%20knowledge%20repo/%E5%9B%9B%E5%85%83%E6%95%B0%E5%92%8C%E6%AC%A7%E6%8B%89%E8%A7%92/" title="Untitled">Untitled</a><time datetime="2024-07-12T14:48:28.012Z" title="Created 2024-07-12 22:48:28">2024-07-12</time></div></div></div></div><div class="card-widget card-categories"><div class="item-headline">
             <i class="fas fa-folder-open"></i>
             <span>Categories</span>
             
             </div>
             <ul class="card-category-list" id="aside-cat-list">
-            <li class="card-category-list-item "><a class="card-category-list-link" href="/categories/ai/"><span class="card-category-list-name">ai</span><span class="card-category-list-count">18</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/cpp/"><span class="card-category-list-name">cpp</span><span class="card-category-list-count">6</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/cybersecurity/"><span class="card-category-list-name">cybersecurity</span><span class="card-category-list-count">2</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/eecs281/"><span class="card-category-list-name">eecs281</span><span class="card-category-list-count">2</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/math/"><span class="card-category-list-name">math</span><span class="card-category-list-count">37</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/physics/"><span class="card-category-list-name">physics</span><span class="card-category-list-count">14</span></a></li>
-            </ul></div><div class="card-widget card-tags"><div class="item-headline"><i class="fas fa-tags"></i><span>Tags</span></div><div class="card-tag-cloud"><a href="/tags/optimization/" style="font-size: 1.1em; color: #999">optimization</a> <a href="/tags/field/" style="font-size: 1.1em; color: #999">field</a> <a href="/tags/structure/" style="font-size: 1.16em; color: #999b9e">structure</a> <a href="/tags/probability/" style="font-size: 1.21em; color: #999ea4">probability</a> <a href="/tags/set/" style="font-size: 1.1em; color: #999">set</a> <a href="/tags/complex-analysis/" style="font-size: 1.33em; color: #99a2af">complex_analysis</a> <a href="/tags/thermal/" style="font-size: 1.33em; color: #99a2af">thermal</a> <a href="/tags/network/" style="font-size: 1.16em; color: #999b9e">network</a> <a href="/tags/cpp-basic/" style="font-size: 1.27em; color: #99a0a9">cpp_basic</a> <a href="/tags/logic/" style="font-size: 1.16em; color: #999b9e">logic</a> <a href="/tags/ODE/" style="font-size: 1.27em; color: #99a0a9">ODE</a> <a href="/tags/linear-algebra/" style="font-size: 1.16em; color: #999b9e">linear_algebra</a> <a href="/tags/discrete-math/" style="font-size: 1.39em; color: #99a4b4">discrete_math</a> <a href="/tags/multi-variable-function/" style="font-size: 1.21em; color: #999ea4">multi-variable_function</a> <a href="/tags/machine-learning/" style="font-size: 1.27em; color: #99a0a9">machine_learning</a> <a href="/tags/cv/" style="font-size: 1.1em; color: #999">cv</a> <a href="/tags/dynamic/" style="font-size: 1.16em; color: #999b9e">dynamic</a> <a href="/tags/algorithm/" style="font-size: 1.21em; color: #999ea4">algorithm</a> <a href="/tags/mse/" style="font-size: 1.5em; color: #99a9bf">mse</a> <a href="/tags/deep-learning/" style="font-size: 1.39em; color: #99a4b4">deep_learning</a> <a href="/tags/dynamics/" style="font-size: 1.44em; color: #99a7ba">dynamics</a></div></div><div class="card-widget card-archives"><div class="item-headline"><i class="fas fa-archive"></i><span>Archives</span></div><ul class="card-archive-list"><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/07/"><span class="card-archive-list-date">July 2024</span><span class="card-archive-list-count">3</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/06/"><span class="card-archive-list-date">June 2024</span><span class="card-archive-list-count">121</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/05/"><span class="card-archive-list-date">May 2024</span><span class="card-archive-list-count">2</span></a></li></ul></div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>Info</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">Article :</div><div class="item-count">126</div></div><div class="webinfo-item"><div class="item-name">UV :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">PV :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2024-07-04T07:42:08.071Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By Yuchen You (Wesley)</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">welcome to my blog!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>window.typedJSFn = {
+            <li class="card-category-list-item "><a class="card-category-list-link" href="/categories/ai/"><span class="card-category-list-name">ai</span><span class="card-category-list-count">18</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/cpp/"><span class="card-category-list-name">cpp</span><span class="card-category-list-count">6</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/cs-basic/"><span class="card-category-list-name">cs_basic</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/cybersecurity/"><span class="card-category-list-name">cybersecurity</span><span class="card-category-list-count">5</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/eecs281/"><span class="card-category-list-name">eecs281</span><span class="card-category-list-count">2</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/math/"><span class="card-category-list-name">math</span><span class="card-category-list-count">41</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/physics/"><span class="card-category-list-name">physics</span><span class="card-category-list-count">15</span></a></li>
+            </ul></div><div class="card-widget card-tags"><div class="item-headline"><i class="fas fa-tags"></i><span>Tags</span></div><div class="card-tag-cloud"><a href="/tags/algorithm/" style="font-size: 1.2em; color: #999da3">algorithm</a> <a href="/tags/set/" style="font-size: 1.1em; color: #999">set</a> <a href="/tags/logic/" style="font-size: 1.15em; color: #999b9e">logic</a> <a href="/tags/dynamics/" style="font-size: 1.45em; color: #99a7ba">dynamics</a> <a href="/tags/network/" style="font-size: 1.25em; color: #999fa7">network</a> <a href="/tags/deep-learning/" style="font-size: 1.4em; color: #99a5b6">deep_learning</a> <a href="/tags/computer-composition/" style="font-size: 1.1em; color: #999">computer_composition</a> <a href="/tags/mse/" style="font-size: 1.5em; color: #99a9bf">mse</a> <a href="/tags/ODE/" style="font-size: 1.3em; color: #99a1ac">ODE</a> <a href="/tags/cv/" style="font-size: 1.1em; color: #999">cv</a> <a href="/tags/structure/" style="font-size: 1.15em; color: #999b9e">structure</a> <a href="/tags/dynamic/" style="font-size: 1.15em; color: #999b9e">dynamic</a> <a href="/tags/optimization/" style="font-size: 1.1em; color: #999">optimization</a> <a href="/tags/machine-learning/" style="font-size: 1.3em; color: #99a1ac">machine_learning</a> <a href="/tags/multi-variable-function/" style="font-size: 1.2em; color: #999da3">multi-variable_function</a> <a href="/tags/linear-algebra/" style="font-size: 1.15em; color: #999b9e">linear_algebra</a> <a href="/tags/field/" style="font-size: 1.1em; color: #999">field</a> <a href="/tags/cpp-basic/" style="font-size: 1.3em; color: #99a1ac">cpp_basic</a> <a href="/tags/complex-analysis/" style="font-size: 1.35em; color: #99a3b1">complex_analysis</a> <a href="/tags/thermal/" style="font-size: 1.35em; color: #99a3b1">thermal</a> <a href="/tags/discrete-math/" style="font-size: 1.45em; color: #99a7ba">discrete_math</a> <a href="/tags/probability/" style="font-size: 1.2em; color: #999da3">probability</a></div></div><div class="card-widget card-archives"><div class="item-headline"><i class="fas fa-archive"></i><span>Archives</span></div><ul class="card-archive-list"><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/07/"><span class="card-archive-list-date">July 2024</span><span class="card-archive-list-count">24</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/06/"><span class="card-archive-list-date">June 2024</span><span class="card-archive-list-count">125</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/05/"><span class="card-archive-list-date">May 2024</span><span class="card-archive-list-count">2</span></a></li></ul></div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>Info</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">Article :</div><div class="item-count">151</div></div><div class="webinfo-item"><div class="item-name">UV :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">PV :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2024-07-14T14:54:49.285Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By Yuchen You (Wesley)</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">welcome to my blog!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>window.typedJSFn = {
   init: (str) => {
     window.typed = new Typed('#subtitle', Object.assign({
       strings: str,
