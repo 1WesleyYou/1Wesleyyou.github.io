@@ -1,13 +1,13 @@
-<!DOCTYPE html><html lang="en-US" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>3. HTTP 攻击防御 | Yuchen You</title><meta name="author" content="Yuchen You (Wesley)"><meta name="copyright" content="Yuchen You (Wesley)"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="TLS Transport Layer Security 在传输层中 tcp 协议并不能保证信息的 confidentiality, integrity, authenticity 因此在 传输层和应用层之间加了一层专门用来保护安全的协议 ![[tls_concept.png]] tls 协议假设用户端和服务器端是安全的，而沟通信道 network 是危险的 (malicious) 并且在网络上有">
+<!DOCTYPE html><html lang="en-US" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>3. HTTP 攻击防御 | Yuchen You</title><meta name="author" content="Yuchen You (Wesley)"><meta name="copyright" content="Yuchen You (Wesley)"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="TLS Transport Layer Security 在传输层中 tcp 协议并不能保证信息的 confidentiality, integrity, authenticity 因此在 传输层和应用层之间加了一层专门用来保护安全的协议  tls 协议假设用户端和服务器端是安全的，而沟通信道 network 是危险的 (malicious) 并且在网络上有两种攻击模式:  passive: on">
 <meta property="og:type" content="article">
 <meta property="og:title" content="3. HTTP 攻击防御">
 <meta property="og:url" content="http://example.com/2025/02/13/wesley_knowledge_repo/network/security/3.%20HTTP%20%E6%94%BB%E5%87%BB%E9%98%B2%E5%BE%A1/index.html">
 <meta property="og:site_name" content="Yuchen You">
-<meta property="og:description" content="TLS Transport Layer Security 在传输层中 tcp 协议并不能保证信息的 confidentiality, integrity, authenticity 因此在 传输层和应用层之间加了一层专门用来保护安全的协议 ![[tls_concept.png]] tls 协议假设用户端和服务器端是安全的，而沟通信道 network 是危险的 (malicious) 并且在网络上有">
+<meta property="og:description" content="TLS Transport Layer Security 在传输层中 tcp 协议并不能保证信息的 confidentiality, integrity, authenticity 因此在 传输层和应用层之间加了一层专门用来保护安全的协议  tls 协议假设用户端和服务器端是安全的，而沟通信道 network 是危险的 (malicious) 并且在网络上有两种攻击模式:  passive: on">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://example.com/img/me_new.jpeg">
 <meta property="article:published_time" content="2025-02-13T08:49:47.000Z">
-<meta property="article:modified_time" content="2025-02-22T20:01:26.810Z">
+<meta property="article:modified_time" content="2025-02-23T23:02:42.330Z">
 <meta property="article:author" content="Yuchen You (Wesley)">
 <meta property="article:tag" content="cyber_security">
 <meta name="twitter:card" content="summary">
@@ -56,7 +56,7 @@
   isHome: false,
   isHighlightShrink: false,
   isToc: true,
-  postUpdate: '2025-02-23 04:01:26'
+  postUpdate: '2025-02-24 07:02:42'
 }</script><script>(win=>{
       win.saveToLocal = {
         set: (key, value, ttl) => {
@@ -153,9 +153,9 @@
         }
       }
       detectApple()
-    })(window)</script><meta name="generator" content="Hexo 7.2.0"><link href="https://cdn.bootcss.com/KaTeX/0.11.1/katex.min.css" rel="stylesheet" /></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/me_new.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">228</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">33</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">8</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/math_master.jpeg')"><nav id="nav"><span id="blog-info"><a href="/" title="Yuchen You"><img class="site-icon" src="/img/avatar.png"/><span class="site-name">Yuchen You</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> Search</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">3. HTTP 攻击防御</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-02-13T08:49:47.000Z" title="Created 2025-02-13 16:49:47">2025-02-13</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-02-22T20:01:26.810Z" title="Updated 2025-02-23 04:01:26">2025-02-23</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/cybersecurity/">cybersecurity</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="3. HTTP 攻击防御"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="tls-transport-layer-security">TLS Transport Layer Security</h2>
+    })(window)</script><meta name="generator" content="Hexo 7.2.0"><link href="https://cdn.bootcss.com/KaTeX/0.11.1/katex.min.css" rel="stylesheet" /></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/me_new.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">228</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">33</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">8</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/math_master.jpeg')"><nav id="nav"><span id="blog-info"><a href="/" title="Yuchen You"><img class="site-icon" src="/img/avatar.png"/><span class="site-name">Yuchen You</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> Search</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">3. HTTP 攻击防御</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-02-13T08:49:47.000Z" title="Created 2025-02-13 16:49:47">2025-02-13</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-02-23T23:02:42.330Z" title="Updated 2025-02-24 07:02:42">2025-02-24</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/cybersecurity/">cybersecurity</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="3. HTTP 攻击防御"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="tls-transport-layer-security">TLS Transport Layer Security</h2>
 <p>在传输层中 tcp 协议并不能保证信息的 confidentiality, integrity, authenticity 因此在 传输层和应用层之间加了一层专门用来保护安全的协议<br>
-![[tls_concept.png]]<br>
+<img src="/images/tls_concept.png" alt="tls_concept.png"><br>
 tls 协议假设用户端和服务器端是安全的，而沟通信道 network 是危险的 (malicious) 并且在网络上有两种攻击模式:</p>
 <ul>
 <li>passive: only eavesdrops</li>
@@ -176,7 +176,7 @@ tls 协议假设用户端和服务器端是安全的，而沟通信道 network �
 </ul>
 <h3 id="发展历史">发展历史</h3>
 <p>现代 tls 拥有超过 30 年的研制历史<br>
-![[Pasted image 20250216210643.png]]</p>
+<img src="/images/ssl_history.png" alt="ssl_history.png"></p>
 <h3 id="tls-握手机制">TLS 握手机制</h3>
 <ol>
 <li>用户端向服务器提供可以使用的安全算法, 服务器选择一个并且返回</li>
@@ -185,10 +185,10 @@ tls 协议假设用户端和服务器端是安全的，而沟通信道 network �
 </ol>
 <h4 id="tls-握手流程">TLS 握手流程</h4>
 <p>如下图所示，tls 两端的信息通过最小时间延迟来进行通信，其中用户会猜测服务器选择哪个交换算法并且提前准备好估算方法，如果猜错了则后续会重新发送一个 RTT 的新共享密钥<br>
-![[Pasted image 20250216211326.png]]</p>
+<img src="/images/tls_establish.png" alt="tls_establish.png"></p>
 <h2 id="x-509-证书">X.509 证书</h2>
 <p>用户端如何获得服务器的公钥呢？服务器会使用一个证书来说明: 一个信息来表明 server 的身份和它的密钥，通过 certificate authority (CA) 来签名<br>
-![[ca_example.png]]<br>
+<img src="/images/ca_example.png" alt="ca_example.png"><br>
 每一个 ca 证书都是一个被用户端信任而用来验证服务器身份的实体<br>
 每一个大型平台和浏览器都会包含一系列信任的 CA 证书和对应的 公钥，这些称为 root CAs, 用户端使用这些密钥来验证身份, TLS 使用的是 X.509 验证格式</p>
 <h3 id="获取证书">获取证书</h3>
@@ -197,7 +197,7 @@ tls 协议假设用户端和服务器端是安全的，而沟通信道 network �
 <li>HTTP (在域名下的某个特定路径放置一个包含验证码的文件);</li>
 <li>DNS (在域名 dns 服务器下添加一个记录来保存对应网站的验证码)</li>
 <li>email (在指定邮箱内收到验证码来说明其属于哪个域名)<br>
-![[ca_obtain.png]]<br>
+<img src="/images/ca_obtain.png" alt="ca_obtain.png"><br>
 在上图中的交流机制中，分为两个阶段:<br>
 第一阶段是证书签发 (Certs Issuance), 即服务器向 CA 发送自己的公钥并且和 CA 实现公钥交换 (这一步包含了向 CA 证明自己的地址身份); 然后CA 验证信息之后使用 private key 签名服务器的 公钥; 服务器存储来自 CA 的证书并且可以迎接用户.<br>
 第二阶段是证书使用阶段 (Certs Use), 即当客户端向服务器发起连接请求的时候，服务器发送一个证书到 Client, 并且等待客户端验证了签名 (客户端有 CA 的公钥)并且从服务器获得了服务器公钥<br>
@@ -208,7 +208,7 @@ tls 协议假设用户端和服务器端是安全的，而沟通信道 network �
 <h3 id="证书链条-certificate-chains">证书链条 Certificate Chains</h3>
 <p>CA 有时候会发出 中间CA证书来进行更多的验证，来代表信任给其他小 CA 机构<br>
 并且可以使用和长时期保存在本地的 root key 分离的密钥，防止 root 密钥被攻击，用户验证的时候也是逐层进行检验，直到找到 root 的验证 (是本地存储的可以直接验证的)<br>
-![[Pasted image 20250216220715.png]]</p>
+<img src="/images/ca_chain_concept.png" alt="ca_chain_concept.png"></p>
 <h3 id="public-key-infrastructure-pki">Public Key Infrastructure (PKI)</h3>
 <p>在网络中会存储一系列的 CA, 由一个大组织管理，该组织包含成员来自:</p>
 <ol>
@@ -264,7 +264,7 @@ MITM 模型利用该机制，首先主动阻挡用户发送 https 请求，将�
 <li>CAA (Certificate Authority Authorization): 域名持有者可以指定哪些 CA 证书可支持本网站，并且制作了一个 DNS 记录 (因为只有domain持有者才能掌控DNS服务器信息)</li>
 <li>禁止一般用户申请类似 administrator 等名字的邮件以确保类似的验证邮箱名都归属于官方所有防止滥用</li>
 <li>多个视角: CA 不止会从一个数据中心验证域名，而是通过多个数据中心共同验证, 从而防止单个数据中心被挟持的问题<br>
-![[multi_perspective.png]]</li>
+<img src="/images/multi_perspective.png" alt="multi_perspective.png"></li>
 </ul>
 <hr>
 <h3 id="2-1-1-homograph攻击-同形异义字攻击">2.1.1 Homograph攻击（同形异义字攻击）</h3>
