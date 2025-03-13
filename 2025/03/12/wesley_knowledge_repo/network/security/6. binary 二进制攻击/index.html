@@ -1,0 +1,280 @@
+<!DOCTYPE html><html lang="en-US" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>6. binary 二进制攻击 | Yuchen You</title><meta name="author" content="Yuchen You (Wesley)"><meta name="copyright" content="Yuchen You (Wesley)"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="控制劫持基础(Control Hijacking Basics)  定义: 通过二进制利用(Binary Exploitation)破坏应用程序的信任边界, 典型手段为内存损坏(Memory Corruption);  目标: 实现远程代码执行(Remote Code Execution, RCE)或提权(Privilege Escalation); 常见攻击类型:  缓冲区溢出(Buffer O">
+<meta property="og:type" content="article">
+<meta property="og:title" content="6. binary 二进制攻击">
+<meta property="og:url" content="http://example.com/2025/03/12/wesley_knowledge_repo/network/security/6.%20binary%20%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%94%BB%E5%87%BB/index.html">
+<meta property="og:site_name" content="Yuchen You">
+<meta property="og:description" content="控制劫持基础(Control Hijacking Basics)  定义: 通过二进制利用(Binary Exploitation)破坏应用程序的信任边界, 典型手段为内存损坏(Memory Corruption);  目标: 实现远程代码执行(Remote Code Execution, RCE)或提权(Privilege Escalation); 常见攻击类型:  缓冲区溢出(Buffer O">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/img/me_new.jpeg">
+<meta property="article:published_time" content="2025-03-12T04:58:08.000Z">
+<meta property="article:modified_time" content="2025-03-12T17:14:49.360Z">
+<meta property="article:author" content="Yuchen You (Wesley)">
+<meta property="article:tag" content="cyber_security">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/me_new.jpeg"><link rel="shortcut icon" href="/img/hackerrank.svg"><link rel="canonical" href="http://example.com/2025/03/12/wesley_knowledge_repo/network/security/6.%20binary%20%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%94%BB%E5%87%BB/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '6. binary 二进制攻击',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2025-03-13 01:14:49'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 7.2.0"><link href="https://cdn.bootcss.com/KaTeX/0.11.1/katex.min.css" rel="stylesheet" /></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/me_new.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">233</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">33</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">8</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/math_master.jpeg')"><nav id="nav"><span id="blog-info"><a href="/" title="Yuchen You"><img class="site-icon" src="/img/avatar.png"/><span class="site-name">Yuchen You</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> Search</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">6. binary 二进制攻击</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-03-12T04:58:08.000Z" title="Created 2025-03-12 12:58:08">2025-03-12</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-03-12T17:14:49.360Z" title="Updated 2025-03-13 01:14:49">2025-03-13</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/cybersecurity/">cybersecurity</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="6. binary 二进制攻击"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="控制劫持基础-control-hijacking-basics">控制劫持基础(Control Hijacking Basics)</h2>
+<ul>
+<li><strong>定义</strong>: 通过<strong>二进制利用(Binary Exploitation)<strong>破坏应用程序的信任边界, 典型手段为</strong>内存损坏(Memory Corruption)</strong>;
+<ul>
+<li><strong>目标</strong>: 实现远程代码执行(Remote Code Execution, RCE)或提权(Privilege Escalation);</li>
+<li><strong>常见攻击类型</strong>:
+<ul>
+<li>缓冲区溢出(Buffer Overflow)</li>
+<li>格式化字符串攻击(Format String)</li>
+<li>整数溢出(Integer Overflow)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="内存与汇编基础-memory-assembly-fundamentals">内存与汇编基础(Memory &amp; Assembly Fundamentals)</h2>
+<ul>
+<li><strong>内存布局</strong>:
+<ul>
+<li><strong>代码段(Text Segment)</strong>: 存储可执行指令;</li>
+<li><strong>数据段(Data Segment)</strong>: 存储全局变量;</li>
+<li><strong>堆(Heap)</strong>: 动态分配内存;</li>
+<li><strong>栈(Stack)</strong>: 管理函数调用与局部变量(后进先出);</li>
+</ul>
+</li>
+<li><strong>关键寄存器</strong>:
+<ul>
+<li><strong>RIP</strong>: 指令指针, 指向下一条执行指令;</li>
+<li><strong>RSP</strong>: 栈指针, 指向栈顶;</li>
+<li><strong>RBP</strong>: 基址指针, 标记当前栈帧起始;</li>
+</ul>
+</li>
+<li><strong>汇编指令</strong>:
+<ul>
+<li><code>mov</code>: 数据移动;</li>
+<li><code>jmp</code>/<code>call</code>: 控制流跳转;</li>
+<li><code>push</code>/<code>pop</code>: 栈操作;</li>
+</ul>
+</li>
+</ul>
+<h3 id="x86-isa-寄存器分类"><code>x86</code> isa 寄存器分类</h3>
+<ul>
+<li>4个数据寄存器(EAX, EBX, ECX和EDX)</li>
+<li>2个<strong>变址</strong>寄存器 Index Register (ESI和EDI)
+<ul>
+<li>主要用于存放存储单元在段内的偏移量, 用它们可实现多种存储器操作数的寻址方式</li>
+<li>32位CPU有2个32位通用寄存器ESI和EDI;其低16位对应SI和DI, 对低16位数据的存取, 不影响高16位的数据;</li>
+</ul>
+</li>
+<li>2个<strong>指针</strong>寄存器(ESP和EBP)
+<ul>
+<li>32位CPU有2个32位通用寄存器EBP和ESP;其低16位对应BP和SP, 对低16位数据的存取, 不影响高16位的数据;</li>
+<li>主要用于存放堆栈内存储单元的偏移量</li>
+</ul>
+</li>
+<li>6个段寄存器(ES, CS, SS, DS, FS和GS)</li>
+<li>1个指令指针寄存器(EIP) 1个标志寄存器(EFlags)</li>
+<li>9个控制寄存器(C0, C1, C2, C3, C4, C5, C6, C7, C8)其中C5~C7架构保留;</li>
+<li>3保护模式寄存器(GDTR, LDTR, IDTR)</li>
+</ul>
+<h4 id="esi-source-index">ESI (Source Index)</h4>
+<ul>
+<li>通常指向操作的源数据地址(如字符串, 数组的起始位置);</li>
+<li>在字符串指令(如 MOVSB, LODSB)中, 配合 DS 段寄存器使用;</li>
+</ul>
+<h4 id="edi-destination-index">EDI (Destination Index)</h4>
+<ul>
+<li>通常指向操作的目标地址(如写入数据的内存位置);</li>
+<li>在字符串指令(如 MOVSB, STOSB)中, 配合 ES 段寄存器使用;</li>
+</ul>
+<hr>
+<h2 id="栈结构与漏洞利用-stack-structure-exploitation">栈结构与漏洞利用(Stack Structure &amp; Exploitation)</h2>
+<ul>
+<li>
+<p><strong>栈帧(Stack Frame)</strong>:</p>
+<ul>
+<li>函数调用时创建, 包含参数, 返回地址, 局部变量;</li>
+<li><strong>调用约定(Calling Convention)</strong>: x64中前6个参数通过寄存器(RDI, RSI等)传递;</li>
+</ul>
+</li>
+<li>
+<p><strong>缓冲区溢出(Buffer Overflow)</strong>:</p>
+<ul>
+<li>
+<p><strong>原理</strong>: 输入数据超出缓冲区边界, 覆盖返回地址或关键数据;</p>
+</li>
+<li>
+<p><strong>示例代码漏洞</strong>:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">foo</span><span class="params">(<span class="type">char</span> *str)</span> &#123;</span><br><span class="line">    <span class="type">char</span> buffer[<span class="number">4</span>];</span><br><span class="line">    <span class="built_in">strcpy</span>(buffer, str); <span class="comment">// 无边界检查</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p><strong>利用步骤</strong>:</p>
+<ol>
+<li>注入超长数据覆盖返回地址;</li>
+<li>跳转到注入的<strong>Shellcode</strong>(恶意指令序列);</li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="shellcode与防御绕过-shellcode-bypassing-defenses">Shellcode与防御绕过(Shellcode &amp; Bypassing Defenses)</h2>
+<ul>
+<li><strong>Shellcode</strong>:
+<ul>
+<li>编译为机器码的恶意负载(如启动Shell, 提权);</li>
+<li><strong>挑战</strong>:
+<ul>
+<li>避免含<code>\x00</code>(strcpy终止符)或<code>\n</code>(gets终止符);</li>
+<li>地址随机化(ASLR)导致跳转地址难以预测;</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>防御技术</strong>:
+<ul>
+<li><strong>数据执行保护(DEP)</strong>: 标记栈为不可执行(NX位);</li>
+<li><strong>栈金丝雀(Stack Canary)</strong>: 在返回地址前插入随机值, 溢出时验证;</li>
+<li><strong>地址空间布局随机化(ASLR)</strong>: 随机化内存地址, 增加攻击难度;</li>
+</ul>
+</li>
+</ul>
+<hr>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">Yuchen You (Wesley)</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2025/03/12/wesley_knowledge_repo/network/security/6.%20binary%20%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%94%BB%E5%87%BB/">http://example.com/2025/03/12/wesley_knowledge_repo/network/security/6.%20binary%20%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%94%BB%E5%87%BB/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/cyber-security/">cyber_security</a></div><div class="post_share"><div class="social-share" data-image="/img/me_new.jpeg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2025/03/11/wesley_knowledge_repo/os/5.%20%E5%86%85%E5%AD%98%E7%A9%BA%E9%97%B4%E6%8A%BD%E8%B1%A1%20Address%20Space/" title="5. 内存空间抽象 Address Space"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Next</div><div class="next_info">5. 内存空间抽象 Address Space</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2025/01/13/wesley_knowledge_repo/network/security/1.%20%E5%AF%86%E7%A0%81%E5%AD%A6%E5%9F%BA%E7%A1%80/" title="1. 密码学基础"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-01-13</div><div class="title">1. 密码学基础</div></div></a></div><div><a href="/2025/02/13/wesley_knowledge_repo/network/security/2.%20Web%20%E6%94%BB%E5%87%BB%E4%B8%8E%E9%98%B2%E5%BE%A1/" title="2. Web 攻击与防御"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-13</div><div class="title">2. Web 攻击与防御</div></div></a></div><div><a href="/2025/02/18/wesley_knowledge_repo/network/security/4.%20Network%20%E5%9F%BA%E7%A1%80%20(%E8%AF%A6%E8%A7%81489)/" title="4. Network 基础"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-19</div><div class="title">4. Network 基础</div></div></a></div><div><a href="/2025/02/13/wesley_knowledge_repo/network/security/3.%20HTTP%20%E6%94%BB%E5%87%BB%E9%98%B2%E5%BE%A1/" title="3. HTTP 攻击防御"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-13</div><div class="title">3. HTTP 攻击防御</div></div></a></div><div><a href="/2025/03/07/wesley_knowledge_repo/network/security/John-the-Ripper/" title="John the Ripper"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-03-07</div><div class="title">John the Ripper</div></div></a></div><div><a href="/2025/03/11/wesley_knowledge_repo/network/security/5.%20%E5%AF%86%E7%A0%81%E6%94%BB%E5%87%BB%20Password%20Attack/" title="5. 密码攻击 Password Attack"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-03-11</div><div class="title">5. 密码攻击 Password Attack</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/me_new.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Yuchen You (Wesley)</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">233</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">33</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">8</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/1WesleyYou"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/1Wesleyyou" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yuchenxr@umich.edu" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://www.linkedin.com/in/yuchen-you-a74940314/?locale=en_US" target="_blank" title="LinkedIn"><i class="fab fa-linkedin" style="color: #4a4dbe;"></i></a><a class="social-icon" href="/Resume.pdf" target="_blank" title="CV"><i class="fas fa-address-card" style="color: #251456;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%A7%E5%88%B6%E5%8A%AB%E6%8C%81%E5%9F%BA%E7%A1%80-control-hijacking-basics"><span class="toc-number">1.</span> <span class="toc-text">控制劫持基础(Control Hijacking Basics)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E4%B8%8E%E6%B1%87%E7%BC%96%E5%9F%BA%E7%A1%80-memory-assembly-fundamentals"><span class="toc-number">2.</span> <span class="toc-text">内存与汇编基础(Memory &amp; Assembly Fundamentals)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#x86-isa-%E5%AF%84%E5%AD%98%E5%99%A8%E5%88%86%E7%B1%BB"><span class="toc-number">2.1.</span> <span class="toc-text">x86 isa 寄存器分类</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#esi-source-index"><span class="toc-number">2.1.1.</span> <span class="toc-text">ESI (Source Index)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#edi-destination-index"><span class="toc-number">2.1.2.</span> <span class="toc-text">EDI (Destination Index)</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%88%E7%BB%93%E6%9E%84%E4%B8%8E%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8-stack-structure-exploitation"><span class="toc-number">3.</span> <span class="toc-text">栈结构与漏洞利用(Stack Structure &amp; Exploitation)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#shellcode%E4%B8%8E%E9%98%B2%E5%BE%A1%E7%BB%95%E8%BF%87-shellcode-bypassing-defenses"><span class="toc-number">4.</span> <span class="toc-text">Shellcode与防御绕过(Shellcode &amp; Bypassing Defenses)</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/12/wesley_knowledge_repo/network/security/6.%20binary%20%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%94%BB%E5%87%BB/" title="6. binary 二进制攻击">6. binary 二进制攻击</a><time datetime="2025-03-12T04:58:08.000Z" title="Created 2025-03-12 12:58:08">2025-03-12</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/11/wesley_knowledge_repo/os/5.%20%E5%86%85%E5%AD%98%E7%A9%BA%E9%97%B4%E6%8A%BD%E8%B1%A1%20Address%20Space/" title="5. 内存空间抽象 Address Space">5. 内存空间抽象 Address Space</a><time datetime="2025-03-11T06:56:38.000Z" title="Created 2025-03-11 14:56:38">2025-03-11</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/11/wesley_knowledge_repo/network/security/5.%20%E5%AF%86%E7%A0%81%E6%94%BB%E5%87%BB%20Password%20Attack/" title="5. 密码攻击 Password Attack">5. 密码攻击 Password Attack</a><time datetime="2025-03-11T06:01:08.000Z" title="Created 2025-03-11 14:01:08">2025-03-11</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/11/wesley_knowledge_repo/network/3.%20%E7%BD%91%E7%BB%9C%E5%B1%82/" title="3. 网络层">3. 网络层</a><time datetime="2025-03-11T04:08:08.000Z" title="Created 2025-03-11 12:08:08">2025-03-11</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/07/wesley_knowledge_repo/network/security/John-the-Ripper/" title="John the Ripper">John the Ripper</a><time datetime="2025-03-07T05:55:47.000Z" title="Created 2025-03-07 13:55:47">2025-03-07</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By Yuchen You (Wesley)</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">welcome to my blog!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/fireworks.min.js"></script><script defer="defer" id="fluttering_ribbon" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/canvas-fluttering-ribbon.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading the Database</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="Search for Posts" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=4.13.0"></script></div></div></body></html>
