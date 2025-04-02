@@ -7,7 +7,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://example.com/img/me_new.jpeg">
 <meta property="article:published_time" content="2025-04-02T05:31:08.000Z">
-<meta property="article:modified_time" content="2025-04-02T18:09:40.308Z">
+<meta property="article:modified_time" content="2025-04-02T19:31:30.350Z">
 <meta property="article:author" content="Yuchen You (Wesley)">
 <meta property="article:tag" content="network">
 <meta name="twitter:card" content="summary">
@@ -56,7 +56,7 @@
   isHome: false,
   isHighlightShrink: false,
   isToc: true,
-  postUpdate: '2025-04-03 02:09:40'
+  postUpdate: '2025-04-03 03:31:30'
 }</script><script>(win=>{
       win.saveToLocal = {
         set: (key, value, ttl) => {
@@ -153,7 +153,7 @@
         }
       }
       detectApple()
-    })(window)</script><meta name="generator" content="Hexo 7.2.0"><link href="https://cdn.bootcss.com/KaTeX/0.11.1/katex.min.css" rel="stylesheet" /></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/me_new.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">237</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">33</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">8</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/math_master.jpeg')"><nav id="nav"><span id="blog-info"><a href="/" title="Yuchen You"><img class="site-icon" src="/img/avatar.png"/><span class="site-name">Yuchen You</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> Search</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">4. 数据链路层</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-04-02T05:31:08.000Z" title="Created 2025-04-02 13:31:08">2025-04-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-04-02T18:09:40.308Z" title="Updated 2025-04-03 02:09:40">2025-04-03</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/cybersecurity/">cybersecurity</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="4. 数据链路层"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="性质">性质</h2>
+    })(window)</script><meta name="generator" content="Hexo 7.2.0"><link href="https://cdn.bootcss.com/KaTeX/0.11.1/katex.min.css" rel="stylesheet" /></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/me_new.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">237</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">33</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">8</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/math_master.jpeg')"><nav id="nav"><span id="blog-info"><a href="/" title="Yuchen You"><img class="site-icon" src="/img/avatar.png"/><span class="site-name">Yuchen You</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> Search</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">4. 数据链路层</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-04-02T05:31:08.000Z" title="Created 2025-04-02 13:31:08">2025-04-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-04-02T19:31:30.350Z" title="Updated 2025-04-03 03:31:30">2025-04-03</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/cybersecurity/">cybersecurity</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="4. 数据链路层"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="性质">性质</h2>
 <ul>
 <li><strong>基本职能</strong>
 <ul>
@@ -223,7 +223,7 @@
 </li>
 <li><strong>Random Access MAC Protocols</strong>
 <ul>
-<li>需要发送的时候发送数据包到完整的 channel 中，<strong>w/o coordination</strong></li>
+<li>需要发送的时候发送数据包到完整的 channel 中, <strong>w/o coordination</strong></li>
 <li>如果出现多个 <strong>transmitting nodes</strong> 会导致 <strong>collision</strong></li>
 <li>Random access MAC protocol 明确了如何 <strong>detect and recover from collisions</strong></li>
 <li>Examples:
@@ -241,9 +241,96 @@
 <ul>
 <li>为了广播技术被发明出来
 <ul>
-<li>Hosts share channel</li>
-<li>Each packet received by all attached hosts</li>
-<li>CSMA/CD for media access control</li>
+<li>Hosts share channel 共享信道 <strong>同一条总线或集线器(Hub)</strong></li>
+<li>Each packet received by all attached hosts 当某台主机发送数据时, 介质上所有设备都能收到该帧(即广播), 再由每台设备自行判断是否接收(检查帧中目的地址)</li>
+<li>CSMA/CD for media access control 带碰撞检测的载波监听多点访问 是早期以太网介质访问控制的核心</li>
+</ul>
+</li>
+<li>现代以太网是<strong>交换式</strong>
+<ul>
+<li>现代以太网普遍使用交换机(Switch)而非集线器,交换机将每个端口都变成一个独立的冲突域, 主机与交换机之间是点对点链接;</li>
+<li>无碰撞 =&gt; 不再需要 CSMA/CD 因为每条链路只连着交换机和单一主机, 介质不再共享, 因此不会发生碰撞事件, 也就无需使用 CSMA/CD
+<ul>
+<li>使用 “self learning” 和 “spanning tree” algorithm 来计算 routing</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>CSMA (Carrier Sense Multiple Access)</strong>
+<ul>
+<li><strong>listen before transmit</strong>
+<ul>
+<li>sense <strong>idle</strong>: transmit entire frame</li>
+<li>sense <strong>busy</strong>: defer transmission</li>
+</ul>
+</li>
+<li>does <strong>not</strong> eliminate all collisions
+<ul>
+<li>由于信号传播延迟(Propagation Delay), 会仍然会存在 detect<br>
+和实际情况并不一致 的情况</li>
+</ul>
+</li>
+<li><strong>CSMA/CD (Collison Detection)</strong>
+<ul>
+<li>Collitions detected within short time
+<ul>
+<li>easy in wired LANs: compare transmitted received signals</li>
+<li>difficult in wireless LANs</li>
+</ul>
+</li>
+<li>Colliding transmission aborted, reducing wastage 由于节点可以在发送过程中快速检测到碰撞并停止发送, 所以不会继续浪费带宽发送整帧数据</li>
+<li>需要限制<strong>最小 frame 尺寸</strong>和<strong>最大传输距离</strong>
+<ul>
+<li>最小 frame 尺寸限制: 对于小包数据, 发送端误认为帧已经成功发送, 实际上帧中的部分数据可能已经被干扰或损坏; 接收端在收到数据后, 通常会进行错误校验(例如 CRC 校验), 如果校验失败, 就会丢弃这帧数据</li>
+<li>网络长度限制: 延迟取决于 link 的物理长度, 也就是从一个 end 到另一个的<br>
+propagation time (这里称为 d), 那么当一端发出信号的时候(时间节点<br>
+t), 另一段需要 在大概 t+d 的时候才会收到数据包, [t,t+d]<br>
+时间范围内被认为是空闲的
+<ul>
+<li>如果 另一段在这个区间内发送了信息, 则会后续监测到 collision<br>
+并且发送一个 jamming signal, 但是 A 直到 t + 2d 的时间节点才会看到</li>
+<li>在 2d 的时间区间内, A 一直在发送数据信息, 并且 检查所有可能的<br>
+collision</li>
+<li>imposes restrictions: 10 Mbps Ethernet
+<ul>
+<li>max wire length: 2500 meters</li>
+<li>min frame length: 512b</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>Random Access 三个核心要点</strong>
+<ul>
+<li><strong>Carrier Sense 载波监听</strong>: wait for link to be idle
+<ul>
+<li>listen before speaking andd don’t interrupt 在发送数据之前, 节点会先&quot;监听&quot;物理介质(线缆或无线信道), 以判断是否有其他节点正在发送数据</li>
+<li>checking if someone else is already sending   and waiting until other node<br>
+is done</li>
+</ul>
+</li>
+<li><strong>Collision Detection 碰撞检测</strong>: listen while transmitting
+<ul>
+<li>在发送数据的同时, 节点会监测介质上实际的信号是否与自己发送的信号相符; 若出现异常(如电平, 波形不匹配, garbled 乱码), 说明可能有其他节点也在发送, 发生了碰撞</li>
+</ul>
+</li>
+<li><strong>Randomness 随机退避</strong>: binary exponential back-off</li>
+<li>检测到碰撞后, 每个节点会等待一个随机长度的时间(退避时间)再尝试重新发送</li>
+<li>m-th collision 之后随机选择 K 于 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0</mn><mo>−</mo><msup><mn>2</mn><mi>m</mi></msup><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">0 - 2^m - 1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">0</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.747722em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.664392em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">m</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span>, 并且等待 K * 512 bit times<br>
+before trying again</li>
+<li>如果准备发送的时候仍然监测到有数据正在发送, 等到结束再说</li>
+</ul>
+</li>
+<li><strong>Efficiency 定义</strong>
+<ul>
+<li>长时间的运转下 frames 被传输而没有发生 collision 的时间比例</li>
+<li><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>d</mi><mrow><mi>p</mi><mi>r</mi><mi>o</mi><mi>p</mi></mrow></msub></mrow><annotation encoding="application/x-tex">d_{prop}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.980548em;vertical-align:-0.286108em;"></span><span class="mord"><span class="mord mathdefault">d</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.15139200000000003em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">p</span><span class="mord mathdefault mtight" style="margin-right:0.02778em;">r</span><span class="mord mathdefault mtight">o</span><span class="mord mathdefault mtight">p</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span></span></span></span> 表示 max propagation time between two adapters</li>
+<li><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>d</mi><mrow><mi>t</mi><mi>r</mi><mi>a</mi><mi>n</mi><mi>s</mi></mrow></msub></mrow><annotation encoding="application/x-tex">d_{trans}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.84444em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault">d</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2805559999999999em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">t</span><span class="mord mathdefault mtight" style="margin-right:0.02778em;">r</span><span class="mord mathdefault mtight">a</span><span class="mord mathdefault mtight">n</span><span class="mord mathdefault mtight">s</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> 表示传输最大尺寸 frame 的时间</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
