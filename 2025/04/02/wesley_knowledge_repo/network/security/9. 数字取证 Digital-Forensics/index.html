@@ -1,0 +1,377 @@
+<!DOCTYPE html><html lang="en-US" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>9. 数字取证 Digital-Forensics | Yuchen You</title><meta name="author" content="Yuchen You (Wesley)"><meta name="copyright" content="Yuchen You (Wesley)"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="数字取证流程(Digital Forensics Process) 四个核心阶段  识别(Identification)  确定存储关键数据的物理&#x2F;数字对象(如计算机, 硬盘, 移动设备, 外接媒体等);   收集(Collection)  保护证据完整性, 建立链式监管(Chain of Custody), 记录证据哈希(Hash of Image)以验证来源;   分析(Analysis)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="9. 数字取证 Digital-Forensics">
+<meta property="og:url" content="http://example.com/2025/04/02/wesley_knowledge_repo/network/security/9.%20%E6%95%B0%E5%AD%97%E5%8F%96%E8%AF%81%20Digital-Forensics/index.html">
+<meta property="og:site_name" content="Yuchen You">
+<meta property="og:description" content="数字取证流程(Digital Forensics Process) 四个核心阶段  识别(Identification)  确定存储关键数据的物理&#x2F;数字对象(如计算机, 硬盘, 移动设备, 外接媒体等);   收集(Collection)  保护证据完整性, 建立链式监管(Chain of Custody), 记录证据哈希(Hash of Image)以验证来源;   分析(Analysis)">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/img/me_new.jpeg">
+<meta property="article:published_time" content="2025-04-02T08:45:08.000Z">
+<meta property="article:modified_time" content="2025-04-02T22:12:25.532Z">
+<meta property="article:author" content="Yuchen You (Wesley)">
+<meta property="article:tag" content="cyber_security">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/me_new.jpeg"><link rel="shortcut icon" href="/img/hackerrank.svg"><link rel="canonical" href="http://example.com/2025/04/02/wesley_knowledge_repo/network/security/9.%20%E6%95%B0%E5%AD%97%E5%8F%96%E8%AF%81%20Digital-Forensics/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '9. 数字取证 Digital-Forensics',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2025-04-03 06:12:25'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 7.2.0"><link href="https://cdn.bootcss.com/KaTeX/0.11.1/katex.min.css" rel="stylesheet" /></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/me_new.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">238</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">33</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">8</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/math_master.jpeg')"><nav id="nav"><span id="blog-info"><a href="/" title="Yuchen You"><img class="site-icon" src="/img/avatar.png"/><span class="site-name">Yuchen You</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> Search</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">9. 数字取证 Digital-Forensics</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-04-02T08:45:08.000Z" title="Created 2025-04-02 16:45:08">2025-04-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-04-02T22:12:25.532Z" title="Updated 2025-04-03 06:12:25">2025-04-03</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/cybersecurity/">cybersecurity</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="9. 数字取证 Digital-Forensics"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="数字取证流程-digital-forensics-process">数字取证流程(Digital Forensics Process)</h2>
+<h3 id="四个核心阶段">四个核心阶段</h3>
+<ul>
+<li><strong>识别(Identification)</strong>
+<ul>
+<li>确定存储关键数据的物理/数字对象(如计算机, 硬盘, 移动设备, 外接媒体等);</li>
+</ul>
+</li>
+<li><strong>收集(Collection)</strong>
+<ul>
+<li>保护证据完整性, 建立<strong>链式监管(Chain of Custody)</strong>, 记录证据哈希(Hash of Image)以验证来源;</li>
+</ul>
+</li>
+<li><strong>分析(Analysis)</strong>
+<ul>
+<li>检查文件系统, 日志, 内存等, 恢复删除文件(Deleted Files)或<strong>残留数据(Slack Space)</strong>;</li>
+</ul>
+</li>
+<li><strong>报告(Reporting)</strong>
+<ul>
+<li>形成专家报告, 提供法律证据(Legal Evidence);</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="数据收集与保存-data-collection-preservation">数据收集与保存(Data Collection &amp; Preservation)</h2>
+<h3 id="数据来源">数据来源</h3>
+<ol>
+<li>computer</li>
+<li>other harddrive</li>
+<li>monitor</li>
+<li>keyboard and mouse</li>
+<li>media (dvd, cd, usb)</li>
+<li>printer</li>
+</ol>
+<ul>
+<li><strong>digital forensics did not replace traditional (physical) forensic analysis</strong></li>
+<li>需要确保数据的原始性, 任何经过操作的数据都不能完全展示当时的情况, 因此需要创建<br>
+forensic image (carefully created copy) 来进行保存</li>
+<li><strong>Principle for collecting evidence</strong>
+<ul>
+<li>Maintain a chain of custody
+<ul>
+<li>physically secure items of evidence</li>
+<li>track possession step by step</li>
+<li>keep documentation (hash image) to trace evidence to the src</li>
+</ul>
+</li>
+<li>Priotize collection by volatility
+<ul>
+<li>脆弱的数据首先保存</li>
+<li>RAM &gt; disk &gt; external media</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-1-法医镜像-forensic-image">2.1 法医镜像(Forensic Image)</h3>
+<ul>
+<li><strong>定义</strong>: 全盘位对位拷贝(Bit-for-Bit Copy), 保留所有数据(包括删除文件, slack/internal fragmentation 空间);</li>
+<li><strong>工具</strong>:
+<ul>
+<li><code>dd if=/path/to/forensic/src of=/path/to/store</code></li>
+<li>需使用 <strong>写阻止器(Write-Blocker)</strong> 防止修改原始数据; (只允许 read)
+<ul>
+<li>从而防止分析的 pc 篡改数据</li>
+<li>一般会额外计算一个 hash 来确保数据的完整性</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-2-内存取证-live-memory-forensics">2.2 内存取证(Live-Memory Forensics)</h3>
+<ul>
+<li>只将 ram 里面的数据进行复制
+<ul>
+<li>利用了 thunderbolt<br>
+(由英特尔(Intel)和苹果(Apple)共同开发的一种高速数据传输接口技术, 它集数据传输, 视频输出和供电于一体)</li>
+</ul>
+</li>
+<li><strong>冷启动攻击(Cold-Boot Attack)</strong>: 通过物理重启并快速镜像未擦除的RAM数据;
+<ul>
+<li>一般情况下电脑重启会擦除 RAM 中的数据</li>
+</ul>
+</li>
+<li><strong>虚拟化快照(VM Snapshot)</strong>: 同时捕获内存与磁盘状态;</li>
+<li>对于不可以重启的OS, 可以考虑 freeze disk+ram (mem chip) 并且移存至其他硬件设备</li>
+</ul>
+<h3 id="2-3-移动设备取证-mobile-device-forensics">2.3 移动设备取证(Mobile Device Forensics)</h3>
+<ul>
+<li><strong>挑战</strong>:
+<ul>
+<li>可能会被 无线电波 radio 连接进行数据篡改</li>
+<li>远程擦除防御: 使用 <strong>法拉第袋(Faraday Bag)</strong> 屏蔽无线信号;</li>
+<li>硬件级加密(Hardware-Backed Security)与取证工具对抗;</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="3-存储结构与取证线索-storage-structure-clues">3. 存储结构与取证线索(Storage Structure &amp; Clues)</h2>
+<ul>
+<li><strong>低级别存储(Low-Level Storage)</strong>
+<ul>
+<li><strong>块(Blocks)</strong>: 存储设备基本单元(通常4KB);</li>
+<li><strong>文件系统(Filesystem)</strong>: 通过 <strong>索引节点(I-Node)</strong> 管理文件元数据(Metadata)与块指针;</li>
+</ul>
+</li>
+<li><strong>删除与残留数据</strong>
+<ul>
+<li><strong>删除文件</strong>: 仅移除I-Node, 实际数据保留至被覆盖;</li>
+<li><strong>碎片(Fragmentation)</strong>: 文件扩展导致的数据块分散, 可能暴露历史操作痕迹;</li>
+</ul>
+</li>
+<li>通过读取这些残留数据, 可以获得以前的数据, 这也是为什么可以删除恢复的原因</li>
+</ul>
+<hr>
+<h2 id="取证工具与技术-forensic-tools-techniques">取证工具与技术(Forensic Tools &amp; Techniques)</h2>
+<h3 id="取证的起始步">取证的起始步</h3>
+<ul>
+<li>如果当前设备开机了: 不能关机, 直接 image 当前状态
+<ul>
+<li>关机会导致部分有用的数据丢失</li>
+</ul>
+</li>
+<li>如果当前设备关机了: 不能开机, 直接用 write-blocker<br>
+等设备和额外的存储设备将当前数据转存复制</li>
+</ul>
+<h3 id="常用工具">常用工具</h3>
+<ul>
+<li><strong>Encase</strong>: 商业级取证软件, 支持快速搜索与分析;</li>
+<li><strong>Autopsy</strong>: 开源工具, 提供案例管理与数据恢复功能;</li>
+</ul>
+<h3 id="数据隐藏技术-data-hiding-techniques">数据隐藏技术(Data Hiding Techniques)</h3>
+<ul>
+<li><strong>加密(Encryption)</strong>: 需密钥解密数据(如全盘加密);</li>
+<li><strong>混淆(Obfuscation)</strong>: 修改代码结构以隐藏功能(常见于恶意软件), 使其难以被人类或自动化工具理解或分析;
+<ul>
+<li>通过改变代码结构, 插入无关逻辑, 打乱变量名等手段来干扰逆向工程</li>
+</ul>
+</li>
+<li><strong>隐写术(Steganography)</strong>: 在图像/音频的LSB(Least Significant Bits)中嵌入隐藏信息;
+<ul>
+<li>文件的&quot;冗余&quot;或&quot;最低有效位&quot;里嵌入信息;表面上文件看似正常, 但实际包含了隐藏内容</li>
+</ul>
+</li>
+<li><strong>水印(Watermarking)</strong>: 在文件中添加抗移除标记(用于追踪或反盗版);
+<ul>
+<li>在文件中嵌入可追溯的标记或&quot;签名&quot;, 即使文件被复制或部分修改, 也能识别其来源或所有者</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="反取证技术-anti-forensic-techniques">反取证技术(Anti-Forensic Techniques)</h2>
+<h3 id="安全删除-secure-deletion">安全删除(Secure Deletion)</h3>
+<ul>
+<li><strong>挑战</strong>: 闪存(Flash)因磨损均衡(Wear-Leveling)难以完全覆盖历史数据;
+<ul>
+<li>即使使用&quot;安全擦除&quot;或&quot;覆盖写&quot;等方法, 也可能在某些缓存, 日志, 交换分区, 备份或未覆盖到的磁盘扇区里留下残留</li>
+<li>磨损均衡: flash 可用范围会大于 os (一些 os 认为无法写入的内存可以被 flash<br>
+访问)</li>
+</ul>
+</li>
+<li><strong>策略</strong>:
+<ul>
+<li>加密数据后丢弃密钥;
+<ul>
+<li>这样没有 erase key 的困难</li>
+</ul>
+</li>
+<li>与其事后再尝试彻底删除数据, 不如在一开始就尽量避免数据被写入存储设备;</li>
+<li>例如使用只在内存中运行, 不落盘的应用; 或采用端到端加密并减少日志记录; 或使用一次性匿名账号等方式, 尽量减少数据在系统上留下痕迹</li>
+<li>物理销毁介质(如研磨芯片);</li>
+</ul>
+</li>
+</ul>
+<h3 id="全盘加密-full-disk-encryption-fde">全盘加密(Full Disk Encryption, FDE)</h3>
+<ul>
+<li><strong>实现</strong>:
+<ul>
+<li>protects data at rest by encrypting every sector of a storage partition<br>
+using a secret key</li>
+</ul>
+</li>
+<li><strong>风险</strong>: 冷启动攻击可窃取内存中的解密密钥;</li>
+<li>攻击模型:
+<ul>
+<li>当物理设备被控制, 攻击者拥有物理权限但是没有key</li>
+<li>Windows Bitlocker</li>
+<li>MacOS FileVault</li>
+<li>similar iOS and Android Features</li>
+</ul>
+</li>
+<li>如何存储密钥?
+<ul>
+<li><strong>密钥存储</strong>: 通过密码派生函数(KDF)或可信平台模块(TPM)保护密钥;
+<ul>
+<li>KDF: <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mi>e</mi><mi>y</mi><mo>=</mo><msub><mi>E</mi><mrow><mi>k</mi><mi>d</mi><mi>f</mi><mo stretchy="false">(</mo><mi>p</mi><mo stretchy="false">)</mo></mrow></msub><mo stretchy="false">(</mo><mi>k</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">key = E_{kdf(p)}(k)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.03148em;">k</span><span class="mord mathdefault">e</span><span class="mord mathdefault" style="margin-right:0.03588em;">y</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.1052em;vertical-align:-0.3551999999999999em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.05764em;">E</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.34480000000000005em;"><span style="top:-2.5198em;margin-left:-0.05764em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.03148em;">k</span><span class="mord mathdefault mtight">d</span><span class="mord mathdefault mtight" style="margin-right:0.10764em;">f</span><span class="mopen mtight">(</span><span class="mord mathdefault mtight">p</span><span class="mclose mtight">)</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.3551999999999999em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord mathdefault" style="margin-right:0.03148em;">k</span><span class="mclose">)</span></span></span></span>, 其中 p 为用户指定的 PIN,  而 k 表示给硬盘<br>
+sector 加密的密钥
+<ul>
+<li>缺点: 如果 boot 分区被加密了 OS 无法打开直到用户输入了 pin, OS<br>
+不开启则用户用不了 gui; server 没有 interface, os<br>
+没有开启则用户无法远程访问之</li>
+</ul>
+</li>
+<li>TPM: 给密钥加密通过一个可以信赖的中间平台 (trusted platform module),<br>
+这个平台防篡改, 并且测量 boot-time code, 这个平台只有在 kernel<br>
+没有被更改的情况下会发送key
+<ul>
+<li>缺点: 启动的时候会将密钥复制到 ram 中, 会被 cold-boot attack</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="预防数据记录">预防数据记录</h3>
+<ul>
+<li><strong>Tails Linux</strong>: 默认只读模式, 避免写入敏感数据;</li>
+<li><strong>浏览器无痕模式(Incognito Mode)</strong>: 不保存历史与缓存;</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">Yuchen You (Wesley)</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2025/04/02/wesley_knowledge_repo/network/security/9.%20%E6%95%B0%E5%AD%97%E5%8F%96%E8%AF%81%20Digital-Forensics/">http://example.com/2025/04/02/wesley_knowledge_repo/network/security/9.%20%E6%95%B0%E5%AD%97%E5%8F%96%E8%AF%81%20Digital-Forensics/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/cyber-security/">cyber_security</a></div><div class="post_share"><div class="social-share" data-image="/img/me_new.jpeg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2025/04/02/wesley_knowledge_repo/network/4.%E6%95%B0%E6%8D%AE%E9%93%BE%E8%B7%AF%E5%B1%82/" title="4. 数据链路层"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Next</div><div class="next_info">4. 数据链路层</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2025/01/13/wesley_knowledge_repo/network/security/1.%20%E5%AF%86%E7%A0%81%E5%AD%A6%E5%9F%BA%E7%A1%80/" title="1. 密码学基础"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-01-13</div><div class="title">1. 密码学基础</div></div></a></div><div><a href="/2025/02/13/wesley_knowledge_repo/network/security/2.%20Web%20%E6%94%BB%E5%87%BB%E4%B8%8E%E9%98%B2%E5%BE%A1/" title="2. Web 攻击与防御"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-13</div><div class="title">2. Web 攻击与防御</div></div></a></div><div><a href="/2025/02/18/wesley_knowledge_repo/network/security/4.%20Network%20%E5%9F%BA%E7%A1%80%20(%E8%AF%A6%E8%A7%81489)/" title="4. Network 基础"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-19</div><div class="title">4. Network 基础</div></div></a></div><div><a href="/2025/02/13/wesley_knowledge_repo/network/security/3.%20HTTP%20%E6%94%BB%E5%87%BB%E9%98%B2%E5%BE%A1/" title="3. HTTP 攻击防御"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-13</div><div class="title">3. HTTP 攻击防御</div></div></a></div><div><a href="/2025/03/07/wesley_knowledge_repo/network/security/John-the-Ripper/" title="John the Ripper"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-03-07</div><div class="title">John the Ripper</div></div></a></div><div><a href="/2025/03/11/wesley_knowledge_repo/network/security/5.%20%E5%AF%86%E7%A0%81%E6%94%BB%E5%87%BB%20Password%20Attack/" title="5. 密码攻击 Password Attack"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-03-11</div><div class="title">5. 密码攻击 Password Attack</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/me_new.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Yuchen You (Wesley)</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">238</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">33</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">8</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/1WesleyYou"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/1Wesleyyou" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yuchenxr@umich.edu" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://www.linkedin.com/in/yuchen-you-a74940314/?locale=en_US" target="_blank" title="LinkedIn"><i class="fab fa-linkedin" style="color: #4a4dbe;"></i></a><a class="social-icon" href="/Resume.pdf" target="_blank" title="CV"><i class="fas fa-address-card" style="color: #251456;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E5%AD%97%E5%8F%96%E8%AF%81%E6%B5%81%E7%A8%8B-digital-forensics-process"><span class="toc-number">1.</span> <span class="toc-text">数字取证流程(Digital Forensics Process)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%9B%E4%B8%AA%E6%A0%B8%E5%BF%83%E9%98%B6%E6%AE%B5"><span class="toc-number">1.1.</span> <span class="toc-text">四个核心阶段</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E6%94%B6%E9%9B%86%E4%B8%8E%E4%BF%9D%E5%AD%98-data-collection-preservation"><span class="toc-number">2.</span> <span class="toc-text">数据收集与保存(Data Collection &amp; Preservation)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E6%9D%A5%E6%BA%90"><span class="toc-number">2.1.</span> <span class="toc-text">数据来源</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E6%B3%95%E5%8C%BB%E9%95%9C%E5%83%8F-forensic-image"><span class="toc-number">2.2.</span> <span class="toc-text">2.1 法医镜像(Forensic Image)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E5%86%85%E5%AD%98%E5%8F%96%E8%AF%81-live-memory-forensics"><span class="toc-number">2.3.</span> <span class="toc-text">2.2 内存取证(Live-Memory Forensics)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-%E7%A7%BB%E5%8A%A8%E8%AE%BE%E5%A4%87%E5%8F%96%E8%AF%81-mobile-device-forensics"><span class="toc-number">2.4.</span> <span class="toc-text">2.3 移动设备取证(Mobile Device Forensics)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84%E4%B8%8E%E5%8F%96%E8%AF%81%E7%BA%BF%E7%B4%A2-storage-structure-clues"><span class="toc-number">3.</span> <span class="toc-text">3. 存储结构与取证线索(Storage Structure &amp; Clues)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%96%E8%AF%81%E5%B7%A5%E5%85%B7%E4%B8%8E%E6%8A%80%E6%9C%AF-forensic-tools-techniques"><span class="toc-number">4.</span> <span class="toc-text">取证工具与技术(Forensic Tools &amp; Techniques)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%96%E8%AF%81%E7%9A%84%E8%B5%B7%E5%A7%8B%E6%AD%A5"><span class="toc-number">4.1.</span> <span class="toc-text">取证的起始步</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7"><span class="toc-number">4.2.</span> <span class="toc-text">常用工具</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E9%9A%90%E8%97%8F%E6%8A%80%E6%9C%AF-data-hiding-techniques"><span class="toc-number">4.3.</span> <span class="toc-text">数据隐藏技术(Data Hiding Techniques)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%8D%E5%8F%96%E8%AF%81%E6%8A%80%E6%9C%AF-anti-forensic-techniques"><span class="toc-number">5.</span> <span class="toc-text">反取证技术(Anti-Forensic Techniques)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E5%85%A8%E5%88%A0%E9%99%A4-secure-deletion"><span class="toc-number">5.1.</span> <span class="toc-text">安全删除(Secure Deletion)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%A8%E7%9B%98%E5%8A%A0%E5%AF%86-full-disk-encryption-fde"><span class="toc-number">5.2.</span> <span class="toc-text">全盘加密(Full Disk Encryption, FDE)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%84%E9%98%B2%E6%95%B0%E6%8D%AE%E8%AE%B0%E5%BD%95"><span class="toc-number">5.3.</span> <span class="toc-text">预防数据记录</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/04/02/wesley_knowledge_repo/network/security/9.%20%E6%95%B0%E5%AD%97%E5%8F%96%E8%AF%81%20Digital-Forensics/" title="9. 数字取证 Digital-Forensics">9. 数字取证 Digital-Forensics</a><time datetime="2025-04-02T08:45:08.000Z" title="Created 2025-04-02 16:45:08">2025-04-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/04/02/wesley_knowledge_repo/network/4.%E6%95%B0%E6%8D%AE%E9%93%BE%E8%B7%AF%E5%B1%82/" title="4. 数据链路层">4. 数据链路层</a><time datetime="2025-04-02T05:31:08.000Z" title="Created 2025-04-02 13:31:08">2025-04-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/26/wesley_knowledge_repo/os/6.%20File%20System/" title="6. File System">6. File System</a><time datetime="2025-03-26T06:56:38.000Z" title="Created 2025-03-26 14:56:38">2025-03-26</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/23/wesley_knowledge_repo/network/security/8.%20%E9%9A%90%E7%A7%81%E6%9D%83%E9%99%90%20privacy/" title="8. 隐私权限 privacy">8. 隐私权限 privacy</a><time datetime="2025-03-24T02:05:08.000Z" title="Created 2025-03-24 10:05:08">2025-03-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/20/wesley_knowledge_repo/network/security/7.%20%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90%E6%8E%A7%E5%88%B6%E6%94%BB%E5%87%BB%20Access%20Control/" title="7. 访问权限控制攻击 Access Control">7. 访问权限控制攻击 Access Control</a><time datetime="2025-03-20T04:58:08.000Z" title="Created 2025-03-20 12:58:08">2025-03-20</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By Yuchen You (Wesley)</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">welcome to my blog!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/fireworks.min.js"></script><script defer="defer" id="fluttering_ribbon" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/canvas-fluttering-ribbon.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading the Database</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="Search for Posts" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=4.13.0"></script></div></div></body></html>
