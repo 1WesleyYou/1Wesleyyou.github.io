@@ -1,0 +1,677 @@
+<!DOCTYPE html><html lang="en-US" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>4. 数据链路层 | Yuchen You</title><meta name="author" content="Yuchen You (Wesley)"><meta name="copyright" content="Yuchen You (Wesley)"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="性质  基本职能  成帧 Framing:  encapsulate network layer data 数据链路层会将来自网络层(第三层)的数据进行分组, 添加头部和尾部信息, 以形成一个个帧(Frame)   链路访问 Link Access:  Medium access control (MAC) protocol defines when to transmit frames 在多点接">
+<meta property="og:type" content="article">
+<meta property="og:title" content="4. 数据链路层">
+<meta property="og:url" content="http://example.com/2025/04/02/wesley_knowledge_repo/network/4.%20%E6%95%B0%E6%8D%AE%E9%93%BE%E8%B7%AF%E5%B1%82/index.html">
+<meta property="og:site_name" content="Yuchen You">
+<meta property="og:description" content="性质  基本职能  成帧 Framing:  encapsulate network layer data 数据链路层会将来自网络层(第三层)的数据进行分组, 添加头部和尾部信息, 以形成一个个帧(Frame)   链路访问 Link Access:  Medium access control (MAC) protocol defines when to transmit frames 在多点接">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/img/me_new.jpeg">
+<meta property="article:published_time" content="2025-04-02T05:31:08.000Z">
+<meta property="article:modified_time" content="2025-04-10T20:00:24.032Z">
+<meta property="article:author" content="Yuchen You (Wesley)">
+<meta property="article:tag" content="network">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/me_new.jpeg"><link rel="shortcut icon" href="/img/hackerrank.svg"><link rel="canonical" href="http://example.com/2025/04/02/wesley_knowledge_repo/network/4.%20%E6%95%B0%E6%8D%AE%E9%93%BE%E8%B7%AF%E5%B1%82/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '4. 数据链路层',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2025-04-11 04:00:24'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 7.2.0"><link href="https://cdn.bootcss.com/KaTeX/0.11.1/katex.min.css" rel="stylesheet" /></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/me_new.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">238</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">33</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">8</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/math_master.jpeg')"><nav id="nav"><span id="blog-info"><a href="/" title="Yuchen You"><img class="site-icon" src="/img/avatar.png"/><span class="site-name">Yuchen You</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> Search</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">4. 数据链路层</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-04-02T05:31:08.000Z" title="Created 2025-04-02 13:31:08">2025-04-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-04-10T20:00:24.032Z" title="Updated 2025-04-11 04:00:24">2025-04-11</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/cybersecurity/">cybersecurity</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="4. 数据链路层"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="性质">性质</h2>
+<ul>
+<li><strong>基本职能</strong>
+<ul>
+<li><strong>成帧 Framing</strong>:
+<ul>
+<li>encapsulate network layer data 数据链路层会将来自网络层(第三层)的数据进行分组, 添加头部和尾部信息, 以形成一个个帧(Frame)</li>
+</ul>
+</li>
+<li><strong>链路访问 Link Access</strong>:
+<ul>
+<li>Medium access control (MAC) protocol defines when to transmit frames 在多点接入的介质 (例如共享式以太网, 无线网络等) 中, 多个设备可能需要同时传输数据</li>
+<li>需要负责决定什么时候由哪一个设备向链路发送数据</li>
+</ul>
+</li>
+<li><strong>可靠交付 Reliable Delivery</strong>:
+<ul>
+<li>Primarily for mediums with high error rates (wireless)</li>
+<li>某些网络环境中可能会受到干扰而导致帧丢失或损坏</li>
+<li>数据链路层可以提供重传, 确认等机制, 确保帧能可靠地到达接收方
+<ul>
+<li>虽然TCP/IP协议栈中大多由传输层(TCP)来保证可靠性, 但一些链路层协议(如PPP)也会提供基本的可靠性功能</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>差错检测与纠正 Error detection and correction</strong>
+<ul>
+<li>帧的尾部通常会包含检错码(例如CRC校验), 用于检测帧在传输过程中是否出错</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><img src="/images/link_layer_frame_concept.png" alt="link_layer_frame_concept.png"></p>
+<ul>
+<li>link layer protocols 是在 <strong>硬件</strong> 层面被实现的</li>
+<li>frame 格式可以随着 link layer 协议而改变</li>
+</ul>
+<h3 id="链路访问-link-access">链路访问 link access</h3>
+<ul>
+<li>共享广播信道(如传统以太网或无线网络)中, 多个节点同时竞争使用同一个物理介质, 如果没有合理的访问控制, 就会导致数据碰撞(collision), 使得传输数据无法被正确接收</li>
+<li><strong>点到点/广播的媒介</strong>
+<ul>
+<li><strong>Point-to-Point</strong>:两个节点之间建立一条专用通信链路, 只有这两个节点可以在这条链路上进行通信
+<ul>
+<li>可用于 远距离 fiber link</li>
+<li>可用于 以太网交换机与主机之间的链路 (b/n Ethernet switch)</li>
+</ul>
+</li>
+<li><strong>Broadcast</strong>: 通过 wire 或者其他媒介交互
+<ul>
+<li>传统以太网 pre2000 使用</li>
+<li>802.11 wireless LAN</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>多重访问算法(Multiple Access Algorithm)</strong>
+<ul>
+<li>让所有节点都能有序地使用信道, 需要一个分布式算法来确定什么时候由哪个节点发送数据</li>
+<li>三大类算法
+<ul>
+<li><strong>Channel Partitioning</strong> 将共享信道按照时间, 频率或编码进行切分, 每个节点只在被分配到的那部分信道上发送数据</li>
+<li><strong>Taking Turns</strong> 节点轮流获得发送权, 在一个节点发送完成后, 再轮到下一个节点发送</li>
+<li><strong>Random Access</strong> 节点在发送之前并不进行严格的时隙或频率分配, 而是&quot;随机地&quot;在需要发送时直接尝试访问介质, 如果检测到碰撞则重传</li>
+</ul>
+</li>
+<li><strong>Random Access MAC Protocols</strong>
+<ul>
+<li>需要发送的时候发送数据包到完整的 channel 中, <strong>w/o coordination</strong></li>
+<li>如果出现多个 <strong>transmitting nodes</strong> 会导致 <strong>collision</strong></li>
+<li>Random access MAC protocol 明确了如何 <strong>detect and recover from collisions</strong></li>
+<li>Examples:
+<ul>
+<li>ALOHA, Slotted ALOHA</li>
+<li>CSMA, CSMA/CD, CSMA/CA (wireless)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="以太网-ethernet">以太网 Ethernet</h2>
+<ul>
+<li>为了广播技术被发明出来
+<ul>
+<li>Hosts share channel 共享信道 <strong>同一条总线或集线器(Hub)</strong></li>
+<li>Each packet received by all attached hosts 当某台主机发送数据时, 介质上所有设备都能收到该帧(即广播), 再由每台设备自行判断是否接收(检查帧中目的地址)</li>
+<li>CSMA/CD for media access control 带碰撞检测的载波监听多点访问 是早期以太网介质访问控制的核心</li>
+</ul>
+</li>
+<li><strong>优点</strong>
+<ul>
+<li><strong>Plug-n-Play</strong>: 不需要进行任何 configuration</li>
+<li><strong>Simple</strong></li>
+<li><strong>Cheap</strong></li>
+</ul>
+</li>
+<li>现代以太网是<strong>交换式</strong>
+<ul>
+<li>现代以太网普遍使用交换机(Switch)而非集线器,交换机将每个端口都变成一个独立的冲突域, 主机与交换机之间是点对点链接;</li>
+<li>无碰撞 =&gt; 不再需要 CSMA/CD 因为每条链路只连着交换机和单一主机, 介质不再共享, 因此不会发生碰撞事件, 也就无需使用 CSMA/CD
+<ul>
+<li>使用 “self learning” 和 “spanning tree” algorithm 来计算 routing</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>CSMA (Carrier Sense Multiple Access)</strong>
+<ul>
+<li><strong>listen before transmit</strong>
+<ul>
+<li>sense <strong>idle</strong>: transmit entire frame</li>
+<li>sense <strong>busy</strong>: defer transmission</li>
+</ul>
+</li>
+<li>does <strong>not</strong> eliminate all collisions
+<ul>
+<li>由于信号传播延迟(Propagation Delay), 会仍然会存在 detect<br>
+和实际情况并不一致 的情况</li>
+</ul>
+</li>
+<li><strong>CSMA/CD (Collison Detection)</strong>
+<ul>
+<li>Collitions detected within short time
+<ul>
+<li>easy in wired LANs: compare transmitted received signals</li>
+<li>difficult in wireless LANs</li>
+</ul>
+</li>
+<li>Colliding transmission aborted, reducing wastage 由于节点可以在发送过程中快速检测到碰撞并停止发送, 所以不会继续浪费带宽发送整帧数据</li>
+<li>需要限制<strong>最小 frame 尺寸</strong>和<strong>最大传输距离</strong>
+<ul>
+<li>最小 frame 尺寸限制: 对于小包数据, 发送端误认为帧已经成功发送, 实际上帧中的部分数据可能已经被干扰或损坏; 接收端在收到数据后, 通常会进行错误校验(例如 CRC 校验), 如果校验失败, 就会丢弃这帧数据</li>
+<li>网络长度限制: 延迟取决于 link 的物理长度, 也就是从一个 end 到另一个的<br>
+propagation time (这里称为 d), 那么当一端发出信号的时候(时间节点<br>
+t), 另一段需要 在大概 t+d 的时候才会收到数据包, [t,t+d]<br>
+时间范围内被认为是空闲的
+<ul>
+<li>如果 另一段在这个区间内发送了信息, 则会后续监测到 collision<br>
+并且发送一个 jamming signal, 但是 A 直到 t + 2d 的时间节点才会看到</li>
+<li>在 2d 的时间区间内, A 一直在发送数据信息, 并且 检查所有可能的<br>
+collision</li>
+<li>imposes restrictions: 10 Mbps Ethernet
+<ul>
+<li>max wire length: 2500 meters</li>
+<li>min frame length: 512b</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>Random Access 三个核心要点</strong>
+<ul>
+<li><strong>Carrier Sense 载波监听</strong>: wait for link to be idle
+<ul>
+<li>listen before speaking andd don’t interrupt 在发送数据之前, 节点会先&quot;监听&quot;物理介质(线缆或无线信道), 以判断是否有其他节点正在发送数据</li>
+<li>checking if someone else is already sending   and waiting until other node<br>
+is done</li>
+</ul>
+</li>
+<li><strong>Collision Detection 碰撞检测</strong>: listen while transmitting
+<ul>
+<li>在发送数据的同时, 节点会监测介质上实际的信号是否与自己发送的信号相符; 若出现异常(如电平, 波形不匹配, garbled 乱码), 说明可能有其他节点也在发送, 发生了碰撞</li>
+</ul>
+</li>
+<li><strong>Randomness 随机退避</strong>: binary exponential back-off</li>
+<li>检测到碰撞后, 每个节点会等待一个随机长度的时间(退避时间)再尝试重新发送</li>
+<li>m-th collision 之后随机选择 K 于 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0</mn><mo>−</mo><msup><mn>2</mn><mi>m</mi></msup><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">0 - 2^m - 1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">0</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.747722em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.664392em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">m</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span>, 并且等待 K * 512 bit times<br>
+before trying again</li>
+<li>如果准备发送的时候仍然监测到有数据正在发送, 等到结束再说</li>
+</ul>
+</li>
+<li><strong>Efficiency 定义</strong>
+<ul>
+<li>长时间的运转下 frames 被传输而没有发生 collision 的时间比例</li>
+<li><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>d</mi><mrow><mi>p</mi><mi>r</mi><mi>o</mi><mi>p</mi></mrow></msub></mrow><annotation encoding="application/x-tex">d_{prop}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.980548em;vertical-align:-0.286108em;"></span><span class="mord"><span class="mord mathdefault">d</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.15139200000000003em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">p</span><span class="mord mathdefault mtight" style="margin-right:0.02778em;">r</span><span class="mord mathdefault mtight">o</span><span class="mord mathdefault mtight">p</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span></span></span></span> 表示 max propagation time between two adapters</li>
+<li><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>d</mi><mrow><mi>t</mi><mi>r</mi><mi>a</mi><mi>n</mi><mi>s</mi></mrow></msub></mrow><annotation encoding="application/x-tex">d_{trans}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.84444em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault">d</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2805559999999999em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">t</span><span class="mord mathdefault mtight" style="margin-right:0.02778em;">r</span><span class="mord mathdefault mtight">a</span><span class="mord mathdefault mtight">n</span><span class="mord mathdefault mtight">s</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> 表示传输最大尺寸 frame 的时间</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="交换机以太网-switched-ethernet">交换机以太网 Switched Ethernet</h3>
+<ul>
+<li>现代以太网就是 交换机组成的
+<ul>
+<li>switch 之间, host 与 switch 之间 是 point-to-point</li>
+<li>no sharing -&gt; no CSMA/CD</li>
+</ul>
+</li>
+<li>交换法的优点
+<ul>
+<li>enables concurrent communication
+<ul>
+<li>可以局部点到点直接连接而不需要让所有无关的 host 都知道这个信息</li>
+<li>不大容易 collision 因此不需要 csma/cd</li>
+<li>对于 link length 没有限制</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>以太网帧结构 Ethernet Frame</strong>
+<ul>
+<li><strong>Preamble</strong>: 7B 用来同步时钟, 1B 用来表示 frame 的开头</li>
+<li><strong>Addresses</strong>: 6B</li>
+<li><strong>EtherType</strong>: 2B, protocol (包含 IP, length 等)</li>
+<li><strong>Data Payload</strong>: 最大 1500B 最小 46B</li>
+<li><strong>CRC</strong>: 4B 来检查 error (收发出错)</li>
+<li><img src="/images/encapsulate_datalink_frame.png" alt="encapsulate_datalink_frame.png"></li>
+<li>以太网帧的最大实现问题: dl 层如何知道什么时候 frame end 了
+<ul>
+<li>TODO:</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>地址 Addressing (MAC)</strong>
+<ul>
+<li>一个 48 bit 的 flat-namespace 并且和网络适配器 (network adapter)<br>
+相关的数字地址</li>
+<li>unique, hard-coded in the adapter when built</li>
+<li><strong>MAC 地址的分配机制(分层式结构)</strong>
+<ul>
+<li>前 24 位(高 3 个字节): 由 IEEE(电气与电子工程师协会)分配给设备厂商, 也称为 OUI(Organizationally Unique Identifier);</li>
+<li>后 24 位(低 3 个字节): 由厂商自行分配给其生产的不同设备, 以确保在同一厂商内部不会出现重复;</li>
+</ul>
+</li>
+<li>Portable, 可以随着用户移动而保持不变</li>
+</ul>
+</li>
+<li><strong>寻路 Routing</strong>
+<ul>
+<li>帧在链路层的处理流程
+<ul>
+<li>当设备 A 发送一个帧时, 这个帧会通过交换机或集线器(逻辑上都是广播域)传到所有其他设备上;</li>
+<li>但是, 并不是所有设备都会将这个帧交给自己的上层(网络层);各设备的链路层会先检查帧头中的目的 MAC 地址(Destination MAC Address, 简称 DMAC);</li>
+<li>只有当以下条件满足时, 设备才会把帧交给自己的网络层:
+<ol>
+<li>目的 MAC 地址与本机网卡的 MAC 地址相同;</li>
+<li>目的 MAC 地址为广播地址 ff:ff:ff:ff:ff:ff(即表示所有设备都要接收该帧);</li>
+</ol>
+</li>
+</ul>
+</li>
+<li>为什么 dl 层不采用 ls/dv 的算法?
+<ul>
+<li>可扩展性(Scalability)问题
+<ul>
+<li>MAC 地址是平面(flat)的, 而 IP 地址是层次化(hierarchical)的;</li>
+<li>不方便像 ip 那样 aggregate</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>历史与兼容性(Legacy &amp; Backward Compatibility)
+<ul>
+<li>以太网早期的设计就是 <strong>“广播介质” + “自学习(learning)”</strong> 的方式, 不需要复杂的路由计算;早期的集线器, 交换机等设备都基于这种广播与自学习机制;</li>
+<li>**生成树协议(STP)**是一个二层协议, 它通过禁用冗余链路来避免广播风暴 (<strong>broadcast storm</strong>), 使得以太网在物理上可以有冗余, 但逻辑上呈现一个无环的树状拓扑;</li>
+<li>这种机制相对简单, 能与老设备保持向后兼容(Backward Compatibility);</li>
+<li>Ethernet 的设计理念也想保持**“插上就能用”(Plug-and-Play)**的特性, 而不像 IP 网络需要配置路由或依赖 DHCP/手动设置 IP 地址;</li>
+</ul>
+</li>
+<li><strong>生成树方法解决 Flooding Loop</strong>
+<ul>
+<li>分成两步: 1. Pick a root; 2. Compute the Shortest paths to the root</li>
+<li>Pick Root: 选取 mac 地址最低的</li>
+<li>Shortest Path:
+<ul>
+<li>最短路径一定没有 loop</li>
+<li>break ties in some way: 选取临近交换机中 id 最低的</li>
+</ul>
+</li>
+<li>生成树构建信息格式 <strong>Message (Y, d, X)</strong>
+<ul>
+<li>From node X</li>
+<li>Proposing Y as the root</li>
+<li>Advertising a distance to Y</li>
+</ul>
+</li>
+<li><strong>实现步骤</strong>:
+<ol>
+<li>最初每个 switch 将自己作为 root 广播信息 (X, 0, X)</li>
+<li>将最低的 id 交换机设置为 root, 并且转发 (Y, d, Z) 信息来更新距离</li>
+<li>每个交换机计算其到达 root 的距离</li>
+</ol>
+<ul>
+<li>每次转发的时候都将最短距离 + 1</li>
+</ul>
+<ol start="4">
+<li>如果发生最短路径变化或者 root 变化, 发送 (Y, d+1, X) 到 neighbor</li>
+</ol>
+</li>
+<li><strong>稳定生成树算法 Robust Spanning Tree Algorithm</strong>
+<ul>
+<li>Algo react to failures (root node failure, other node/link failure)</li>
+<li>Root send periodic root announcement msg</li>
+<li>Detect failures through <strong>timeout</strong></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>Forwarding 转发</strong>
+<ul>
+<li>Flooding: 在最初没有建立 spanning tree 的时候是向每一个 port 都发出 msg
+<ul>
+<li>建立生成树的时候, 在一个端口收到一个包, 向其他所有端口都转发这个包</li>
+<li>建立生成树之后, 忽略所有不符合 生成树branch 对应的 link 的 port</li>
+<li><strong>Wasteful</strong>: 发送之后所有的 node 都会知道如何到达这个 节点
+<ul>
+<li>对比某个节点的 response 只能被一些交换机知道其位置</li>
+</ul>
+</li>
+<li><strong>交换机学习机制</strong>:
+<ul>
+<li>将 src 的 mac 地址和 接受该包的 port 形成一个映射</li>
+<li>将映射关系存入 switch 内部的表中</li>
+<li>使用 ttl (time-to-live) 来定义遗忘机制</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>Discovery and Bootstrapping</strong>:
+<ul>
+<li>host 初始化情况下只知道自身的 mac 地址
+<ul>
+<li>能交流之前需要先收集大量信息: 要用到 <strong>ARP</strong> 和 <strong>DHCP</strong> 协议服务</li>
+<li>这些都是 局限于一个 LAN (Local Area Network) 的情况</li>
+<li>依赖于 broadcast capability</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="dhcp-协议-dynamic-host-configuration-protocol-动态地址分配协议">DHCP 协议 (Dynamic Host Configuration Protocol 动态地址分配协议)</h3>
+<ul>
+<li>自身是 <strong>应用层</strong> 协议, 但是功能会直接作用于 网络层</li>
+<li><strong>功能</strong>
+<ul>
+<li>发现自身 ip 地址, netmask (子网掩码)</li>
+<li>local DNS name server IP</li>
+<li>first-hop default router’s IP</li>
+</ul>
+</li>
+<li><strong>运行机制</strong>
+<ul>
+<li>DHCP 服务器保存一个可用地址池, 比如可以发放哪些 IP 地址</li>
+<li>使用 udp (port 67) 进行交流</li>
+<li><strong>四步握手协议 (DORA)</strong>
+<ol>
+<li><strong>DHCP Discover</strong>: 广播(Broadcast), 目标地址是 <code>FF:FF:FF:FF:FF:FF</code>, 意思是对所有人说</li>
+<li><strong>DHCP Offer</strong>: 多个 DHCP 服务器可能都回应你, 给出不同的 IP 地址和配置信息; 每个 Offer 都是临时的 (lease time)</li>
+<li><strong>DHCP Request</strong>: 客户端从众多 Offer 中选择一个, 广播发出一个 DHCP Request, 请求指定那个 IP; 其他 dhcp 服务器能知道其没有被选中</li>
+<li><strong>DHCP ACK</strong>: DHCP 服务器最终确认并将配置绑定到客户端: 你获得了 IP, 网关, DNS 等信息;租期(lease time)开始计时</li>
+</ol>
+</li>
+<li>如果 DHCP 服务器不在同一个广播域中(例如在另一个网络), 广播是到不了的;这时, 网络管理员可以设置一个 DHCP Relay Agent, 作为&quot;中继者&quot;转发 Discover 请求</li>
+<li><strong>DHCP 软状态 Soft State</strong>
+<ul>
+<li>Hard State: 系统中的状态是明确设定, 持久存储, 不会自动失效的;状态一旦建立, 就必须通过显式的动作来更改或删除</li>
+<li>IP 地址是租来的(Lease), 有失效时间 (lease period);</li>
+<li>server sets a timer for each allocation, resets timer when a refresh arrives and ACKs, or reclaims allocated address when timer expires</li>
+<li>客户端在租期快到时 (expires) 需要续租(Renew);</li>
+<li>如果网络崩溃或服务器宕机, 系统不会强制记住你的 IP, 等你重新上线时再协商一次;</li>
+</ul>
+</li>
+<li><strong>Robustness under Failure</strong>
+<ul>
+<li>Host Failure:</li>
+<li>Server Failure:</li>
+<li>Network Failure:</li>
+</ul>
+</li>
+<li></li>
+</ul>
+</li>
+</ul>
+<h3 id="arp-协议-address-resolution-protocol">ARP 协议 (Address Resolution Protocol)</h3>
+<ul>
+<li></li>
+<li>
+<p><strong>以太网的缺点</strong></p>
+<ul>
+<li>很多 bandwidth 都是 unused
+<ul>
+<li>转发只会经过 spanning tree 的 branch (link)</li>
+</ul>
+</li>
+<li>建立 spanning tree 会导致延迟</li>
+<li>对于 host 的转移会非常延迟响应</li>
+<li>root 的地址会决定 forwarding 效率</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="无线网络-wireless-network">无线网络 Wireless Network</h2>
+<h3 id="无线网络元素">无线网络元素</h3>
+<ul>
+<li><strong>无线主机(Wireless Hosts)</strong><br>
+智能手机, 笔记本电脑等终端设备, 可运行应用程序, 可能为固定或移动设备;</li>
+<li><strong>网络基础设施(Network Infrastructure)</strong>
+<ul>
+<li><strong>基站(Base Station / Access Point, AP)</strong>: 连接无线主机与有线网络的中继设备(如WiFi路由器);</li>
+<li><strong>无线链路(Wireless Link)</strong>: 连接移动设备与基站, 支持多种速率和传输距离;</li>
+</ul>
+</li>
+</ul>
+<h3 id="无线与移动的区别">无线与移动的区别</h3>
+<ul>
+<li>$<strong>无线(Wireless)</strong>: 基于无线链路的通信;</li>
+<li><strong>移动(Mobility)</strong>: 设备切换连接点(如基站切换);</li>
+</ul>
+<h3 id="无线网络分类">无线网络分类</h3>
+<table>
+<thead>
+<tr>
+<th><strong>模式</strong></th>
+<th><strong>单跳(Single Hop)</strong></th>
+<th><strong>多跳(Multiple Hops)</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>基础设施模式(Infrastructure)</strong></td>
+<td>主机直接连接基站(WiFi, 蜂窝网络)</td>
+<td>通过多个无线节点中继连接(Mesh网络)</td>
+</tr>
+<tr>
+<td><strong>无基础设施模式(Ad-hoc)</strong></td>
+<td>无基站, 短距离直连(蓝牙)</td>
+<td>自组织网络(MANET, VANET)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="无线链路特性与挑战">无线链路特性与挑战</h3>
+<h4 id="无线链路特性">无线链路特性</h4>
+<ul>
+<li><strong>信号衰减(Path Loss)</strong><br>
+信号强度随距离和障碍物衰减, 公式:<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>F</mi><mi>S</mi><mi>P</mi><mi>L</mi><mo>=</mo><msup><mrow><mo fence="true">(</mo><mfrac><mrow><mn>4</mn><mi>π</mi><mi>d</mi><mi>f</mi></mrow><mi>c</mi></mfrac><mo fence="true">)</mo></mrow><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">FSPL = \left( \frac{4\pi df}{c} \right)^2
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.13889em;">F</span><span class="mord mathdefault" style="margin-right:0.05764em;">S</span><span class="mord mathdefault" style="margin-right:0.13889em;">P</span><span class="mord mathdefault">L</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:2.604038em;vertical-align:-0.95003em;"></span><span class="minner"><span class="minner"><span class="mopen delimcenter" style="top:0em;"><span class="delimsizing size3">(</span></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3714399999999998em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathdefault">c</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">4</span><span class="mord mathdefault" style="margin-right:0.03588em;">π</span><span class="mord mathdefault">d</span><span class="mord mathdefault" style="margin-right:0.10764em;">f</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mclose delimcenter" style="top:0em;"><span class="delimsizing size3">)</span></span></span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:1.6540080000000001em;"><span style="top:-3.9029000000000003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></span></p>
+(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>d</mi></mrow><annotation encoding="application/x-tex">d</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathdefault">d</span></span></span></span>: 距离, <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi></mrow><annotation encoding="application/x-tex">f</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.10764em;">f</span></span></span></span>: 频率, <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>c</mi></mrow><annotation encoding="application/x-tex">c</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">c</span></span></span></span>: 光速)</li>
+<li><strong>多径效应(Multipath Propagation)</strong><br>
+信号反射导致接收端多路径干扰(Self-Interference);</li>
+<li><strong>干扰(Interference)</strong><br>
+共享频段(如2.4GHz)中其他设备或环境噪声的干扰;</li>
+</ul>
+<h4 id="信噪比与误码率">信噪比与误码率</h4>
+<ul>
+<li><strong>SNR(Signal-to-Noise Ratio)</strong>: 信噪比越高, 信号质量越好;</li>
+<li><strong>BER(Bit Error Rate)</strong>: 误码率与SNR负相关, 不同调制方式(如QAM, BPSK)BER不同;</li>
+</ul>
+<h4 id="误码处理策略">误码处理策略</h4>
+<ul>
+<li><strong>提高发射功率</strong>: 增加能耗和干扰;</li>
+<li><strong>纠错编码与重传</strong>: 链路层重传(如TCP Westwood);</li>
+</ul>
+<h3 id="802-11无线局域网-wifi">802.11无线局域网(WiFi)</h3>
+<h4 id="架构与工作模式">架构与工作模式</h4>
+<ul>
+<li>
+<p><strong>基础设施模式(Infrastructure Mode)</strong></p>
+<ul>
+<li>基本服务集(Basic Service Set, BSS): 包含AP和关联的无线主机;</li>
+<li><strong>被动扫描(Passive Scanning)</strong>: 主机监听AP的信标帧(Beacon Frames);</li>
+<li><strong>主动扫描(Active Scanning)</strong>: 主机发送探测请求(Probe Request), AP响应(Probe Response);</li>
+</ul>
+</li>
+<li>
+<p><strong>Ad-hoc模式</strong><br>
+无基站, 主机自组织网络(如MANET);</p>
+</li>
+</ul>
+<h4 id="802-11帧结构">802.11帧结构</h4>
+<ul>
+<li><strong>地址字段</strong>:
+<ul>
+<li>Address 1: 接收端MAC地址(目标AP或主机);</li>
+<li>Address 2: 发送端MAC地址(源主机或AP);</li>
+<li>Address 3: AP连接的路由器接口MAC地址(用于跨子网通信);</li>
+</ul>
+</li>
+</ul>
+<h4 id="多址接入协议-csma-ca">多址接入协议: CSMA/CA</h4>
+<ul>
+<li><strong>冲突避免机制(Collision Avoidance)</strong>
+<ol>
+<li><strong>载波侦听(Carrier Sense)</strong>: 检测信道是否空闲;</li>
+<li><strong>随机退避(Random Backoff)</strong>: 信道忙时等待随机时隙;</li>
+<li><strong>RTS/CTS握手</strong>:
+<ul>
+<li>发送端发送RTS(Request to Send)帧;</li>
+<li>接收端响应CTS(Clear to Send)帧, 预留信道;</li>
+<li>解决隐藏终端问题(Hidden Terminal Problem);</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul>
+<h4 id="移动性管理">移动性管理</h4>
+<ul>
+<li><strong>同一子网内切换</strong>:
+<ul>
+<li>IP地址保持不变, 交换机通过自学习更新端口映射;</li>
+<li>AP切换由主机的关联请求(Association Request)触发;</li>
+</ul>
+</li>
+</ul>
+<h3 id="其他无线技术-802-15-蓝牙">其他无线技术 802.15(蓝牙)</h3>
+<ul>
+<li><strong>个人局域网(PAN)</strong>: 覆盖范围&lt;10米, 主从架构(Master/Slave);</li>
+<li><strong>应用场景</strong>: 鼠标, 键盘, 耳机等短距离设备连接;</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">Yuchen You (Wesley)</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2025/04/02/wesley_knowledge_repo/network/4.%20%E6%95%B0%E6%8D%AE%E9%93%BE%E8%B7%AF%E5%B1%82/">http://example.com/2025/04/02/wesley_knowledge_repo/network/4.%20%E6%95%B0%E6%8D%AE%E9%93%BE%E8%B7%AF%E5%B1%82/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/network/">network</a></div><div class="post_share"><div class="social-share" data-image="/img/me_new.jpeg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2025/04/02/wesley_knowledge_repo/network/security/9.%20%E6%95%B0%E5%AD%97%E5%8F%96%E8%AF%81%20Digital-Forensics/" title="9. 数字取证 Digital-Forensics"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Previous</div><div class="prev_info">9. 数字取证 Digital-Forensics</div></div></a></div><div class="next-post pull-right"><a href="/2025/03/26/wesley_knowledge_repo/os/6.%20File%20System/" title="6. File System"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Next</div><div class="next_info">6. File System</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2025/01/13/wesley_knowledge_repo/network/1.%20OSI%20%E6%A6%82%E8%BF%B0%E4%B8%8E%E5%BA%94%E7%94%A8%E5%B1%82/" title="1. OSI 概述与应用层"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-01-13</div><div class="title">1. OSI 概述与应用层</div></div></a></div><div><a href="/2025/02/13/wesley_knowledge_repo/network/2.%20%E4%BC%A0%E8%BE%93%E5%B1%82/" title="2. 传输层"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-13</div><div class="title">2. 传输层</div></div></a></div><div><a href="/2025/01/18/wesley_knowledge_repo/network/%E7%BD%91%E7%BB%9C%20Socket%20%E7%BC%96%E7%A8%8B/" title="网络 Socket 编程"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-01-19</div><div class="title">网络 Socket 编程</div></div></a></div><div><a href="/2024/06/10/wesley_knowledge_repo/cs/CTF/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/" title="渗透测试"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-10</div><div class="title">渗透测试</div></div></a></div><div><a href="/2024/07/14/wesley_knowledge_repo/cs/CTF/XSS%20%E8%B7%A8%E7%AB%99%E8%84%9A%E6%9C%AC%E6%94%BB%E5%87%BB%20Crossing%20Site%20Scripting/" title="XSS 跨站脚本攻击 Crossing Site Scripting"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-07-14</div><div class="title">XSS 跨站脚本攻击 Crossing Site Scripting</div></div></a></div><div><a href="/2024/07/04/wesley_knowledge_repo/network/net_sec/1.2.%20tcp-ip%20%E5%8D%8F%E8%AE%AE/" title="1.2. tcp-ip 协议"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-07-05</div><div class="title">1.2. tcp-ip 协议</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/me_new.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Yuchen You (Wesley)</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">238</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">33</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">8</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/1WesleyYou"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/1Wesleyyou" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yuchenxr@umich.edu" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://www.linkedin.com/in/yuchen-you-a74940314/?locale=en_US" target="_blank" title="LinkedIn"><i class="fab fa-linkedin" style="color: #4a4dbe;"></i></a><a class="social-icon" href="/Resume.pdf" target="_blank" title="CV"><i class="fas fa-address-card" style="color: #251456;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%A7%E8%B4%A8"><span class="toc-number">1.</span> <span class="toc-text">性质</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%93%BE%E8%B7%AF%E8%AE%BF%E9%97%AE-link-access"><span class="toc-number">1.1.</span> <span class="toc-text">链路访问 link access</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A5%E5%A4%AA%E7%BD%91-ethernet"><span class="toc-number">2.</span> <span class="toc-text">以太网 Ethernet</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%A4%E6%8D%A2%E6%9C%BA%E4%BB%A5%E5%A4%AA%E7%BD%91-switched-ethernet"><span class="toc-number">2.1.</span> <span class="toc-text">交换机以太网 Switched Ethernet</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#dhcp-%E5%8D%8F%E8%AE%AE-dynamic-host-configuration-protocol-%E5%8A%A8%E6%80%81%E5%9C%B0%E5%9D%80%E5%88%86%E9%85%8D%E5%8D%8F%E8%AE%AE"><span class="toc-number">2.2.</span> <span class="toc-text">DHCP 协议 (Dynamic Host Configuration Protocol 动态地址分配协议)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#arp-%E5%8D%8F%E8%AE%AE-address-resolution-protocol"><span class="toc-number">2.3.</span> <span class="toc-text">ARP 协议 (Address Resolution Protocol)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%97%A0%E7%BA%BF%E7%BD%91%E7%BB%9C-wireless-network"><span class="toc-number">3.</span> <span class="toc-text">无线网络 Wireless Network</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%A0%E7%BA%BF%E7%BD%91%E7%BB%9C%E5%85%83%E7%B4%A0"><span class="toc-number">3.1.</span> <span class="toc-text">无线网络元素</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%A0%E7%BA%BF%E4%B8%8E%E7%A7%BB%E5%8A%A8%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">3.2.</span> <span class="toc-text">无线与移动的区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%A0%E7%BA%BF%E7%BD%91%E7%BB%9C%E5%88%86%E7%B1%BB"><span class="toc-number">3.3.</span> <span class="toc-text">无线网络分类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%A0%E7%BA%BF%E9%93%BE%E8%B7%AF%E7%89%B9%E6%80%A7%E4%B8%8E%E6%8C%91%E6%88%98"><span class="toc-number">3.4.</span> <span class="toc-text">无线链路特性与挑战</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%97%A0%E7%BA%BF%E9%93%BE%E8%B7%AF%E7%89%B9%E6%80%A7"><span class="toc-number">3.4.1.</span> <span class="toc-text">无线链路特性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BF%A1%E5%99%AA%E6%AF%94%E4%B8%8E%E8%AF%AF%E7%A0%81%E7%8E%87"><span class="toc-number">3.4.2.</span> <span class="toc-text">信噪比与误码率</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AF%AF%E7%A0%81%E5%A4%84%E7%90%86%E7%AD%96%E7%95%A5"><span class="toc-number">3.4.3.</span> <span class="toc-text">误码处理策略</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#802-11%E6%97%A0%E7%BA%BF%E5%B1%80%E5%9F%9F%E7%BD%91-wifi"><span class="toc-number">3.5.</span> <span class="toc-text">802.11无线局域网(WiFi)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%B7%A5%E4%BD%9C%E6%A8%A1%E5%BC%8F"><span class="toc-number">3.5.1.</span> <span class="toc-text">架构与工作模式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#802-11%E5%B8%A7%E7%BB%93%E6%9E%84"><span class="toc-number">3.5.2.</span> <span class="toc-text">802.11帧结构</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%9A%E5%9D%80%E6%8E%A5%E5%85%A5%E5%8D%8F%E8%AE%AE-csma-ca"><span class="toc-number">3.5.3.</span> <span class="toc-text">多址接入协议: CSMA&#x2F;CA</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A7%BB%E5%8A%A8%E6%80%A7%E7%AE%A1%E7%90%86"><span class="toc-number">3.5.4.</span> <span class="toc-text">移动性管理</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E6%97%A0%E7%BA%BF%E6%8A%80%E6%9C%AF-802-15-%E8%93%9D%E7%89%99"><span class="toc-number">3.6.</span> <span class="toc-text">其他无线技术 802.15(蓝牙)</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/04/02/wesley_knowledge_repo/network/security/9.%20%E6%95%B0%E5%AD%97%E5%8F%96%E8%AF%81%20Digital-Forensics/" title="9. 数字取证 Digital-Forensics">9. 数字取证 Digital-Forensics</a><time datetime="2025-04-02T08:45:08.000Z" title="Created 2025-04-02 16:45:08">2025-04-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/04/02/wesley_knowledge_repo/network/4.%20%E6%95%B0%E6%8D%AE%E9%93%BE%E8%B7%AF%E5%B1%82/" title="4. 数据链路层">4. 数据链路层</a><time datetime="2025-04-02T05:31:08.000Z" title="Created 2025-04-02 13:31:08">2025-04-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/26/wesley_knowledge_repo/os/6.%20File%20System/" title="6. File System">6. File System</a><time datetime="2025-03-26T06:56:38.000Z" title="Created 2025-03-26 14:56:38">2025-03-26</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/23/wesley_knowledge_repo/network/security/8.%20%E9%9A%90%E7%A7%81%E6%9D%83%E9%99%90%20privacy/" title="8. 隐私权限 privacy">8. 隐私权限 privacy</a><time datetime="2025-03-24T02:05:08.000Z" title="Created 2025-03-24 10:05:08">2025-03-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/20/wesley_knowledge_repo/network/security/7.%20%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90%E6%8E%A7%E5%88%B6%E6%94%BB%E5%87%BB%20Access%20Control/" title="7. 访问权限控制攻击 Access Control">7. 访问权限控制攻击 Access Control</a><time datetime="2025-03-20T04:58:08.000Z" title="Created 2025-03-20 12:58:08">2025-03-20</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By Yuchen You (Wesley)</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">welcome to my blog!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/fireworks.min.js"></script><script defer="defer" id="fluttering_ribbon" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/canvas-fluttering-ribbon.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading the Database</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="Search for Posts" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=4.13.0"></script></div></div></body></html>
