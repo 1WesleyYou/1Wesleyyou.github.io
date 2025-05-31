@@ -7,7 +7,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://example.com/img/me_new.jpeg">
 <meta property="article:published_time" content="2025-05-27T07:11:00.000Z">
-<meta property="article:modified_time" content="2025-05-27T21:18:39.908Z">
+<meta property="article:modified_time" content="2025-05-31T21:35:36.847Z">
 <meta property="article:author" content="Yuchen You (Wesley)">
 <meta property="article:tag" content="operating_system">
 <meta property="article:tag" content="distributed_sys">
@@ -58,7 +58,7 @@
   isHome: false,
   isHighlightShrink: false,
   isToc: true,
-  postUpdate: '2025-05-28 05:18:39'
+  postUpdate: '2025-06-01 05:35:36'
 }</script><script>(win=>{
       win.saveToLocal = {
         set: (key, value, ttl) => {
@@ -155,7 +155,7 @@
         }
       }
       detectApple()
-    })(window)</script><meta name="generator" content="Hexo 7.2.0"><link href="https://cdn.bootcss.com/KaTeX/0.11.1/katex.min.css" rel="stylesheet" /></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/me_new.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">252</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">37</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">8</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/math_master.jpeg')"><nav id="nav"><span id="blog-info"><a href="/" title="Yuchen You"><img class="site-icon" src="/img/avatar.png"/><span class="site-name">Yuchen You</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> Search</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">5. Fail-Slow at Scale</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-05-27T07:11:00.000Z" title="Created 2025-05-27 15:11:00">2025-05-27</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-05-27T21:18:39.908Z" title="Updated 2025-05-28 05:18:39">2025-05-28</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="5. Fail-Slow at Scale"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="introduction">Introduction</h2>
+    })(window)</script><meta name="generator" content="Hexo 7.2.0"><link href="https://cdn.bootcss.com/KaTeX/0.11.1/katex.min.css" rel="stylesheet" /></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/me_new.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">252</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">37</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">8</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/math_master.jpeg')"><nav id="nav"><span id="blog-info"><a href="/" title="Yuchen You"><img class="site-icon" src="/img/avatar.png"/><span class="site-name">Yuchen You</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> Search</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">5. Fail-Slow at Scale</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-05-27T07:11:00.000Z" title="Created 2025-05-27 15:11:00">2025-05-27</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-05-31T21:35:36.847Z" title="Updated 2025-06-01 05:35:36">2025-06-01</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="5. Fail-Slow at Scale"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="introduction">Introduction</h2>
 <p>这篇论文 <em>Fail-Slow at Scale: Evidence of Hardware Performance Faults in Large Production Systems</em> 由Haryadi S. Gunawi等人发表在第16届USENIX文件与存储技术会议(FAST 2018)上</p>
 <p>系统性地揭示了在大规模生产系统中&quot;fail-slow&quot;(故障-缓慢)硬件现象的存在与影响;这类故障指的是硬件仍在运行, 但其性能严重退化, 未达到应有的标准;</p>
 <p>硬件类型包括:</p>
@@ -246,5 +246,225 @@
 </ul>
 </li>
 </ul>
-<h3 id="none"></h3>
-</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">Yuchen You (Wesley)</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2025/05/27/wesley_knowledge_repo/os/OrderLab/5.%20Fail-Slow%20at%20Scale/">http://example.com/2025/05/27/wesley_knowledge_repo/os/OrderLab/5.%20Fail-Slow%20at%20Scale/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/operating-system/">operating_system</a><a class="post-meta__tags" href="/tags/distributed-sys/">distributed_sys</a><a class="post-meta__tags" href="/tags/system-failure/">system_failure</a></div><div class="post_share"><div class="social-share" data-image="/img/me_new.jpeg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2025/05/25/wesley_knowledge_repo/os/tools_frames/1.%20Kubernetes%20%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/" title="1. Kubernetes 核心概念"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Next</div><div class="next_info">1. Kubernetes 核心概念</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2025/05/22/wesley_knowledge_repo/os/OrderLab/3.%20Metastable%20Failures%20in%20Distributed%20Systems/" title="3. Metastable Failures in Distributed Systems"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-05-22</div><div class="title">3. Metastable Failures in Distributed Systems</div></div></a></div><div><a href="/2025/05/22/wesley_knowledge_repo/os/OrderLab/4.%20Metastable%20Failures%20in%20the%20Wild/" title="4. Metastable Failures in the Wild"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-05-22</div><div class="title">4. Metastable Failures in the Wild</div></div></a></div><div><a href="/2025/02/01/wesley_knowledge_repo/os/1.%20%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%90%8C%E6%AD%A5%E6%9C%BA%E5%88%B6/" title="1. 多线程同步机制"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-01</div><div class="title">1. 多线程同步机制</div></div></a></div><div><a href="/2025/02/09/wesley_knowledge_repo/os/2.%20%E7%BA%BF%E7%A8%8B%E8%B0%83%E5%BA%A6%E7%9A%84%E5%AE%9E%E7%8E%B0/" title="2. 线程调度的实现"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-09</div><div class="title">2. 线程调度的实现</div></div></a></div><div><a href="/2025/02/18/wesley_knowledge_repo/os/3.%20%E4%BF%A1%E5%8F%B7%E9%87%8F%20Semaphore/" title="3. 信号量 Semaphore"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-18</div><div class="title">3. 信号量 Semaphore</div></div></a></div><div><a href="/2025/02/18/wesley_knowledge_repo/os/4.%20%E6%AD%BB%E9%94%81%20Deadlock/" title="4. 死锁 Deadlock"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-18</div><div class="title">4. 死锁 Deadlock</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/me_new.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Yuchen You (Wesley)</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">252</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">37</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">8</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/1WesleyYou"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/1Wesleyyou" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yuchenxr@umich.edu" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://www.linkedin.com/in/yuchen-you-a74940314/?locale=en_US" target="_blank" title="LinkedIn"><i class="fab fa-linkedin" style="color: #4a4dbe;"></i></a><a class="social-icon" href="/Resume.pdf" target="_blank" title="CV"><i class="fas fa-address-card" style="color: #251456;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#introduction"><span class="toc-number">1.</span> <span class="toc-text">Introduction</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-fail-slow"><span class="toc-number">1.1.</span> <span class="toc-text">什么是 fail-slow?</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#observations"><span class="toc-number">2.</span> <span class="toc-text">Observations</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#varying-root-causes"><span class="toc-number">2.1.</span> <span class="toc-text">Varying Root Causes</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#fault-conversions-to-fail-slow"><span class="toc-number">2.2.</span> <span class="toc-text">Fault Conversions to Fail-Slow</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#fail-stop-fail-slow"><span class="toc-number">2.2.1.</span> <span class="toc-text">Fail-Stop -&gt; Fail-Slow</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#fail-transient-fail-slow"><span class="toc-number">2.2.2.</span> <span class="toc-text">Fail-Transient -&gt; Fail-Slow</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#fail-partial-fail-slow"><span class="toc-number">2.2.3.</span> <span class="toc-text">Fail-Partial -&gt; Fail-Slow</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#varying-fail-slow-symptoms"><span class="toc-number">2.3.</span> <span class="toc-text">Varying Fail-Slow Symptoms</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#none"><span class="toc-number">2.4.</span> <span class="toc-text"></span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/27/wesley_knowledge_repo/os/OrderLab/5.%20Fail-Slow%20at%20Scale/" title="5. Fail-Slow at Scale">5. Fail-Slow at Scale</a><time datetime="2025-05-27T07:11:00.000Z" title="Created 2025-05-27 15:11:00">2025-05-27</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/25/wesley_knowledge_repo/os/tools_frames/1.%20Kubernetes%20%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/" title="1. Kubernetes 核心概念">1. Kubernetes 核心概念</a><time datetime="2025-05-25T11:45:47.000Z" title="Created 2025-05-25 19:45:47">2025-05-25</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/23/wesley_knowledge_repo/os/Unix/1.%20Boot%20and%20System%20Management%20Daemons/" title="1. Boot and System Management Daemons">1. Boot and System Management Daemons</a><time datetime="2025-05-23T04:58:57.000Z" title="Created 2025-05-23 12:58:57">2025-05-23</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/22/wesley_knowledge_repo/os/OrderLab/3.%20Metastable%20Failures%20in%20Distributed%20Systems/" title="3. Metastable Failures in Distributed Systems">3. Metastable Failures in Distributed Systems</a><time datetime="2025-05-22T13:38:11.000Z" title="Created 2025-05-22 21:38:11">2025-05-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/22/wesley_knowledge_repo/os/OrderLab/4.%20Metastable%20Failures%20in%20the%20Wild/" title="4. Metastable Failures in the Wild">4. Metastable Failures in the Wild</a><time datetime="2025-05-22T13:33:26.000Z" title="Created 2025-05-22 21:33:26">2025-05-22</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By Yuchen You (Wesley)</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">welcome to my blog!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/fireworks.min.js"></script><script defer="defer" id="fluttering_ribbon" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/canvas-fluttering-ribbon.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading the Database</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="Search for Posts" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=4.13.0"></script></div></div></body></html>
+<h3 id="cascading-root-causes-and-impacts">Cascading Root Causes and Impacts</h3>
+<p>fail-slow 故障不仅仅影响本地硬件, 它可以沿着系统组件间的依赖链传播和放大, 从&quot;微小的慢&quot;演化为&quot;全局系统性瓶颈&quot;</p>
+<p>可以分为根因连锁 (cascading root cause) 和影响连锁 (cascading system impact) 两种</p>
+<p><em><strong>根因连锁 (Cascading Root Cause)</strong></em></p>
+<p>一个微小问题往往并不单独存在, 它可能引发一系列次生问题, 导致一个本该易修复的局部问题扩散为系统性性能故障</p>
+<p>例子: 风扇 A 停止工作 -&gt; 其他风扇被迫以最高速运转 -&gt; 产生剧烈震动 -&gt; 震动影响磁盘精度 -&gt; 最终磁盘 IO 速度降低数十倍</p>
+<p><em><strong>影响连锁 (Cascading System Impact)</strong></em></p>
+<p>即使只有一个硬件子系统 fail-slow, 其&quot;慢&quot;可能会拖垮上层软件服务甚至整个集群, 出现&quot;次生资源枯竭&quot;问题</p>
+<p>例子: 节点网卡从 1 Gbps 降至 1 Kbps -&gt; 该节点的任务一直阻塞, 锁定资源 -&gt; 健康节点也无法获得空闲 slot -&gt; 整个集群无任务可调度, 进入死锁状态</p>
+<h3 id="rare-but-deadly-long-ttd-time-to-detect">Rare but Deadly: Long TTD (time-to-detect)</h3>
+<p>fail-slow 故障虽然发生频率低, 但其检测和定位极其困难, 代价高昂, 往往拖累系统长时间处于低效状态, 甚至引发集群级资源瓶颈或用户中断</p>
+<p>原因1: 现有系统设计未充分考虑 fail-slow<br>
+• 多数系统构建于 fail-stop 模型: 只识别&quot;设备是否宕机&quot;;<br>
+• 对于&quot;变慢&quot;这一非二值状态缺乏容错机制与监控触发条件;<br>
+• 结果是系统仍在运行, 但性能下降很久都未被注意;</p>
+<p>原因2: 根因不在出故障的那台机器上<br>
+• 许多 fail-slow 故障的真正根因来自邻近节点, 共享电源或环境设施;<br>
+• 操作人员难以将&quot;问题症状&quot;和&quot;根因源头&quot;连接起来;</p>
+<p>原因3: 环境依赖强, 无法在实验环境中复现<br>
+• 许多问题依赖&quot;线上部署条件&quot;(如气压, 温度, 负载协同)才能触发;<br>
+• 在办公测试环境下, 问题无法复现, 因此测试通过却上线出错;</p>
+<p>原因4:  缺乏全栈可见性(full-stack visibility)<br>
+• 传统运维工具大多只监控关键组件: CPU, 磁盘, 网络负载等;<br>
+• 但 fail-slow 的根因可能在电源, 风扇, 主板传感器, 线缆等 <strong>非主流组件</strong> 上;<br>
+• 各运维团队分散负责不同子系统, 视角分裂, 信息割裂;</p>
+<h2 id="internal-root-cause">Internal Root Cause</h2>
+<p>这一章主要讨论 firmware bug 和 device error/wear-outs 的故障问题</p>
+<h3 id="ssd-相关">SSD 相关</h3>
+<ul>
+<li>Firmware Bugs: 特定 IO 模式触发了 SSD 控制器中的错误状态, 导致内部线程死锁
+<ul>
+<li>SSD 偶尔变得完全无响应, 几秒后重新出现, 但期间数据丢失/超时, 表现为&quot;间歇性掉盘&quot;, 系统表现为&quot;轻度闪断&quot;</li>
+<li>固件升级可修复, 但部署前无法测试出, 在多节点系统中, 这种抖动极具破坏性</li>
+</ul>
+</li>
+<li>Read Retries with Different Voltages(多电压重试机制)
+<ul>
+<li>随着 NAND cell 老化, 其电压窗口变窄, 控制器必须尝试**多个参考电压(read reference voltages)**进行读取</li>
+<li>每次读取失败后都会触发 read-retry 机制, 大幅增加延迟</li>
+<li>读取过程仍然成功, 因此不会报错, 系统只感知到延迟增加</li>
+</ul>
+</li>
+<li>GC Interference and Write Amplification(垃圾回收干扰与写放大)
+<ul>
+<li>SSD 使用 垃圾回收(Garbage Collection, GC) 来管理可用块, 但其运行不透明</li>
+<li>当 GC 与前台 I/O 请求竞争资源时, 会显著抬高写延迟</li>
+<li>一些 SSD 固件缺乏良好调度策略, 导致 GC 在高负载时仍强制运行</li>
+</ul>
+</li>
+<li>并行性受损: Broken Parallelism by Suboptimal Wear-Leveling
+<ul>
+<li>理想情况下, 大容量 IO 应该被映射到多个通道或芯片上以提高并行度;</li>
+<li>但由于 Wear-Leveling(磨损均衡) 策略会持续迁移热页/冷页(Hot/Cold Pages), 导致逻辑页地址(LPN)到物理页地址(PPN)的映射频繁变化;</li>
+<li>某些特殊负载下, 会导致连续的 LPN 被映射到相同的通道/芯片上, 从而降低 IO 并行性;</li>
+<li>此外, 如果有坏页或坏芯片, 也会迫使 wear-leveling 做出次优映射决策, 进一步削弱并行性</li>
+</ul>
+</li>
+</ul>
+<h3 id="disk">Disk</h3>
+<p><em><strong>Firmware Bugs 固件故障</strong></em></p>
+<ul>
+<li><strong>多次报告表明</strong>, 硬盘控制器的固件存在 bug, 会显著影响性能;例如:
+<ul>
+<li>磁盘控制器会 <strong>延迟 I/O 请求达数十秒</strong>;</li>
+<li>磁盘出现周期性&quot;抖动&quot;(jitters), 每隔几秒影响一次性能, 调试非常困难;</li>
+<li>一些 RAID 控制器在主节点上停止响应, 重启后虽能工作, 但频繁出现超时和重试;</li>
+<li>更糟糕的是, <strong>单块损坏磁盘可耗尽 RAID 卡资源</strong>, 导致所有 IO 操作超时;这说明了错误的&quot;坏盘掩盖&quot;机制(bad-disk masking);</li>
+</ul>
+</li>
+</ul>
+<p><em><strong>硬件损坏(Device Errors / Wear-outs)</strong></em></p>
+<p>• RAID 控制器会在磁盘出现&quot;bit rot&quot;(位腐蚀)时反复进行重建操作, 严重影响正常读写;<br>
+• 某些磁盘会<strong>反复</strong>被标记为&quot;坏盘&quot;并从存储池中剔除, 但后又自动重新添加为&quot;好盘&quot;, 引发<em>频繁的好坏切换</em>, 对系统稳定性造成影响;<br>
+• 操作者还观察到了一些 介质故障: 磁盘在读取时需多次重试才能成功返回数据, 这种现象 极大拖慢了读操作速度;<br>
+• 有研究建议: 在检测到坏盘面(bad platter)时应允许磁盘 <em>部分失效运行</em>(部分禁用), 而不是完全下线, 这种方法可以在带宽降低的情况下保持服务继续运行;</p>
+<h3 id="memory">Memory</h3>
+<p><em><strong>设备错误(Device Errors)</strong></em></p>
+<ul>
+<li>某些内存错误通过自定义芯片进行了掩盖, 不向系统暴露坏地址;</li>
+<li>但随着时间推移, 错误数量增加, 有效可用的内存容量逐渐减少;</li>
+<li>这导致缓存命中率下降, 频繁换页(page swapping), 进而降低系统整体性能;</li>
+</ul>
+<p>对比: 磁盘或 SSD 空间耗尽时会返回明确错误, 而内存空间减少往往 <strong>“悄无声息”</strong>, 程序仍能运行但速度显著下降;</p>
+<p><em><strong>SRAM 错误: 控制路径中的&quot;隐形炸弹&quot;</strong></em></p>
+<ul>
+<li>报告强调: SRAM(静态随机访问存储器)不像 DRAM 那样有刷新机制, 更容易因电压波动导致错误;</li>
+<li>虽然数据路径上的错误常被掩盖(例如导致 CRC 错误并重传), 但控制路径上的 SRAM 错误更危险:
+<ul>
+<li>可能导致 设备重启(transient stop)甚至控制逻辑故障;</li>
+<li>这些错误并不罕见, 是大规模基础设施中 服务中断的重要诱因;</li>
+</ul>
+</li>
+</ul>
+<h3 id="network">Network</h3>
+<p><em><strong>固件缺陷(Firmware Bugs)</strong></em></p>
+<ul>
+<li>错误的动态路由算法:
+<ul>
+<li>某些交换机固件内置的动态路由算法表现不如预期, 导致网络性能下降至一半;</li>
+<li>由于固件为黑盒, 调试极其困难, 工程师不得不篡改内核并手动 ping 测试交换机连接;</li>
+</ul>
+</li>
+<li>MAC 学习(MAC learning)失效:
+<ul>
+<li>导致交换机无法正确识别新的 MAC 地址, 进而产生广播风暴(flooding), 影响大规模数据传输;</li>
+</ul>
+</li>
+<li>多播支持不全:
+<ul>
+<li>一些固件处理特殊流量(如 multicast)不当, 导致网络严重拥塞;</li>
+</ul>
+</li>
+</ul>
+<p><em><strong>NIC Driver Bugs</strong></em></p>
+<p><em><strong>物理硬件缺陷(Device Errors)</strong></em></p>
+<ul>
+<li>设计错误造成电流不足:
+<ul>
+<li>一款网卡芯片由于电路设计问题, 某角落&quot;缺电&quot;, 导致其不能全速运行;厂商最后不得不 召回并重制所有网卡;</li>
+</ul>
+</li>
+<li>光学模块失效:
+<ul>
+<li>VCSEL 激光器的硬件缺陷导致交换机间性能下降, 影响成百上千条连接线缆;</li>
+</ul>
+</li>
+<li>路由器缓存故障:
+<ul>
+<li>内部 buffer memory 出现比特错误, 触发 TCP 重传机制, 使网络带宽崩溃;</li>
+</ul>
+</li>
+</ul>
+<h3 id="processors">Processors</h3>
+<p>就目前 CPU 的实现水平而言其非常稳定, 大多数问题都是外部因素造成的</p>
+<h2 id="external-root-causes">External Root Causes</h2>
+<p><em><strong>温度</strong></em></p>
+<p>风扇与散热系统失效: 风扇滤网堵塞</p>
+<ul>
+<li>现象: 某交换机内光模块因温度升高而失效, 造成 高达 10% 的网络丢包;</li>
+<li>原因: 风扇滤网(air filter)被灰尘堵塞, 冷却气流受阻;</li>
+<li>结果: 即使清理后问题暂时缓解, 但由于早期过热, 交换机内部已经出现不可逆硬件损坏;</li>
+</ul>
+<p>低温环境导致性能下降: 数据中心温度过低</p>
+<ul>
+<li>现象: 硬盘进入&quot;读后写&quot;模式(read-after-write), 读取性能下降;</li>
+<li>原因: 该数据中心采用&quot;地板下送冷风&quot;系统(旧式设计), 使靠近地板的磁盘温度低于正常值;</li>
+<li>推论: 低温会干扰磁盘预期的工作温度范围, 激发冗余保护机制, 导致性能退化;</li>
+</ul>
+<p>风扇之间的&quot;协同崩溃&quot;效应: 一个风扇坏, 全系统震动</p>
+<ul>
+<li>现象: 一个计算节点的风扇损坏后, 其他节点的风扇 自动提升到最大转速补偿;</li>
+<li>后果: 高转速风扇产生剧烈噪音和机械震动, 引发附近磁盘性能崩溃;</li>
+</ul>
+<p><em><strong>Power</strong></em></p>
+<p>主板电容不足(Insufficient Capacitors): CPU 在高负载下掉电</p>
+<ul>
+<li>问题现象:
+<ul>
+<li>在某些主板上, 供电电容不够强大, 无法满足 CPU 在瞬时高负载下的电压需求;</li>
+<li>结果是 CPU 工作在低于规范电压的状态, 出现数据错误与重复计算, 性能严重下降;</li>
+</ul>
+</li>
+</ul>
+<p>PCU 固件问题(Power Control Unit Firmware Bugs): 整个机架断电</p>
+<ul>
+<li>问题现象:
+<ul>
+<li>PCU(电力控制单元)固件进入&quot;异常状态&quot;, 未能提供足够电压;</li>
+<li>最终导致整个机架掉电;</li>
+</ul>
+</li>
+<li>处理难点:
+<ul>
+<li>有时可以通过重启控制器恢复;</li>
+<li>有时必须重刷固件, 甚至更换整个 PCU;</li>
+</ul>
+</li>
+</ul>
+<p>部分失效(Fail-Partial Power Supply): 一个电源坏, 所有机器降频</p>
+<ul>
+<li>背景:
+<ul>
+<li>每 4 台机器共用 2 个电源, 设计为冗余容错;</li>
+</ul>
+</li>
+<li>故障机制:
+<ul>
+<li>其中一个电源失效后, 另一个电源无法独立支撑所有设备;</li>
+<li>所有 CPU 自动降频 50%;</li>
+</ul>
+</li>
+<li>后果:
+<ul>
+<li>系统运行缓慢, 任务处理积压严重;</li>
+<li>故障定位困难, 因为另一个电源并未&quot;完全宕机&quot;;</li>
+</ul>
+</li>
+</ul>
+<p>邻居机器功耗过高(Power-Hungry Neighbors): “我没问题, 是你太耗电”</p>
+<ul>
+<li>现象:
+<ul>
+<li>某些节点运行大负载程序, 拉高整排机架电流;</li>
+<li>结果导致同机架内其他节点电压下降, 频繁出现性能异常;</li>
+</ul>
+</li>
+<li>排查困难:
+<ul>
+<li>故障不在&quot;慢机器&quot;, 也不在电源设备, 而是在&quot;邻居&quot;;</li>
+<li>定位耗时数月, 因无电源层级监控;</li>
+</ul>
+</li>
+</ul>
+<h3 id="environment">Environment</h3>
+<ul>
+<li>Altitude and Cosmic Events</li>
+<li>Loose Interconnects</li>
+<li>Vibration (performance vibration)</li>
+</ul>
+<h3 id="configuration">Configuration</h3>
+<h2 id="suggestions">Suggestions</h2>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">Yuchen You (Wesley)</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2025/05/27/wesley_knowledge_repo/os/OrderLab/5.%20Fail-Slow%20at%20Scale/">http://example.com/2025/05/27/wesley_knowledge_repo/os/OrderLab/5.%20Fail-Slow%20at%20Scale/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/operating-system/">operating_system</a><a class="post-meta__tags" href="/tags/distributed-sys/">distributed_sys</a><a class="post-meta__tags" href="/tags/system-failure/">system_failure</a></div><div class="post_share"><div class="social-share" data-image="/img/me_new.jpeg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2025/05/25/wesley_knowledge_repo/os/tools_frames/1.%20Kubernetes%20%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/" title="1. Kubernetes 核心概念"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Next</div><div class="next_info">1. Kubernetes 核心概念</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2025/05/22/wesley_knowledge_repo/os/OrderLab/3.%20Metastable%20Failures%20in%20Distributed%20Systems/" title="3. Metastable Failures in Distributed Systems"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-05-22</div><div class="title">3. Metastable Failures in Distributed Systems</div></div></a></div><div><a href="/2025/05/22/wesley_knowledge_repo/os/OrderLab/4.%20Metastable%20Failures%20in%20the%20Wild/" title="4. Metastable Failures in the Wild"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-05-22</div><div class="title">4. Metastable Failures in the Wild</div></div></a></div><div><a href="/2025/02/01/wesley_knowledge_repo/os/1.%20%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%90%8C%E6%AD%A5%E6%9C%BA%E5%88%B6/" title="1. 多线程同步机制"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-01</div><div class="title">1. 多线程同步机制</div></div></a></div><div><a href="/2025/02/09/wesley_knowledge_repo/os/2.%20%E7%BA%BF%E7%A8%8B%E8%B0%83%E5%BA%A6%E7%9A%84%E5%AE%9E%E7%8E%B0/" title="2. 线程调度的实现"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-09</div><div class="title">2. 线程调度的实现</div></div></a></div><div><a href="/2025/02/18/wesley_knowledge_repo/os/3.%20%E4%BF%A1%E5%8F%B7%E9%87%8F%20Semaphore/" title="3. 信号量 Semaphore"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-18</div><div class="title">3. 信号量 Semaphore</div></div></a></div><div><a href="/2025/02/18/wesley_knowledge_repo/os/4.%20%E6%AD%BB%E9%94%81%20Deadlock/" title="4. 死锁 Deadlock"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-18</div><div class="title">4. 死锁 Deadlock</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/me_new.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Yuchen You (Wesley)</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">252</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">37</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">8</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/1WesleyYou"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/1Wesleyyou" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yuchenxr@umich.edu" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://www.linkedin.com/in/yuchen-you-a74940314/?locale=en_US" target="_blank" title="LinkedIn"><i class="fab fa-linkedin" style="color: #4a4dbe;"></i></a><a class="social-icon" href="/Resume.pdf" target="_blank" title="CV"><i class="fas fa-address-card" style="color: #251456;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#introduction"><span class="toc-number">1.</span> <span class="toc-text">Introduction</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-fail-slow"><span class="toc-number">1.1.</span> <span class="toc-text">什么是 fail-slow?</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#observations"><span class="toc-number">2.</span> <span class="toc-text">Observations</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#varying-root-causes"><span class="toc-number">2.1.</span> <span class="toc-text">Varying Root Causes</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#fault-conversions-to-fail-slow"><span class="toc-number">2.2.</span> <span class="toc-text">Fault Conversions to Fail-Slow</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#fail-stop-fail-slow"><span class="toc-number">2.2.1.</span> <span class="toc-text">Fail-Stop -&gt; Fail-Slow</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#fail-transient-fail-slow"><span class="toc-number">2.2.2.</span> <span class="toc-text">Fail-Transient -&gt; Fail-Slow</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#fail-partial-fail-slow"><span class="toc-number">2.2.3.</span> <span class="toc-text">Fail-Partial -&gt; Fail-Slow</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#varying-fail-slow-symptoms"><span class="toc-number">2.3.</span> <span class="toc-text">Varying Fail-Slow Symptoms</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#cascading-root-causes-and-impacts"><span class="toc-number">2.4.</span> <span class="toc-text">Cascading Root Causes and Impacts</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#rare-but-deadly-long-ttd-time-to-detect"><span class="toc-number">2.5.</span> <span class="toc-text">Rare but Deadly: Long TTD (time-to-detect)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#internal-root-cause"><span class="toc-number">3.</span> <span class="toc-text">Internal Root Cause</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ssd-%E7%9B%B8%E5%85%B3"><span class="toc-number">3.1.</span> <span class="toc-text">SSD 相关</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#disk"><span class="toc-number">3.2.</span> <span class="toc-text">Disk</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#memory"><span class="toc-number">3.3.</span> <span class="toc-text">Memory</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#network"><span class="toc-number">3.4.</span> <span class="toc-text">Network</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#processors"><span class="toc-number">3.5.</span> <span class="toc-text">Processors</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#external-root-causes"><span class="toc-number">4.</span> <span class="toc-text">External Root Causes</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#environment"><span class="toc-number">4.1.</span> <span class="toc-text">Environment</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#configuration"><span class="toc-number">4.2.</span> <span class="toc-text">Configuration</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#suggestions"><span class="toc-number">5.</span> <span class="toc-text">Suggestions</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/27/wesley_knowledge_repo/os/OrderLab/5.%20Fail-Slow%20at%20Scale/" title="5. Fail-Slow at Scale">5. Fail-Slow at Scale</a><time datetime="2025-05-27T07:11:00.000Z" title="Created 2025-05-27 15:11:00">2025-05-27</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/25/wesley_knowledge_repo/os/tools_frames/1.%20Kubernetes%20%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/" title="1. Kubernetes 核心概念">1. Kubernetes 核心概念</a><time datetime="2025-05-25T11:45:47.000Z" title="Created 2025-05-25 19:45:47">2025-05-25</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/23/wesley_knowledge_repo/os/Unix/1.%20Boot%20and%20System%20Management%20Daemons/" title="1. Boot and System Management Daemons">1. Boot and System Management Daemons</a><time datetime="2025-05-23T04:58:57.000Z" title="Created 2025-05-23 12:58:57">2025-05-23</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/22/wesley_knowledge_repo/os/OrderLab/3.%20Metastable%20Failures%20in%20Distributed%20Systems/" title="3. Metastable Failures in Distributed Systems">3. Metastable Failures in Distributed Systems</a><time datetime="2025-05-22T13:38:11.000Z" title="Created 2025-05-22 21:38:11">2025-05-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/22/wesley_knowledge_repo/os/OrderLab/4.%20Metastable%20Failures%20in%20the%20Wild/" title="4. Metastable Failures in the Wild">4. Metastable Failures in the Wild</a><time datetime="2025-05-22T13:33:26.000Z" title="Created 2025-05-22 21:33:26">2025-05-22</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By Yuchen You (Wesley)</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">welcome to my blog!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/fireworks.min.js"></script><script defer="defer" id="fluttering_ribbon" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/canvas-fluttering-ribbon.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading the Database</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="Search for Posts" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=4.13.0"></script></div></div></body></html>
