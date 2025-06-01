@@ -1,0 +1,384 @@
+<!DOCTYPE html><html lang="en-US" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>6. Fail Stutter Fault Tolerance | Yuchen You</title><meta name="author" content="Yuchen You (Wesley)"><meta name="copyright" content="Yuchen You (Wesley)"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Introduction 背景问题缺陷  Byzantine 模型假设组件可能出现任意错误甚至恶意行为, 过于复杂难以实施; Fail-stop 模型假设组件要么正常工作, 要么完全停止, 虽然简单易用, 但忽视了现代硬件中常见的&quot;性能故障&quot;;  本文特点 Fail-Stutter 模型: a realistic and yet tractable fault model th">
+<meta property="og:type" content="article">
+<meta property="og:title" content="6. Fail Stutter Fault Tolerance">
+<meta property="og:url" content="http://example.com/2025/05/31/wesley_knowledge_repo/os/OrderLab/6.%20Fail%20Stutter%20Fault%20Tolerance%202001/index.html">
+<meta property="og:site_name" content="Yuchen You">
+<meta property="og:description" content="Introduction 背景问题缺陷  Byzantine 模型假设组件可能出现任意错误甚至恶意行为, 过于复杂难以实施; Fail-stop 模型假设组件要么正常工作, 要么完全停止, 虽然简单易用, 但忽视了现代硬件中常见的&quot;性能故障&quot;;  本文特点 Fail-Stutter 模型: a realistic and yet tractable fault model th">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/img/me_new.jpeg">
+<meta property="article:published_time" content="2025-05-31T10:32:49.000Z">
+<meta property="article:modified_time" content="2025-06-01T01:33:05.365Z">
+<meta property="article:author" content="Yuchen You (Wesley)">
+<meta property="article:tag" content="operating_system">
+<meta property="article:tag" content="distributed_sys">
+<meta property="article:tag" content="system_failure">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/me_new.jpeg"><link rel="shortcut icon" href="/img/hackerrank.svg"><link rel="canonical" href="http://example.com/2025/05/31/wesley_knowledge_repo/os/OrderLab/6.%20Fail%20Stutter%20Fault%20Tolerance%202001/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '6. Fail Stutter Fault Tolerance',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2025-06-01 09:33:05'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 7.2.0"><link href="https://cdn.bootcss.com/KaTeX/0.11.1/katex.min.css" rel="stylesheet" /></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/me_new.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">253</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">37</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">8</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/math_master.jpeg')"><nav id="nav"><span id="blog-info"><a href="/" title="Yuchen You"><img class="site-icon" src="/img/avatar.png"/><span class="site-name">Yuchen You</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> Search</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">6. Fail Stutter Fault Tolerance</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-05-31T10:32:49.000Z" title="Created 2025-05-31 18:32:49">2025-05-31</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-06-01T01:33:05.365Z" title="Updated 2025-06-01 09:33:05">2025-06-01</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="6. Fail Stutter Fault Tolerance"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="introduction">Introduction</h2>
+<h3 id="背景问题缺陷">背景问题缺陷</h3>
+<ul>
+<li>Byzantine 模型假设组件可能出现任意错误甚至恶意行为, <strong>过于复杂难以实施</strong>;</li>
+<li>Fail-stop 模型假设组件要么正常工作, 要么完全停止, 虽然简单易用, 但<strong>忽视了现代硬件中常见的&quot;性能故障&quot;</strong>;</li>
+</ul>
+<h3 id="本文特点">本文特点</h3>
+<p><em><strong>Fail-Stutter 模型</strong></em>: a realistic and yet tractable fault model that accounts for both absolute failure and a new range of performance failures common in modern components.</p>
+<ul>
+<li>引入了一个更现实但可操作的故障模型, 结合 fail-stop 和&quot;性能故障&quot;(performance faults);</li>
+<li>性能故障指的是<strong>组件虽然没完全失效, 但表现不稳定或变慢</strong>, 如磁盘速率下降, 缓存命中率降低等;</li>
+<li>这种模型认为组件既可以&quot;失败&quot;, 也可以&quot;卡顿&quot;或&quot;表现异常&quot;;</li>
+</ul>
+<h3 id="需要的模型性质-要求">需要的模型性质 (要求)</h3>
+<ol>
+<li>考虑到 components 经常会 fail</li>
+<li>components 可能会不稳定 (erratic)</li>
+<li>统称一个 component 的无法预料且低性能的表现的现象为 <em>performance fault</em></li>
+<li>由此引入 fail-stutter fault model, 即一个考虑 performance fault 的 fail-stop 模型</li>
+</ol>
+<h2 id="the-erratic-behavior-of-system">The Erratic Behavior of System</h2>
+<h3 id="hardware">Hardware</h3>
+<h4 id="processors-and-caches">Processors and Caches</h4>
+<p><em><strong>Fault Masking(掩盖故障)</strong></em></p>
+<ul>
+<li>现代处理器会掩盖芯片内部的缺陷, 使得略有缺陷的芯片仍可售卖;
+<ul>
+<li>例如 Sun 的 Viking 处理器系列: 有些芯片的一级缓存被部分禁用, 虽然名义上是&quot;同款&quot;, 实际性能可能相差 达40%;</li>
+<li>HP 的 PA-RISC 架构也存在类似做法, 将坏掉的 cache line 映射到&quot;安全区&quot;;</li>
+</ul>
+</li>
+<li>用户和系统认为硬件是&quot;标准化的&quot;, 但实际上其性能早已被&quot;软处理&quot;过, 隐藏了缺陷</li>
+</ul>
+<p><em><strong>Prediction and Fetch Logic(预测与取指逻辑)</strong></em></p>
+<ul>
+<li>比如 Sun UltraSPARC-I 处理器的复杂取指逻辑与预测逻辑导致同一段程序在相同条件下运行时间可能差 3倍;</li>
+<li>原因包括: next-field predictors, 分支预测, 指令聚合等复杂机制, 部分现象的根本原因甚至未知;</li>
+<li>程序性能表现无法预测, 系统层优化也变得困难;</li>
+</ul>
+<p><em><strong>Replacement Policy(缓存替换策略)</strong></em></p>
+<ul>
+<li>HP 9000/720 中的 TLB(Translation Lookaside Buffer)表现为非确定性替换;</li>
+<li>相同的访问序列在主机和备份虚拟机上导致不同的 TLB 内容, 连 HP 工程师也感到意外;</li>
+<li>非一致的行为破坏了分布式系统中同步和复制的基本假设;</li>
+</ul>
+<h4 id="disks">Disks</h4>
+<p><em><strong>Fault Masking(坏块重映射)</strong></em></p>
+<ul>
+<li>多个相同型号(如 Seagate Hawk)磁盘的顺序读取性能应为 5.5MB/s, 但其中一个仅为 5.0MB/s;</li>
+<li>原因是 SCSI 的坏块重映射机制, 但这个机制对用户和文件系统是透明的;</li>
+</ul>
+<p><em><strong>Timeouts(超时错误)</strong></em></p>
+<ul>
+<li>在一个拥有400块磁盘的存储集群中, 6个月记录显示: 超时和奇偶校验错误占所有错误的 87%;</li>
+<li>这些错误会触发 SCSI 总线重置, 影响整个链路上的磁盘;</li>
+</ul>
+<p><em><strong>Thermal Recalibration(热校准)</strong></em></p>
+<ul>
+<li>在视频服务器中, 有磁盘会间歇性&quot;离线&quot;几秒钟, 推测是硬盘自动热校准行为引起的;</li>
+</ul>
+<p><em><strong>Disk Geometry(磁道布局差异)</strong></em></p>
+<ul>
+<li>同一磁盘的不同区域性能也不一样(通常是内圈慢, 外圈快), 最多差一倍;</li>
+<li>在集群中, 磁盘布局不一致导致了设备间的性能差异;</li>
+</ul>
+<h4 id="network-switches">Network Switches</h4>
+<ul>
+<li><strong>Deadlock(死锁)</strong>
+<ul>
+<li>Myrinet 网络交换机在包间隔过长时触发死锁检测机制, 从而停止整个交换流量2秒</li>
+</ul>
+</li>
+<li><strong>Unfairness(资源分配不公平)</strong>
+<ul>
+<li>在高负载下, 某些链路优先被服务, 导致部分节点即便性能正常, 也被系统视为&quot;慢节点&quot;;</li>
+</ul>
+</li>
+<li><strong>Flow Control(流控制问题)</strong>
+<ul>
+<li>在 CM-5 网络结构中, 少数慢速接收者会导致整个 all-to-all transpose 操作的性能下降 三倍;</li>
+</ul>
+</li>
+</ul>
+<h3 id="software">Software</h3>
+<h4 id="operating-systems-and-virtual-machines">Operating Systems and Virtual Machines</h4>
+<ul>
+<li>Page Mapping
+<ul>
+<li>研究发现虚拟内存管理策略(页映射方式)能使应用性能下降多达 50%;</li>
+<li>原因是: 现代缓存结构使用物理地址做cache标签, 页分配方式会影响cache命中率;</li>
+<li>即使底层硬件不变, 操作系统的&quot;隐性决策&quot;也能极大左右程序性能;</li>
+</ul>
+</li>
+<li>File Layout(文件系统布局)
+<ul>
+<li>即便磁盘和文件系统完全一致, 只要文件系统&quot;老化&quot;过(存在历史写入/删除痕迹), 顺序读性能也可差一倍;</li>
+<li>实验中, 格式化后的新文件系统表现一致, 而使用时间较长的文件系统因文件碎片化, 表现差异大;</li>
+</ul>
+</li>
+</ul>
+<h4 id="interference-from-other-applications">Interference From Other Applications</h4>
+<ul>
+<li>Memory Bank Conflicts(内存模块冲突)
+<ul>
+<li>研究表明: 向一个向量结构访问流插入少量随机访问, 可使整个内存子系统效率下降一半;</li>
+</ul>
+</li>
+<li>Memory Hogs(内存抢占型进程)
+<ul>
+<li>如果一个&quot;内存密集型任务&quot;与交互式任务并发运行, 会使后者的响应时间恶化高达 40倍</li>
+</ul>
+</li>
+<li>CPU Hogs(CPU资源抢占)
+<ul>
+<li>在 NOW-sort(并行排序)系统中, 若一个节点上运行了额外的负载任务, 会将整个系统排序性能下降 一半;</li>
+<li>实验者称: 系统性能非常敏感, 只有在&quot;完全隔离环境&quot;下才能达到理想值</li>
+</ul>
+</li>
+</ul>
+<h3 id="summary">Summary</h3>
+<p>Particularly harmful are slowdowns that are long-lived and likely to occur on a subset of components.</p>
+<h2 id="fail-stutter-model">Fail-Stutter Model</h2>
+<p>这一部分主要围绕三个对比进行讨论:</p>
+<ul>
+<li>separation of performance faults from correctness faults</li>
+<li>notification of other components of presence of a performance fault within the<br>
+system</li>
+<li>performance specifications for each component</li>
+</ul>
+<h3 id="separation-of-performance-faults-from-correctness-faults-正确性故障-vs-性能故障">Separation of Performance Faults from Correctness Faults (正确性故障 vs 性能故障)</h3>
+<p>对于 correctness faults, 最标准的解决方法就是 fail-stop 模型, 即组件完全停止工作;</p>
+<p>但是传统的 correctness 定义: 组件的行为不再符合其功能规范 (once its<br>
+behavior is no longer consistent with its specification);<br>
+而对应于这种识别方式, 系统会将性能下降的组件标记为 不可用并且停止其执行</p>
+<p>Fail-Stutter 模型引入了 performance failure<br>
+的概念, 从而分离出性能下降的问题, 即对于没有完全 failed<br>
+但是符合上述定义的组件标记为 fail-stutter</p>
+<p>这类组件可以达到额定效果的一定量比例, 直接停止工作大可不必</p>
+<p>但是这种区分有一个很重要的问题: 如果组件对于回复一个请求非常的缓慢, 那么系统可能会认为这个请求已经完全failed了,<br>
+从而施加 fail-stop model 的处理方式.</p>
+<h3 id="notification">Notification</h3>
+<p>相比于 fail-stop 模型, stutter 模型在通知 failure 信息的时候,<br>
+并不会通知到其他无关的组件, 原因如下:</p>
+<ol>
+<li>erratic performance 可能频繁地发生, 因此广播信息有点浪费</li>
+<li>performance failure 从一个 component 角度来看并不对其他组件有影响</li>
+</ol>
+<p>但是如果一个 performance-faulty 现象持久地存在, 那么广播这个 failure 信息是完全必要且合理的</p>
+<h3 id="performance-specifications-定义性能规格">Performance Specifications 定义性能规格</h3>
+<ol>
+<li>模型复杂度 vs 实用性 的权衡:</li>
+</ol>
+<ul>
+<li>性能定义越详细, 系统调度越精准, 但复杂性和实现成本更高;</li>
+<li>定义越粗略, 性能异常的识别容易错判;</li>
+</ul>
+<ol start="2">
+<li>环境相关性强:</li>
+</ol>
+<ul>
+<li>不同部署<strong>环境</strong>对&quot;性能故障&quot;的容忍度不同;</li>
+<li>开发者需了解性能故障出现的频率 <strong>how often</strong> 和持续时间 <strong>how long last</strong>, 作为容错机制设计依据;</li>
+</ul>
+<h2 id="benefits-of-fail-stutter">Benefits of Fail-Stutter</h2>
+<h3 id="manageability">Manageability</h3>
+<ol>
+<li>Fail-stutter fault tolerance enables true “plug-and-play”:</li>
+</ol>
+<ul>
+<li>新设备插入系统后, 无需管理员手动配置, 调优;</li>
+<li>系统可根据设备当前性能状态自动分配任务;</li>
+<li>避免传统&quot;调参-匹配-格式化-测试&quot;流程;</li>
+</ul>
+<ol start="2">
+<li>Incremental Growth(增量扩展能力)</li>
+</ol>
+<ul>
+<li>系统可以平滑地接纳不同代际的硬件设备(如老旧磁盘与新 SSD 共存);</li>
+<li>因为性能差异会被模型视为&quot;正常偏差&quot;, 由调度机制适配;
+<ul>
+<li>旧有的硬件会被认为是 performance-faulty versions of new hardware;</li>
+</ul>
+</li>
+<li>不需要等&quot;统一采购&quot;后再部署, 适合云和数据中心扩展需求;</li>
+</ul>
+<ol start="3">
+<li>No Stockpiling(不需囤货)</li>
+</ol>
+<ul>
+<li>管理员不需要因&quot;某组件即将停产&quot;而过早囤积;</li>
+<li>旧硬件若表现退化, 仅被视为&quot;性能故障&quot;, 依然可以使用;</li>
+<li>延长硬件生命周期, 降低维护成本;</li>
+</ul>
+<ol start="4">
+<li>Workload Adaptivity(适应新工作负载)</li>
+</ol>
+<ul>
+<li>新工作负载引入系统时, 可能带来非均衡压力;</li>
+<li>Fail-stutter 模型允许系统根据实际运行状态进行调整, 不需管理员担忧失衡或重配;</li>
+<li>支持系统自动&quot;重调节&quot;, 提升灵活性;</li>
+</ul>
+<h3 id="availability-可用性">Availability 可用性</h3>
+<p>Availability 的定义如下: the fraction of the offered load that is processed<br>
+with acceptable response times (Gray and Reuter, 1990)</p>
+<p>A system that takes performance failures into account is likely to deliver consistent, high performance, thus<br>
+increasing availability.</p>
+<h3 id="reliability">Reliability</h3>
+<p>FS 模型能通过两种方式来提升</p>
+<ol>
+<li>design diversity:</li>
+</ol>
+<ul>
+<li>Fail-stutter 允许不同厂商, 不同型号, 不同代际的组件共存;</li>
+<li>避免了&quot;统一硬件&quot;所带来的批量故障风险;</li>
+<li>灾难时, 一个设计瑕疵不会&quot;全网同爆&quot;;</li>
+</ul>
+<ol start="2">
+<li>Anomaly Detection (异常检测)</li>
+</ol>
+<ul>
+<li>Fail-stutter 模型支持记录和追踪性能退化;</li>
+<li>某个组件长期&quot;变慢&quot;可能是硬件即将失效的前兆;</li>
+<li>系统可以基于这些信号发出告警, 预防性更换;</li>
+<li>提高系统对&quot;早期失效&quot;的敏感性和应对能力;</li>
+</ul>
+<h2 id="related-work">Related Work</h2>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">Yuchen You (Wesley)</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2025/05/31/wesley_knowledge_repo/os/OrderLab/6.%20Fail%20Stutter%20Fault%20Tolerance%202001/">http://example.com/2025/05/31/wesley_knowledge_repo/os/OrderLab/6.%20Fail%20Stutter%20Fault%20Tolerance%202001/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/operating-system/">operating_system</a><a class="post-meta__tags" href="/tags/distributed-sys/">distributed_sys</a><a class="post-meta__tags" href="/tags/system-failure/">system_failure</a></div><div class="post_share"><div class="social-share" data-image="/img/me_new.jpeg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2025/05/27/wesley_knowledge_repo/os/OrderLab/5.%20Fail-Slow%20at%20Scale/" title="5. Fail-Slow at Scale"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Next</div><div class="next_info">5. Fail-Slow at Scale</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2025/05/22/wesley_knowledge_repo/os/OrderLab/3.%20Metastable%20Failures%20in%20Distributed%20Systems/" title="3. Metastable Failures in Distributed Systems"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-05-22</div><div class="title">3. Metastable Failures in Distributed Systems</div></div></a></div><div><a href="/2025/05/22/wesley_knowledge_repo/os/OrderLab/4.%20Metastable%20Failures%20in%20the%20Wild/" title="4. Metastable Failures in the Wild"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-05-22</div><div class="title">4. Metastable Failures in the Wild</div></div></a></div><div><a href="/2025/05/27/wesley_knowledge_repo/os/OrderLab/5.%20Fail-Slow%20at%20Scale/" title="5. Fail-Slow at Scale"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-05-27</div><div class="title">5. Fail-Slow at Scale</div></div></a></div><div><a href="/2025/02/01/wesley_knowledge_repo/os/1.%20%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%90%8C%E6%AD%A5%E6%9C%BA%E5%88%B6/" title="1. 多线程同步机制"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-01</div><div class="title">1. 多线程同步机制</div></div></a></div><div><a href="/2025/02/09/wesley_knowledge_repo/os/2.%20%E7%BA%BF%E7%A8%8B%E8%B0%83%E5%BA%A6%E7%9A%84%E5%AE%9E%E7%8E%B0/" title="2. 线程调度的实现"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-09</div><div class="title">2. 线程调度的实现</div></div></a></div><div><a href="/2025/02/18/wesley_knowledge_repo/os/3.%20%E4%BF%A1%E5%8F%B7%E9%87%8F%20Semaphore/" title="3. 信号量 Semaphore"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-18</div><div class="title">3. 信号量 Semaphore</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/me_new.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Yuchen You (Wesley)</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">253</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">37</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">8</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/1WesleyYou"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/1Wesleyyou" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yuchenxr@umich.edu" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://www.linkedin.com/in/yuchen-you-a74940314/?locale=en_US" target="_blank" title="LinkedIn"><i class="fab fa-linkedin" style="color: #4a4dbe;"></i></a><a class="social-icon" href="/Resume.pdf" target="_blank" title="CV"><i class="fas fa-address-card" style="color: #251456;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#introduction"><span class="toc-number">1.</span> <span class="toc-text">Introduction</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%83%8C%E6%99%AF%E9%97%AE%E9%A2%98%E7%BC%BA%E9%99%B7"><span class="toc-number">1.1.</span> <span class="toc-text">背景问题缺陷</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%AC%E6%96%87%E7%89%B9%E7%82%B9"><span class="toc-number">1.2.</span> <span class="toc-text">本文特点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9C%80%E8%A6%81%E7%9A%84%E6%A8%A1%E5%9E%8B%E6%80%A7%E8%B4%A8-%E8%A6%81%E6%B1%82"><span class="toc-number">1.3.</span> <span class="toc-text">需要的模型性质 (要求)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#the-erratic-behavior-of-system"><span class="toc-number">2.</span> <span class="toc-text">The Erratic Behavior of System</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#hardware"><span class="toc-number">2.1.</span> <span class="toc-text">Hardware</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#processors-and-caches"><span class="toc-number">2.1.1.</span> <span class="toc-text">Processors and Caches</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#disks"><span class="toc-number">2.1.2.</span> <span class="toc-text">Disks</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#network-switches"><span class="toc-number">2.1.3.</span> <span class="toc-text">Network Switches</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#software"><span class="toc-number">2.2.</span> <span class="toc-text">Software</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#operating-systems-and-virtual-machines"><span class="toc-number">2.2.1.</span> <span class="toc-text">Operating Systems and Virtual Machines</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#interference-from-other-applications"><span class="toc-number">2.2.2.</span> <span class="toc-text">Interference From Other Applications</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#summary"><span class="toc-number">2.3.</span> <span class="toc-text">Summary</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#fail-stutter-model"><span class="toc-number">3.</span> <span class="toc-text">Fail-Stutter Model</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#separation-of-performance-faults-from-correctness-faults-%E6%AD%A3%E7%A1%AE%E6%80%A7%E6%95%85%E9%9A%9C-vs-%E6%80%A7%E8%83%BD%E6%95%85%E9%9A%9C"><span class="toc-number">3.1.</span> <span class="toc-text">Separation of Performance Faults from Correctness Faults (正确性故障 vs 性能故障)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#notification"><span class="toc-number">3.2.</span> <span class="toc-text">Notification</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#performance-specifications-%E5%AE%9A%E4%B9%89%E6%80%A7%E8%83%BD%E8%A7%84%E6%A0%BC"><span class="toc-number">3.3.</span> <span class="toc-text">Performance Specifications 定义性能规格</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#benefits-of-fail-stutter"><span class="toc-number">4.</span> <span class="toc-text">Benefits of Fail-Stutter</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#manageability"><span class="toc-number">4.1.</span> <span class="toc-text">Manageability</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#availability-%E5%8F%AF%E7%94%A8%E6%80%A7"><span class="toc-number">4.2.</span> <span class="toc-text">Availability 可用性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#reliability"><span class="toc-number">4.3.</span> <span class="toc-text">Reliability</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#related-work"><span class="toc-number">5.</span> <span class="toc-text">Related Work</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/31/wesley_knowledge_repo/os/OrderLab/6.%20Fail%20Stutter%20Fault%20Tolerance%202001/" title="6. Fail Stutter Fault Tolerance">6. Fail Stutter Fault Tolerance</a><time datetime="2025-05-31T10:32:49.000Z" title="Created 2025-05-31 18:32:49">2025-05-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/27/wesley_knowledge_repo/os/OrderLab/5.%20Fail-Slow%20at%20Scale/" title="5. Fail-Slow at Scale">5. Fail-Slow at Scale</a><time datetime="2025-05-27T07:11:00.000Z" title="Created 2025-05-27 15:11:00">2025-05-27</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/25/wesley_knowledge_repo/os/tools_frames/1.%20Kubernetes%20%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/" title="1. Kubernetes 核心概念">1. Kubernetes 核心概念</a><time datetime="2025-05-25T11:45:47.000Z" title="Created 2025-05-25 19:45:47">2025-05-25</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/23/wesley_knowledge_repo/os/Unix/1.%20Boot%20and%20System%20Management%20Daemons/" title="1. Boot and System Management Daemons">1. Boot and System Management Daemons</a><time datetime="2025-05-23T04:58:57.000Z" title="Created 2025-05-23 12:58:57">2025-05-23</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/22/wesley_knowledge_repo/os/OrderLab/3.%20Metastable%20Failures%20in%20Distributed%20Systems/" title="3. Metastable Failures in Distributed Systems">3. Metastable Failures in Distributed Systems</a><time datetime="2025-05-22T13:38:11.000Z" title="Created 2025-05-22 21:38:11">2025-05-22</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By Yuchen You (Wesley)</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">welcome to my blog!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/fireworks.min.js"></script><script defer="defer" id="fluttering_ribbon" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/canvas-fluttering-ribbon.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading the Database</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="Search for Posts" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=4.13.0"></script></div></div></body></html>
