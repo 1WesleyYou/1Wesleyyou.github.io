@@ -1,0 +1,349 @@
+<!DOCTYPE html><html lang="en-US" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>19.scheduler_activation | Yuchen You</title><meta name="author" content="Yuchen You (Wesley)"><meta name="copyright" content="Yuchen You (Wesley)"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="背景  并行计算的效果, 取决于创建和管理并行的开销; 开销大的话即使 coarse grained parallelism 也不划算; 开销小的话, 即使 fine grained parallelism 也划算; 传统 UNIX 进程 &#x3D; 单地址空间 + 单执行流; 设计目标是单核多道程序环境(multiprogramming), 适合粗粒度并行, 不适合细粒度并行;  线程支持的两种方式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="19.scheduler_activation">
+<meta property="og:url" content="http://example.com/2025/09/30/wesley_knowledge_repo/os/historical/19.scheduler_activation/index.html">
+<meta property="og:site_name" content="Yuchen You">
+<meta property="og:description" content="背景  并行计算的效果, 取决于创建和管理并行的开销; 开销大的话即使 coarse grained parallelism 也不划算; 开销小的话, 即使 fine grained parallelism 也划算; 传统 UNIX 进程 &#x3D; 单地址空间 + 单执行流; 设计目标是单核多道程序环境(multiprogramming), 适合粗粒度并行, 不适合细粒度并行;  线程支持的两种方式">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/img/me_new.jpeg">
+<meta property="article:published_time" content="2025-09-30T13:23:07.000Z">
+<meta property="article:modified_time" content="2025-10-01T03:40:31.398Z">
+<meta property="article:author" content="Yuchen You (Wesley)">
+<meta property="article:tag" content="operating_system">
+<meta property="article:tag" content="kernel">
+<meta property="article:tag" content="schedule">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/me_new.jpeg"><link rel="shortcut icon" href="/img/hackerrank.svg"><link rel="canonical" href="http://example.com/2025/09/30/wesley_knowledge_repo/os/historical/19.scheduler_activation/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '19.scheduler_activation',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2025-10-01 11:40:31'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 7.2.0"><link href="https://cdn.bootcss.com/KaTeX/0.11.1/katex.min.css" rel="stylesheet" /></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/me_new.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">292</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">46</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">8</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/math_master.jpeg')"><nav id="nav"><span id="blog-info"><a href="/" title="Yuchen You"><img class="site-icon" src="/img/avatar.png"/><span class="site-name">Yuchen You</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> Search</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">19.scheduler_activation</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-09-30T13:23:07.000Z" title="Created 2025-09-30 21:23:07">2025-09-30</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-10-01T03:40:31.398Z" title="Updated 2025-10-01 11:40:31">2025-10-01</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="19.scheduler_activation"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="背景">背景</h2>
+<ul>
+<li>并行计算的效果, 取决于创建和管理并行的开销; 开销大的话即使 coarse grained parallelism 也不划算; 开销小的话, 即使 fine grained parallelism 也划算;</li>
+<li>传统 UNIX 进程 = 单地址空间 + 单执行流;</li>
+<li>设计目标是单核多道程序环境(multiprogramming), 适合粗粒度并行, 不适合细粒度并行;</li>
+</ul>
+<h3 id="线程支持的两种方式">线程支持的两种方式</h3>
+<ol>
+<li>用户级线程 (User-level threads)</li>
+</ol>
+<ul>
+<li>通过 runtime library 库实现(不改内核);</li>
+<li>优点:
+<ul>
+<li>性能好: 上下文切换, 创建销毁的代价接近过程调用;</li>
+<li>灵活: 可以按语言/应用需求定制;</li>
+</ul>
+</li>
+<li>缺点:
+<ul>
+<li>内核对线程不可见, 仍然只认识&quot;进程&quot;;</li>
+<li>进程就像虚拟 CPU, 被内核调度到物理 CPU 上;</li>
+<li>遇到 I/O 阻塞, 页面缺页, 多道并发 时, 线程库感知不到真实 CPU 情况, 导致性能下降甚至错误;</li>
+</ul>
+</li>
+</ul>
+<ol start="2">
+<li>内核级线程 (Kernel threads)</li>
+</ol>
+<ul>
+<li>
+<p>内核直接提供多线程支持, 每个线程对内核可见, 内核负责调度;</p>
+</li>
+<li>
+<p>优点:</p>
+<ul>
+<li>与系统资源和调度机制直接集成, 没有&quot;virtual/real processor 错位&quot;的问题;</li>
+<li>不会出现用户级线程那种 “一挂全挂”(比如一个线程阻塞整个进程);</li>
+</ul>
+</li>
+<li>
+<p>缺点:</p>
+<ul>
+<li>内核操作比用户空间 heavyweight 得多;</li>
+<li>性能明显比用户级线程差 (通常差一个数量级);</li>
+<li>对于很多并行程序仍然&quot;太重&quot;;</li>
+</ul>
+</li>
+<li>
+<p>ULT 库会在程序启动时调用内核 API(比如现代系统里 pthread_create())来创建一批内核线程;</p>
+<ul>
+<li>数量一般与物理 CPU 数接近, 用来&quot;占位&quot;, 相当于&quot;虚拟 CPU 池&quot;;</li>
+</ul>
+</li>
+<li>
+<p>ULT 线程 <strong>绑定</strong> 在这些 KLT 上运行</p>
+<ul>
+<li>每个内核线程里跑的是用户线程库的调度循环;</li>
+<li>库自己决定哪个用户线程在这个内核线程里执行;</li>
+<li>所以用户线程确实是基于内核线程执行的;</li>
+</ul>
+</li>
+</ul>
+<h3 id="设计目标">设计目标</h3>
+<p>他们要设计一个 kernel interface + user-level thread package, 结合两边的优势:</p>
+<ol>
+<li>功能性 (Functionality)</li>
+</ol>
+<ul>
+<li>能表现得像内核线程系统一样, 即便有多道并发, I/O, 缺页;</li>
+<li>保证:
+<ul>
+<li>有线程 ready queue 时, 处理器不会 idle;</li>
+<li>No high-prioirty thread waits for a processor while a low-priority thread runs</li>
+<li>当某个线程因为 page fault 或 I/O 阻塞进入内核, 原来的 CPU 可以立刻切去跑别的线程;</li>
+</ul>
+</li>
+</ul>
+<ol start="2">
+<li>性能 (Performance)</li>
+</ol>
+<ul>
+<li>常见线程操作的开销接近一次 procedure call (和最好的 user-level thread 相当);</li>
+<li>但同时避免了用户级线程系统的&quot;系统整合问题&quot;;</li>
+</ul>
+<ol start="3">
+<li>灵活性 (Flexibility)</li>
+</ol>
+<ul>
+<li>simplify application-specific customization</li>
+<li>可以替换不同的 concurrency model (workers, actors, futures 等);</li>
+</ul>
+<p>但是设计的问题在于, 用于精细化控制和调度的 info 存在于 application address space 内部, 而 kernel 需要访问这些 user-level scheduling info 来进行决策</p>
+<h3 id="方法论">方法论</h3>
+<ul>
+<li>
+<p>为每个 APP (Process) 提供一个 &quot;虚拟多处理机 (virtual multiprocessor)&quot;抽象;</p>
+<ul>
+<li>应用能清楚知道自己有多少个处理器, 是哪几个处理器;</li>
+<li>应用完全掌控: 哪些线程运行在哪些处理器上;</li>
+</ul>
+</li>
+<li>
+<p>kernel 决定处理器资源如何在不同地址空间(应用)之间分配;</p>
+<ul>
+<li>可以动态调整一个应用的处理器数目;</li>
+</ul>
+</li>
+<li>
+<p>关键点:</p>
+<ul>
+<li>内核不会像传统系统那样&quot;替应用解释事件&quot;;</li>
+<li>内核只把与调度相关的事件通知到应用的用户态调度器;
+<ul>
+<li>kernel’s role is to vector events that influence user-level scheduling to the address space for the thread scheduler to handle,</li>
+</ul>
+</li>
+<li>应用的线程库根据事件自己决定如何调度;</li>
+</ul>
+</li>
+<li>
+<p><strong>Upward Communication</strong>: kernel -&gt; addr space, <strong>functionality improved</strong> since app know its own context</p>
+</li>
+<li>
+<p><strong>Downward Communication</strong>: addr space -&gt; kernel, <strong>performance improved</strong> since only operations that would affect the kernel behaviors would be notified</p>
+</li>
+</ul>
+<p><em><strong>Scheduler Activation</strong></em></p>
+<ul>
+<li><strong>execution context for an event</strong> vectored from the kernel to an address space;</li>
+<li>the address space thread (<strong>user level</strong>) scheduler uses this  context to handle the event</li>
+</ul>
+<h3 id="为什么-kernel-thread-的性能远远低于-user-level-thread">为什么 kernel thread 的性能远远低于 user-level thread?</h3>
+<ol>
+<li>Protection Boundary Overhead</li>
+</ol>
+<ul>
+<li>内核线程: 每次线程操作都要跨越保护边界(用户态 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>↔</mo></mrow><annotation encoding="application/x-tex">\leftrightarrow</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">↔</span></span></span></span> 内核态);
+<ul>
+<li>需要一次 trap <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>→</mo></mrow><annotation encoding="application/x-tex">\rightarrow</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">→</span></span></span></span> 大约 19 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>μ</mi></mrow><annotation encoding="application/x-tex">\mu</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">μ</span></span></span></span>s;</li>
+<li>内核必须 check parameters, 防止恶意或错误的程序破坏系统;</li>
+</ul>
+</li>
+<li>用户级线程:
+<ul>
+<li>调用开销接近过程调用(7 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>μ</mi></mrow><annotation encoding="application/x-tex">\mu</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">μ</span></span></span></span>s);</li>
+<li>甚至可以通过编译器优化(内联, 寄存器分配)进一步降低成本;</li>
+<li>安全性仍然依靠地址空间隔离保证, 不会影响别的进程;</li>
+</ul>
+</li>
+</ul>
+<ol start="2">
+<li>通用性开销</li>
+</ol>
+<ul>
+<li>
+<p>内核线程: 一个统一实现要满足所有应用的需求 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>→</mo></mrow><annotation encoding="application/x-tex">\rightarrow</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">→</span></span></span></span> 加入了很多&quot;通用功能&quot;(比如抢占式优先级调度);</p>
+<ul>
+<li>这对一些只需要简单 FIFO 调度的并行程序来说就是额外负担;</li>
+</ul>
+</li>
+<li>
+<p>用户级线程:</p>
+<ul>
+<li>每个应用可以链接不同的用户线程库;</li>
+<li>库可以裁剪, 专门优化, 只保留所需功能;</li>
+<li>更灵活, 也更轻量;</li>
+</ul>
+</li>
+<li>
+<p>用户级线程不但有 performance 优势, 还有 flexibility 优势;</p>
+<ul>
+<li>在其他系统服务里, 常常要在&quot;性能 vs 灵活性&quot;之间 trade-off, 但 用户级线程避免了这种权衡:</li>
+<li>性能高 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>→</mo></mrow><annotation encoding="application/x-tex">\rightarrow</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">→</span></span></span></span> 因为避免内核切换;</li>
+<li>灵活性高 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>→</mo></mrow><annotation encoding="application/x-tex">\rightarrow</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">→</span></span></span></span> 可以支持多种并行模型(FIFO, workers, actors, futures…), 无需改内核;</li>
+</ul>
+</li>
+</ul>
+<h3 id="为什么传统-kernel-interface-对-user-level-thread-集成的效果不好">为什么传统 kernel interface 对 user-level thread 集成的效果不好?</h3>
+<p>用户级线程本身并不&quot;天生&quot;难集成, 问题在于 传统内核 interface 不合适:</p>
+<ul>
+<li>kernel events 对 user-level 不可见
+<ul>
+<li>就比如 ult 调用了 <code>read()</code> 读取io, 会导致 klt 阻塞, 但 ult 库并不知道这个事件, 也不知道该调度哪个线程; 也无法预知这个阻塞有多久直到 klt 在 event 发生之后返回</li>
+<li>相当于每个 user-level 预定的 klt 都只知道这是一个 virtual processor, 但是不知道也无法控制这个 processor 的状态</li>
+</ul>
+</li>
+<li>kernel thread 的 scheduling 对 user-level thread state 不可见</li>
+</ul>
+<p>一种看似可行的办法: 创建比物理处理器更多的内核线程; 这样当一个内核线程阻塞, 另一个内核线程可以接管;<br>
+但这带来新问题: 当阻塞结束后, 内核会有 比处理器数更多的内核线程 都在 runnable 状态; 内核调度器必须选择运行哪几个内核线程; 由于每个内核线程里都装着一个用户级线程 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>→</mo></mrow><annotation encoding="application/x-tex">\rightarrow</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">→</span></span></span></span> 内核就间接决定了哪些用户级线程能运行; 这破坏了用户级线程调度库的控制权;</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">Yuchen You (Wesley)</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2025/09/30/wesley_knowledge_repo/os/historical/19.scheduler_activation/">http://example.com/2025/09/30/wesley_knowledge_repo/os/historical/19.scheduler_activation/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/operating-system/">operating_system</a><a class="post-meta__tags" href="/tags/kernel/">kernel</a><a class="post-meta__tags" href="/tags/schedule/">schedule</a></div><div class="post_share"><div class="social-share" data-image="/img/me_new.jpeg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2025/09/29/wesley_knowledge_repo/os/historical/18.vmware_esx_mem/" title="18.vmware_esx_mem"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Next</div><div class="next_info">18.vmware_esx_mem</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2025/09/06/wesley_knowledge_repo/os/kernel/SYSCALL_DEFINE/" title="SYSCALL_DEFINE"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-09-06</div><div class="title">SYSCALL_DEFINE</div></div></a></div><div><a href="/2025/09/13/wesley_knowledge_repo/os/historical/5.Plan9_9P/" title="5.Plan9_9P"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-09-13</div><div class="title">5.Plan9_9P</div></div></a></div><div><a href="/2025/09/13/wesley_knowledge_repo/os/historical/7.micro-Kernel/" title="7.micro-Kernel"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-09-13</div><div class="title">7.micro-Kernel</div></div></a></div><div><a href="/2025/09/13/wesley_knowledge_repo/os/historical/6.Mach/" title="6.Mach"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-09-13</div><div class="title">6.Mach</div></div></a></div><div><a href="/2025/09/08/wesley_knowledge_repo/os/historical/8.L4/" title="8.L4"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-09-08</div><div class="title">8.L4</div></div></a></div><div><a href="/2025/09/13/wesley_knowledge_repo/os/historical/9.exokernel/" title="9.exokernel"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-09-13</div><div class="title">9.exokernel</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/me_new.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Yuchen You (Wesley)</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">292</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">46</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">8</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/1WesleyYou"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/1Wesleyyou" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yuchenxr@umich.edu" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://www.linkedin.com/in/yuchen-you-a74940314/?locale=en_US" target="_blank" title="LinkedIn"><i class="fab fa-linkedin" style="color: #4a4dbe;"></i></a><a class="social-icon" href="/Resume.pdf" target="_blank" title="CV"><i class="fas fa-address-card" style="color: #251456;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%83%8C%E6%99%AF"><span class="toc-number">1.</span> <span class="toc-text">背景</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BA%BF%E7%A8%8B%E6%94%AF%E6%8C%81%E7%9A%84%E4%B8%A4%E7%A7%8D%E6%96%B9%E5%BC%8F"><span class="toc-number">1.1.</span> <span class="toc-text">线程支持的两种方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BE%E8%AE%A1%E7%9B%AE%E6%A0%87"><span class="toc-number">1.2.</span> <span class="toc-text">设计目标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E8%AE%BA"><span class="toc-number">1.3.</span> <span class="toc-text">方法论</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88-kernel-thread-%E7%9A%84%E6%80%A7%E8%83%BD%E8%BF%9C%E8%BF%9C%E4%BD%8E%E4%BA%8E-user-level-thread"><span class="toc-number">1.4.</span> <span class="toc-text">为什么 kernel thread 的性能远远低于 user-level thread?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BC%A0%E7%BB%9F-kernel-interface-%E5%AF%B9-user-level-thread-%E9%9B%86%E6%88%90%E7%9A%84%E6%95%88%E6%9E%9C%E4%B8%8D%E5%A5%BD"><span class="toc-number">1.5.</span> <span class="toc-text">为什么传统 kernel interface 对 user-level thread 集成的效果不好?</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/09/30/wesley_knowledge_repo/os/historical/19.scheduler_activation/" title="19.scheduler_activation">19.scheduler_activation</a><time datetime="2025-09-30T13:23:07.000Z" title="Created 2025-09-30 21:23:07">2025-09-30</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/09/29/wesley_knowledge_repo/os/historical/18.vmware_esx_mem/" title="18.vmware_esx_mem">18.vmware_esx_mem</a><time datetime="2025-09-29T05:19:27.000Z" title="Created 2025-09-29 13:19:27">2025-09-29</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/09/28/wesley_knowledge_repo/os/historical/17.superpage/" title="17.superpage">17.superpage</a><time datetime="2025-09-28T08:35:17.000Z" title="Created 2025-09-28 16:35:17">2025-09-28</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/09/25/wesley_knowledge_repo/ds/3.PB-Replication%20&amp;%20Linearizability/" title="3.PB-Replication &amp; Linearizability">3.PB-Replication &amp; Linearizability</a><time datetime="2025-09-25T13:20:55.000Z" title="Created 2025-09-25 21:20:55">2025-09-25</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/09/23/wesley_knowledge_repo/os/historical/15.vm_lighter_than_container/" title="15.vm_lighter_than_container">15.vm_lighter_than_container</a><time datetime="2025-09-23T11:03:49.000Z" title="Created 2025-09-23 19:03:49">2025-09-23</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By Yuchen You (Wesley)</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">welcome to my blog!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/fireworks.min.js"></script><script defer="defer" id="fluttering_ribbon" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/canvas-fluttering-ribbon.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading the Database</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="Search for Posts" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=4.13.0"></script></div></div></body></html>
