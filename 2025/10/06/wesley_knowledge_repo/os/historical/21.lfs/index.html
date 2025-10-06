@@ -7,7 +7,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://example.com/img/me_new.jpeg">
 <meta property="article:published_time" content="2025-10-06T05:07:17.000Z">
-<meta property="article:modified_time" content="2025-10-06T17:20:39.292Z">
+<meta property="article:modified_time" content="2025-10-06T17:51:56.728Z">
 <meta property="article:author" content="Yuchen You (Wesley)">
 <meta property="article:tag" content="operating_system">
 <meta property="article:tag" content="unix">
@@ -57,7 +57,7 @@
   isHome: false,
   isHighlightShrink: false,
   isToc: true,
-  postUpdate: '2025-10-07 01:20:39'
+  postUpdate: '2025-10-07 01:51:56'
 }</script><script>(win=>{
       win.saveToLocal = {
         set: (key, value, ttl) => {
@@ -154,7 +154,7 @@
         }
       }
       detectApple()
-    })(window)</script><meta name="generator" content="Hexo 7.2.0"><link href="https://cdn.bootcss.com/KaTeX/0.11.1/katex.min.css" rel="stylesheet" /></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/me_new.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">294</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">46</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">8</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/math_master.jpeg')"><nav id="nav"><span id="blog-info"><a href="/" title="Yuchen You"><img class="site-icon" src="/img/avatar.png"/><span class="site-name">Yuchen You</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> Search</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">21. The Design and Implementation of a Log-Structured File System</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-10-06T05:07:17.000Z" title="Created 2025-10-06 13:07:17">2025-10-06</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-10-06T17:20:39.292Z" title="Updated 2025-10-07 01:20:39">2025-10-07</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="21. The Design and Implementation of a Log-Structured File System"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="design-for-file-systems-of-the-1990-s">Design for File Systems of the 1990’s</h2>
+    })(window)</script><meta name="generator" content="Hexo 7.2.0"><link href="https://cdn.bootcss.com/KaTeX/0.11.1/katex.min.css" rel="stylesheet" /></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/me_new.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">294</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">46</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">8</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/math_master.jpeg')"><nav id="nav"><span id="blog-info"><a href="/" title="Yuchen You"><img class="site-icon" src="/img/avatar.png"/><span class="site-name">Yuchen You</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> Search</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">21. The Design and Implementation of a Log-Structured File System</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-10-06T05:07:17.000Z" title="Created 2025-10-06 13:07:17">2025-10-06</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-10-06T17:51:56.728Z" title="Updated 2025-10-07 01:51:56">2025-10-07</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="21. The Design and Implementation of a Log-Structured File System"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="design-for-file-systems-of-the-1990-s">Design for File Systems of the 1990’s</h2>
 <p>文件系统的设计受到两种力量驱动:</p>
 <ul>
 <li><strong>技术 (Technology)</strong>: 提供基本的硬件能力与性能边界;</li>
@@ -239,7 +239,6 @@
 <h2 id="log-structured-file-systems">Log-Structured File Systems</h2>
 <p>本节介绍 <strong>日志结构文件系统(Log-Structured File System, LFS)</strong> 的核心思想与实现方法;<br>
 LFS 的目标是通过顺序写入来显著提升写性能, 并保持与传统文件系统相当的读取性能;</p>
-<hr>
 <h3 id="核心思想-fundamental-idea">核心思想 (Fundamental Idea)</h3>
 <blockquote>
 <p>“A log-structured file system improves write performance by buffering changes in memory and writing them sequentially to disk.”</p>
@@ -274,7 +273,6 @@ LFS 的目标是通过顺序写入来显著提升写性能, 并保持与传统�
 <li>写性能提升约一个数量级;</li>
 <li>崩溃恢复更快: 只需检查日志尾部;</li>
 </ul>
-<hr>
 <h3 id="设计挑战-two-key-issues">设计挑战 (Two Key Issues)</h3>
 <p>LFS 的设计虽概念简单, 但要发挥潜力需解决两个关键问题:</p>
 <ol>
@@ -286,7 +284,6 @@ LFS 的目标是通过顺序写入来显著提升写性能, 并保持与传统�
 <blockquote>
 <p>Sprite LFS 通过一系列日志化数据结构解决这两个问题, 如下表所示;</p>
 </blockquote>
-<hr>
 <h3 id="主要磁盘数据结构-key-on-disk-data-structures">主要磁盘数据结构 (Key On-Disk Data Structures)</h3>
 <table>
 <thead>
@@ -393,7 +390,6 @@ LFS 的目标是通过顺序写入来显著提升写性能, 并保持与传统�
 <li>读取文件内容;</li>
 </ol>
 <p><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>→</mo></mrow><annotation encoding="application/x-tex">\rightarrow</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">→</span></span></span></span> 一旦 inode 被找到, <strong>读取的 I/O 次数与 Unix FFS 相同</strong>;</p>
-<hr>
 <h3 id="图示对比-figure-1-sprite-lfs-vs-unix-ffs">图示对比 (Figure 1: Sprite LFS vs Unix FFS)</h3>
 <h4 id="unix-ffs">Unix FFS</h4>
 <ul>
@@ -408,7 +404,6 @@ LFS 的目标是通过顺序写入来显著提升写性能, 并保持与传统�
 <li>一次大写即可完成;</li>
 <li>写性能显著提升, 读性能保持不变;</li>
 </ul>
-<hr>
 <h3 id="总结对比-comparison-summary">总结对比 (Comparison Summary)</h3>
 <table>
 <thead>
