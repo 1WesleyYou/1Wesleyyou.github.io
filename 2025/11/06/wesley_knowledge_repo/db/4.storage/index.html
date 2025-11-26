@@ -1,0 +1,396 @@
+<!DOCTYPE html><html lang="en-US" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>4. Database Storage Structure | Yuchen You</title><meta name="author" content="Yuchen You (Wesley)"><meta name="copyright" content="Yuchen You (Wesley)"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Database Storage Disk-Based Architecture(磁盘架构) DBMS 假定数据库的主存储位置在非易失性磁盘 (Disk &#x2F; SSD); 系统组件负责在 volatile memory(主存) 与 non-volatile storage(磁盘) 之间移动数据; Storage Hierarchy(存储层次) CPU Registers &lt; CPU Cache">
+<meta property="og:type" content="article">
+<meta property="og:title" content="4. Database Storage Structure">
+<meta property="og:url" content="http://example.com/2025/11/06/wesley_knowledge_repo/db/4.storage/index.html">
+<meta property="og:site_name" content="Yuchen You">
+<meta property="og:description" content="Database Storage Disk-Based Architecture(磁盘架构) DBMS 假定数据库的主存储位置在非易失性磁盘 (Disk &#x2F; SSD); 系统组件负责在 volatile memory(主存) 与 non-volatile storage(磁盘) 之间移动数据; Storage Hierarchy(存储层次) CPU Registers &lt; CPU Cache">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/img/me_new.jpeg">
+<meta property="article:published_time" content="2025-11-06T12:46:22.000Z">
+<meta property="article:modified_time" content="2025-11-14T04:04:52.260Z">
+<meta property="article:author" content="Yuchen You (Wesley)">
+<meta property="article:tag" content="database">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/me_new.jpeg"><link rel="shortcut icon" href="/img/hackerrank.svg"><link rel="canonical" href="http://example.com/2025/11/06/wesley_knowledge_repo/db/4.storage/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '4. Database Storage Structure',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2025-11-14 12:04:52'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 7.2.0"><link href="https://cdn.bootcss.com/KaTeX/0.11.1/katex.min.css" rel="stylesheet" /></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/me_new.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">297</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">46</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">8</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/math_master.jpeg')"><nav id="nav"><span id="blog-info"><a href="/" title="Yuchen You"><img class="site-icon" src="/img/avatar.png"/><span class="site-name">Yuchen You</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> Search</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">4. Database Storage Structure</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-11-06T12:46:22.000Z" title="Created 2025-11-06 20:46:22">2025-11-06</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-11-14T04:04:52.260Z" title="Updated 2025-11-14 12:04:52">2025-11-14</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="4. Database Storage Structure"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="database-storage">Database Storage</h2>
+<h3 id="disk-based-architecture-磁盘架构">Disk-Based Architecture(磁盘架构)</h3>
+<p>DBMS 假定数据库的主存储位置在非易失性磁盘 (Disk / SSD);<br>
+系统组件负责在 volatile memory(主存) 与 non-volatile storage(磁盘) 之间移动数据;</p>
+<h4 id="storage-hierarchy-存储层次">Storage Hierarchy(存储层次)</h4>
+<p>CPU Registers &lt; CPU Cache &lt; DRAM &lt; SSD &lt; HDD &lt; Network Storage</p>
+<p>越靠上速度越快, 容量越小, 成本越高;<br>
+DBMS 设计目标: 最大化利用高速层, 最小化慢速访问;</p>
+<h3 id="为什么不直接用-os-管理存储">为什么不直接用 OS 管理存储</h3>
+<p>虽然可以用 <code>mmap()</code> 将文件映射到内存, 但:</p>
+<ul>
+<li>DBMS 无法控制 page replacement 策略;</li>
+<li>OS 不保证 flush 顺序;</li>
+<li>并发写入下可能引发不可控的 page fault;</li>
+<li>因此 DBMS 自己实现 Buffer Pool, Page Replacement 与 Flush 策略更可控;</li>
+</ul>
+<p>常见 OS 辅助机制:</p>
+<ul>
+<li><code>madvise</code>: 告诉 OS 访问模式;</li>
+<li><code>mlock</code>: 锁定内存页;</li>
+<li><code>msync</code>: 强制同步内存与磁盘;</li>
+</ul>
+<h3 id="file-storage-文件存储层">File Storage(文件存储层)</h3>
+<p>数据库通常由一个或多个文件组成(专有格式);<br>
+OS 不理解文件内部结构;<br>
+Storage Manager 负责:</p>
+<ul>
+<li>管理数据库文件;</li>
+<li>控制页的读取, 写入与空间利用;</li>
+</ul>
+<h3 id="page-页-与-page-directory-页目录">Page(页)与 Page Directory(页目录)</h3>
+<p>DBMS 将文件划分为固定大小的 pages(如 8KB);<br>
+Page 是 DBMS 的最小读写单位;<br>
+每页有 Page ID(逻辑编号), 通过 Page Directory 映射到磁盘偏移;</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>大小</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hardware Page</td>
+<td>4KB</td>
+<td>设备级写保护块</td>
+</tr>
+<tr>
+<td>OS Page</td>
+<td>4KB</td>
+<td>操作系统级内存页</td>
+</tr>
+<tr>
+<td>Database Page</td>
+<td>512B–16KB</td>
+<td>DBMS 管理单元</td>
+</tr>
+</tbody>
+</table>
+<h3 id="page-layout-页布局">Page Layout(页布局)</h3>
+<p><strong>Page Header</strong><br>
+记录页元数据, 如 Page size, checksum, 事务可见性等;</p>
+<p><strong>Tuple Storage</strong><br>
+朴素顺序追加易产生碎片;</p>
+<p><strong>Slotted Page(槽式页结构)</strong></p>
+<p>Slot Array 保存每个 tuple 的偏移位置, 支持变长记录与高效删除更新;</p>
+<h3 id="storage-model-存储模型">Storage Model(存储模型)</h3>
+<table>
+<thead>
+<tr>
+<th>模型</th>
+<th>设计思想</th>
+<th>应用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Row Store (NSM)</td>
+<td>一行完整存储</td>
+<td>OLTP, 频繁小更新</td>
+</tr>
+<tr>
+<td>Column Store (DSM)</td>
+<td>按列分块存储</td>
+<td>OLAP, 聚合扫描快</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="hash-tables">Hash Tables</h2>
+<p>DBMS 在执行层需要高效的数据结构来支持索引查找, join, 聚合等操作;<br>
+核心结构包括:</p>
+<ul>
+<li>Hash Table</li>
+<li>Tree (B+Tree)</li>
+</ul>
+<h3 id="设计关键点">设计关键点</h3>
+<p><strong>Hash Function</strong></p>
+<ul>
+<li>将任意 key 映射到有限桶用 int 表示;</li>
+<li>常见实现: <code>CRC-64</code>, <code>MurmurHash</code>, <code>CityHash</code>, <code>XXHash</code>, <code>FarmHash</code>;</li>
+<li>目标: 快速且冲突率低;</li>
+</ul>
+<p><strong>Hashing Scheme</strong><br>
+解决冲突的策略: Linear Probing, Chaining, Extendible Hashing, Linear Hashing;</p>
+<h3 id="static-hashing-静态哈希">Static Hashing(静态哈希)</h3>
+<p>哈希桶数固定, 冲突需处理, 插入过多会触发 rehash;<br>
+优点是简单, 缺点是扩展性差;</p>
+<h3 id="linear-probing-线性探测">Linear Probing(线性探测)</h3>
+<p>删除策略:</p>
+<ul>
+<li>Tombstone 标记删除;</li>
+<li>Movement 移动填补空洞; 也就是将删除位置后面的元素前移;</li>
+</ul>
+<p>对于重复的 key 就是直接插在现在的后面位置上</p>
+<h3 id="chained-hashing-链式哈希">Chained Hashing(链式哈希)</h3>
+<p>对于可能重复的 key 可以对每个 hash 结果维护一个 linked list;<br>
+collision 冲突时元素挂到链表尾部;<br>
+插入, 删除, 查找都需遍历链表;</p>
+<p>典型实现: Java <code>HashMap</code>;</p>
+<h3 id="extendible-hashing-动态哈希">Extendible Hashing(动态哈希)</h3>
+<p>对于 chain hashing 的方案, 当链表过长时, 触发 bucket split; 由于映射范围是 int, 因此可以等价于一个二进制树, 也就是通过 bit 长度来表示 chain 的容量;<br>
+因此如果要增加 chain 的数量, 就需要增加 bit 长度; 但是问题在于, 现在要做的是拆分现有的 long-chain, 比如 <code>0x110</code> 的 chain 过长, 那么最直接的方法就是扩张 bit 长度, 比如从 3 位扩张到 4 位, 也就是这个 chain 可以拆分成 <code>0x1100</code> 和 <code>0x1101</code> 两个 chain;</p>
+<h4 id="extendible-linear-hashing">Extendible Linear Hashing</h4>
+<p>每个 hash entry 都有一个指向下一个同 entry (hashed key) 的 block 的指针, 也就是链表, 如果要扩展, 思路就是把超载的 node 重新分裂为 <code>hash_2(key) = hash(key) % 2n</code>;<br>
+类似于 extendible hashing, 但是不是通过 bit 长度来扩张, 而是通过一个全局的 depth 来控制; 直接</p>
+<h2 id="tree-indexes">Tree Indexes</h2>
+<h3 id="index-的定义">Index 的定义</h3>
+<p>Index 用于快速定位 tuple; 但是 index 也是存在 trade-off 的, 即更加精准的 index 可能会带来更高的存储与维护开销;</p>
+<p>DBMS 需保证表与索引一致;<br>
+多个索引需平衡存储与维护开销;</p>
+<h3 id="b-tree-结构">B+Tree 结构</h3>
+<p>B+Tree 是平衡树的一种变体, 确保:</p>
+<ul>
+<li>数据有序</li>
+<li>支持 <code>O(log n)</code> 复杂度的查找, 排序和删除</li>
+<li>M-way (一个节点有 M 个子节点) 平衡树;</li>
+<li>perfectly balanced (每个 leaf 都在树中的深度相同)</li>
+<li>每个节点 (非 root) 都是至少 half-full (在这个节点内部的 key 数量: <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mi>M</mi><mn>2</mn></mfrac><mo>−</mo><mn>1</mn><mo>≤</mo><mi mathvariant="normal">#</mi><mi>k</mi><mi>e</mi><mi>y</mi><mi>s</mi><mo>≤</mo><mi>M</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\frac{M}{2}-1 \le \# keys \le M-1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.217331em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.10903em;">M</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.78041em;vertical-align:-0.13597em;"></span><span class="mord">1</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">≤</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord">#</span><span class="mord mathdefault" style="margin-right:0.03148em;">k</span><span class="mord mathdefault">e</span><span class="mord mathdefault" style="margin-right:0.03588em;">y</span><span class="mord mathdefault">s</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">≤</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathdefault" style="margin-right:0.10903em;">M</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span>)</li>
+<li>每个 inner node 如果有 k 个 key 就至少有 k+1 个非空子节点</li>
+</ul>
+<p><img src="/images/b+Tree_concept.png" alt="b+Tree_concept.png"></p>
+<p>从这个图的特点我们可以看出来, B+Tree 其实是有两种查找/遍历的方式的: 如果想要直接遍历所有, 就直接走 sibling ptr 从头到脚, 但是如果有 range 的话就可以走 tree 节点将查找复杂度直接开 <code>log</code></p>
+<p>如图所示, 这里的每个 tree node 的数据结构都是如下:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">b_plus_tree_t</span> &#123;</span><br><span class="line"> Node_t* node, <span class="comment">// points to the child node/sibling node</span></span><br><span class="line"> T key </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里确保: <code>node</code> 指向的 node 的所有数据都小于 <code>value</code><br>
+如果是 leaf node, 那么这里的 node 一般是 <code>PageID</code>, 也就是 sibling 节点的地址</p>
+<p>用 DB/FS 的角度来考虑, 这里每个 B+Tree node 就是一个 key/value pair array, 占据一个或者多个 page. 这里的 array 一般都是有序的 (基于 key)</p>
+<p><img src="/images/b_plus_tree_leaf_node_concept.png" alt="b_plus_tree_leaf_node_concept.png"></p>
+<p>查找, 插入, 删除复杂度 O(log n);</p>
+<p>这里的节点存储内容有不同的实现选择, 比如可以存储指向实际存储位置的指针, 也可以存储完整的数据结构 tuple</p>
+<ul>
+<li>存储 Tuple 的我们称为 Early Materialization</li>
+<li>存储 Record ID 的我们称为 Late Materialization</li>
+</ul>
+<h3 id="insert">Insert</h3>
+<ol>
+<li>找到目标叶节点;</li>
+<li>插入并排序;</li>
+<li>若 overflow 则拆分;</li>
+<li>middle key 上推父节点;</li>
+</ol>
+<h3 id="delete">Delete</h3>
+<ol>
+<li>找到目标叶节点</li>
+<li>删除;</li>
+<li>若低于半满则借 key 或合并;</li>
+<li>合并需更新父节点;</li>
+</ol>
+<h3 id="duplicate-keys">Duplicate Keys</h3>
+<p>有两种解决办法:</p>
+<ul>
+<li><strong>Append Record ID</strong>: <code>&lt;key, rid&gt;</code>;
+<ul>
+<li>这样每个 实际 key 就真的是 unique 的了</li>
+</ul>
+</li>
+<li><strong>Overflow Leaf Node</strong>: 溢出节点链表;
+<ul>
+<li>这个比较难以实现</li>
+</ul>
+</li>
+</ul>
+<h3 id="clustered-b-tree">Clustered B+Tree</h3>
+<p>这就是上面提及的, 在 tree 中存储的不是 索引指针, 而是直接存储整个 tuple 原始数据</p>
+<h2 id="sorting-aggregations">Sorting &amp; Aggregations</h2>
+<h3 id="external-merge-sort-外部归并排序">External Merge Sort(外部归并排序)</h3>
+<h4 id="phase-1-sorting">Phase 1: Sorting</h4>
+<ul>
+<li>读入可容纳 page;</li>
+<li>内存内部排序;</li>
+<li>写回磁盘为有序 runs;</li>
+</ul>
+<h4 id="phase-2-merging">Phase 2: Merging</h4>
+<ul>
+<li>多路合并;</li>
+<li>生成更大 run;</li>
+<li>直到全局有序;</li>
+</ul>
+<h4 id="2-way-external-merge-sort">2-way external merge sort</h4>
+<p>首先从最直接而二元外部归并排序开始做</p>
+<ul>
+<li><strong>Pass 0</strong>: 将每个 page 从内存中读取出来分别做内部的排序
+<ul>
+<li>时间复杂度就是 <code>O(n)</code>, 处理量是 <code>#page * 2</code> 因为有出有进</li>
+</ul>
+</li>
+<li><strong>Pass 1/2/…</strong>: 递归地开始执行归并排序, 使用 3 个 buffer page
+<ul>
+<li>2 个 buffer page 分别用来存储两个需要合并的 page</li>
+<li>1 个 page 用来存放输出</li>
+</ul>
+</li>
+</ul>
+<p>这个操作的复杂度是 (对于 N 个 page):</p>
+<ul>
+<li>pass 数量: <code>1 = log2(N)</code></li>
+<li>I/O cost: <code>2N * (# pass)</code></li>
+</ul>
+<h2 id="join-算法">Join 算法</h2>
+<p>一个 query 的执行可以形成一个 tree 结构, 数据从 leaf node 经过各种操作符 (operator) 最终到达 root node 输出结果<br>
+而整个 root node 输出的内容就是此次 query 输出的结果</p>
+<ul>
+<li><strong>Early Materialization</strong>: 在 join 过程中就将 tuple 的完整数据都读入内存
+<ul>
+<li>优点是后续不会再需要回到 base table 来读取数据</li>
+</ul>
+</li>
+<li><strong>Late Materialization</strong>: 只在 join 过程中读入 tuple 的 record ID (其实就是 join key), 最后再根据 record ID 读入完整数据
+<ul>
+<li>更加适合 column 存储, 因为这样只需要读取非常少的列数据</li>
+</ul>
+</li>
+</ul>
+<h3 id="最基本方案的-cost-分析">最基本方案的 Cost 分析</h3>
+<p>假设现在有两个表 R 和 S, 分别有 <code>M</code> 和 <code>N</code> 个 page, 以及 <code>m</code> 和 <code>n</code> 个 tuple (是指表中总的 tuple 数而不是单个 page 内的 tuple 数量), 那么遍历式的 Nested Loop Join 的 cost 就是: <code>M + (m * N)</code>;</p>
+<p>为了让这个 Cost 更小, 要将 <code>m</code> 和 <code>N</code> 尽可能地变小, 也就是减少外层循环的 tuple 数量和内层循环的 page 数量</p>
+<p>如果要使用 block 来进行操作, 也就是每次读取都是按照 block (整个 R) 为单位进行读取, 那么 cost 就是 <code>M + (M * N)</code>, 也就是要小的 block 在外, 大的 block 在内</p>
+<p>但是显示情况下往往能够使用的 buffer 的尺寸是有限的</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">Yuchen You (Wesley)</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2025/11/06/wesley_knowledge_repo/db/4.storage/">http://example.com/2025/11/06/wesley_knowledge_repo/db/4.storage/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/database/">database</a></div><div class="post_share"><div class="social-share" data-image="/img/me_new.jpeg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2025/10/16/wesley_knowledge_repo/ds/5.paxos/" title="5. Consensus: Paxos Made Simple (not to me)"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Next</div><div class="next_info">5. Consensus: Paxos Made Simple (not to me)</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2025/08/30/wesley_knowledge_repo/db/1.dbms/" title="1. Database Management System"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-08-30</div><div class="title">1. Database Management System</div></div></a></div><div><a href="/2025/09/15/wesley_knowledge_repo/db/2.sql/" title="2. Relational Algebra to SQL Grammar"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-09-15</div><div class="title">2. Relational Algebra to SQL Grammar</div></div></a></div><div><a href="/2025/10/02/wesley_knowledge_repo/db/3.normalization/" title="3. Normalization"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-10-02</div><div class="title">3. Normalization</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/me_new.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Yuchen You (Wesley)</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">297</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">46</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">8</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/1WesleyYou"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/1Wesleyyou" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yuchenxr@umich.edu" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://www.linkedin.com/in/yuchen-you-a74940314/?locale=en_US" target="_blank" title="LinkedIn"><i class="fab fa-linkedin" style="color: #4a4dbe;"></i></a><a class="social-icon" href="/Yuchen_CV.pdf" target="_blank" title="CV"><i class="fas fa-address-card" style="color: #251456;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#database-storage"><span class="toc-number">1.</span> <span class="toc-text">Database Storage</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#disk-based-architecture-%E7%A3%81%E7%9B%98%E6%9E%B6%E6%9E%84"><span class="toc-number">1.1.</span> <span class="toc-text">Disk-Based Architecture(磁盘架构)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#storage-hierarchy-%E5%AD%98%E5%82%A8%E5%B1%82%E6%AC%A1"><span class="toc-number">1.1.1.</span> <span class="toc-text">Storage Hierarchy(存储层次)</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E7%9B%B4%E6%8E%A5%E7%94%A8-os-%E7%AE%A1%E7%90%86%E5%AD%98%E5%82%A8"><span class="toc-number">1.2.</span> <span class="toc-text">为什么不直接用 OS 管理存储</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#file-storage-%E6%96%87%E4%BB%B6%E5%AD%98%E5%82%A8%E5%B1%82"><span class="toc-number">1.3.</span> <span class="toc-text">File Storage(文件存储层)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#page-%E9%A1%B5-%E4%B8%8E-page-directory-%E9%A1%B5%E7%9B%AE%E5%BD%95"><span class="toc-number">1.4.</span> <span class="toc-text">Page(页)与 Page Directory(页目录)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#page-layout-%E9%A1%B5%E5%B8%83%E5%B1%80"><span class="toc-number">1.5.</span> <span class="toc-text">Page Layout(页布局)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#storage-model-%E5%AD%98%E5%82%A8%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.6.</span> <span class="toc-text">Storage Model(存储模型)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#hash-tables"><span class="toc-number">2.</span> <span class="toc-text">Hash Tables</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BE%E8%AE%A1%E5%85%B3%E9%94%AE%E7%82%B9"><span class="toc-number">2.1.</span> <span class="toc-text">设计关键点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#static-hashing-%E9%9D%99%E6%80%81%E5%93%88%E5%B8%8C"><span class="toc-number">2.2.</span> <span class="toc-text">Static Hashing(静态哈希)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#linear-probing-%E7%BA%BF%E6%80%A7%E6%8E%A2%E6%B5%8B"><span class="toc-number">2.3.</span> <span class="toc-text">Linear Probing(线性探测)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#chained-hashing-%E9%93%BE%E5%BC%8F%E5%93%88%E5%B8%8C"><span class="toc-number">2.4.</span> <span class="toc-text">Chained Hashing(链式哈希)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#extendible-hashing-%E5%8A%A8%E6%80%81%E5%93%88%E5%B8%8C"><span class="toc-number">2.5.</span> <span class="toc-text">Extendible Hashing(动态哈希)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#extendible-linear-hashing"><span class="toc-number">2.5.1.</span> <span class="toc-text">Extendible Linear Hashing</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#tree-indexes"><span class="toc-number">3.</span> <span class="toc-text">Tree Indexes</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#index-%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="toc-number">3.1.</span> <span class="toc-text">Index 的定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#b-tree-%E7%BB%93%E6%9E%84"><span class="toc-number">3.2.</span> <span class="toc-text">B+Tree 结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#insert"><span class="toc-number">3.3.</span> <span class="toc-text">Insert</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#delete"><span class="toc-number">3.4.</span> <span class="toc-text">Delete</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#duplicate-keys"><span class="toc-number">3.5.</span> <span class="toc-text">Duplicate Keys</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#clustered-b-tree"><span class="toc-number">3.6.</span> <span class="toc-text">Clustered B+Tree</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#sorting-aggregations"><span class="toc-number">4.</span> <span class="toc-text">Sorting &amp; Aggregations</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#external-merge-sort-%E5%A4%96%E9%83%A8%E5%BD%92%E5%B9%B6%E6%8E%92%E5%BA%8F"><span class="toc-number">4.1.</span> <span class="toc-text">External Merge Sort(外部归并排序)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#phase-1-sorting"><span class="toc-number">4.1.1.</span> <span class="toc-text">Phase 1: Sorting</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#phase-2-merging"><span class="toc-number">4.1.2.</span> <span class="toc-text">Phase 2: Merging</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-way-external-merge-sort"><span class="toc-number">4.1.3.</span> <span class="toc-text">2-way external merge sort</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#join-%E7%AE%97%E6%B3%95"><span class="toc-number">5.</span> <span class="toc-text">Join 算法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%80%E5%9F%BA%E6%9C%AC%E6%96%B9%E6%A1%88%E7%9A%84-cost-%E5%88%86%E6%9E%90"><span class="toc-number">5.1.</span> <span class="toc-text">最基本方案的 Cost 分析</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/06/wesley_knowledge_repo/db/4.storage/" title="4. Database Storage Structure">4. Database Storage Structure</a><time datetime="2025-11-06T12:46:22.000Z" title="Created 2025-11-06 20:46:22">2025-11-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/16/wesley_knowledge_repo/ds/5.paxos/" title="5. Consensus: Paxos Made Simple (not to me)">5. Consensus: Paxos Made Simple (not to me)</a><time datetime="2025-10-16T11:22:07.000Z" title="Created 2025-10-16 19:22:07">2025-10-16</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/12/wesley_knowledge_repo/ds/4.lexical_pb_vs/" title="4. Primary-Backup Storage System Design and Implementation (PBSSDI)">4. Primary-Backup Storage System Design and Implementation (PBSSDI)</a><time datetime="2025-10-13T03:05:15.000Z" title="Created 2025-10-13 11:05:15">2025-10-13</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/06/wesley_knowledge_repo/os/historical/21.lfs/" title="21. The Design and Implementation of a Log-Structured File System">21. The Design and Implementation of a Log-Structured File System</a><time datetime="2025-10-06T05:07:17.000Z" title="Created 2025-10-06 13:07:17">2025-10-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/02/wesley_knowledge_repo/db/3.normalization/" title="3. Normalization">3. Normalization</a><time datetime="2025-10-02T13:43:37.000Z" title="Created 2025-10-02 21:43:37">2025-10-02</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By Yuchen You (Wesley)</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">welcome to my blog!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/fireworks.min.js"></script><script defer="defer" id="fluttering_ribbon" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/canvas-fluttering-ribbon.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading the Database</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="Search for Posts" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=4.13.0"></script></div></div></body></html>
