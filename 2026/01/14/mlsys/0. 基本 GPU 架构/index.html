@@ -1,0 +1,301 @@
+<!DOCTYPE html><html lang="en-US" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>0. 基本 GPU 架构 | Yuchen You</title><meta name="author" content="Yuchen You (Wesley)"><meta name="copyright" content="Yuchen You (Wesley)"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Data-Level Parallelism (DLP) 在前面的工作中我们主要学习的 并行架构 就是 pipelining 简单的做法就是并行使用多个 核 core 或者使用多个硬件结构实现并行, 但是这里要讨论的是 数据层面的并行 在固有的处理器中, 我们计算如下公式 12for(i &#x3D; 0; i &lt; 100; i++) z[i] &#x3D; A * x[i] + y[i]; 很显然这一步可以用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="0. 基本 GPU 架构">
+<meta property="og:url" content="http://example.com/2026/01/14/mlsys/0.%20%E5%9F%BA%E6%9C%AC%20GPU%20%E6%9E%B6%E6%9E%84/index.html">
+<meta property="og:site_name" content="Yuchen You">
+<meta property="og:description" content="Data-Level Parallelism (DLP) 在前面的工作中我们主要学习的 并行架构 就是 pipelining 简单的做法就是并行使用多个 核 core 或者使用多个硬件结构实现并行, 但是这里要讨论的是 数据层面的并行 在固有的处理器中, 我们计算如下公式 12for(i &#x3D; 0; i &lt; 100; i++) z[i] &#x3D; A * x[i] + y[i]; 很显然这一步可以用">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/img/me_new.jpeg">
+<meta property="article:published_time" content="2026-01-14T05:52:09.000Z">
+<meta property="article:modified_time" content="2026-03-25T20:15:05.035Z">
+<meta property="article:author" content="Yuchen You (Wesley)">
+<meta property="article:tag" content="mlsys">
+<meta property="article:tag" content="cuda">
+<meta property="article:tag" content="gpu">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/me_new.jpeg"><link rel="shortcut icon" href="/img/hackerrank.svg"><link rel="canonical" href="http://example.com/2026/01/14/mlsys/0.%20%E5%9F%BA%E6%9C%AC%20GPU%20%E6%9E%B6%E6%9E%84/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '0. 基本 GPU 架构',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-03-26 04:15:05'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 7.2.0"><link href="https://cdn.bootcss.com/KaTeX/0.11.1/katex.min.css" rel="stylesheet" />
+<style>
+.obsidian-callout { margin: 1em 0; }
+.obsidian-callout blockquote { border-left: none; margin: 0; padding: 0; background: transparent; }
+.obsidian-callout p { margin: 0.4em 0; }
+.obsidian-callout details > summary { list-style: none; }
+.obsidian-callout details > summary::-webkit-details-marker { display: none; }
+</style></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/me_new.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">102</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">24</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">5</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/math_master.jpeg')"><nav id="nav"><span id="blog-info"><a href="/" title="Yuchen You"><img class="site-icon" src="/img/avatar.png"/><span class="site-name">Yuchen You</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> Search</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">0. 基本 GPU 架构</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2026-01-14T05:52:09.000Z" title="Created 2026-01-14 13:52:09">2026-01-14</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-03-25T20:15:05.035Z" title="Updated 2026-03-26 04:15:05">2026-03-26</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/mlsys/">mlsys</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="0. 基本 GPU 架构"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="data-level-parallelism-dlp">Data-Level Parallelism (DLP)</h2>
+<p>在前面的工作中我们主要学习的 并行架构 就是 pipelining<br>
+简单的做法就是并行使用多个 核 core 或者使用多个硬件结构实现并行, 但是这里要讨论的是 数据层面的并行<br>
+在固有的处理器中, 我们计算如下公式</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++)</span><br><span class="line"> z[i] = A * x[i] + y[i];</span><br></pre></td></tr></table></figure>
+<p>很显然这一步可以用矩阵和向量等式进行优化<br>
+即表达式 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mi>z</mi><mo>⃗</mo></mover><mo>=</mo><mi>A</mi><mo>⋅</mo><mover accent="true"><mi>x</mi><mo>⃗</mo></mover><mo>+</mo><mover accent="true"><mi>y</mi><mo>⃗</mo></mover></mrow><annotation encoding="application/x-tex">\vec z = A\cdot \vec x + \vec y</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.714em;vertical-align:0em;"></span><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.714em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathdefault" style="margin-right:0.04398em;">z</span></span><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.17994em;"><span class="overlay" style="height:0.714em;width:0.471em;"><svg width='0.471em' height='0.714em' style='width:0.471em' viewBox='0 0 471 714' preserveAspectRatio='xMinYMin'><path d='M377 20c0-5.333 1.833-10 5.5-14S391 0 397 0c4.667 0 8.667 1.667 12 5
+3.333 2.667 6.667 9 10 19 6.667 24.667 20.333 43.667 41 57 7.333 4.667 11
+10.667 11 18 0 6-1 10-3 12s-6.667 5-14 9c-28.667 14.667-53.667 35.667-75 63
+-1.333 1.333-3.167 3.5-5.5 6.5s-4 4.833-5 5.5c-1 .667-2.5 1.333-4.5 2s-4.333 1
+-7 1c-4.667 0-9.167-1.833-13.5-5.5S337 184 337 178c0-12.667 15.667-32.333 47-59
+H213l-171-1c-8.667-6-13-12.333-13-19 0-4.667 4.333-11.333 13-20h359
+c-16-25.333-24-45-24-59z'/></svg></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault">A</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.79733em;vertical-align:-0.08333em;"></span><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.714em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathdefault">x</span></span><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.20772em;"><span class="overlay" style="height:0.714em;width:0.471em;"><svg width='0.471em' height='0.714em' style='width:0.471em' viewBox='0 0 471 714' preserveAspectRatio='xMinYMin'><path d='M377 20c0-5.333 1.833-10 5.5-14S391 0 397 0c4.667 0 8.667 1.667 12 5
+3.333 2.667 6.667 9 10 19 6.667 24.667 20.333 43.667 41 57 7.333 4.667 11
+10.667 11 18 0 6-1 10-3 12s-6.667 5-14 9c-28.667 14.667-53.667 35.667-75 63
+-1.333 1.333-3.167 3.5-5.5 6.5s-4 4.833-5 5.5c-1 .667-2.5 1.333-4.5 2s-4.333 1
+-7 1c-4.667 0-9.167-1.833-13.5-5.5S337 184 337 178c0-12.667 15.667-32.333 47-59
+H213l-171-1c-8.667-6-13-12.333-13-19 0-4.667 4.333-11.333 13-20h359
+c-16-25.333-24-45-24-59z'/></svg></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.9084399999999999em;vertical-align:-0.19444em;"></span><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.714em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathdefault" style="margin-right:0.03588em;">y</span></span><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.17994em;"><span class="overlay" style="height:0.714em;width:0.471em;"><svg width='0.471em' height='0.714em' style='width:0.471em' viewBox='0 0 471 714' preserveAspectRatio='xMinYMin'><path d='M377 20c0-5.333 1.833-10 5.5-14S391 0 397 0c4.667 0 8.667 1.667 12 5
+3.333 2.667 6.667 9 10 19 6.667 24.667 20.333 43.667 41 57 7.333 4.667 11
+10.667 11 18 0 6-1 10-3 12s-6.667 5-14 9c-28.667 14.667-53.667 35.667-75 63
+-1.333 1.333-3.167 3.5-5.5 6.5s-4 4.833-5 5.5c-1 .667-2.5 1.333-4.5 2s-4.333 1
+-7 1c-4.667 0-9.167-1.833-13.5-5.5S337 184 337 178c0-12.667 15.667-32.333 47-59
+H213l-171-1c-8.667-6-13-12.333-13-19 0-4.667 4.333-11.333 13-20h359
+c-16-25.333-24-45-24-59z'/></svg></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.19444em;"><span></span></span></span></span></span></span></span></span><br>
+那么接下来的问题就是如何用硬件快速计算向量</p>
+<h3 id="simd-方法论">SIMD 方法论</h3>
+<p>基础方法称为 single insturction single data 处理, 即每个指令获取一个对应的 data 部分, 但是事实上我们可以从一个指令调用多个 变量(来自一个 vector 的多个相关变量) 这就是 simd (可以在单核处理器上面有出色表现)<br>
+当然也可以 多个指令调用多个变量, 这个取决于多核同时工作<br>
+<img src="/images/simd_concept.png" alt="simd_concept.png"><br>
+对比 cpu 和 gpu, 我们会发现当我们要处理大量相同类型的数据的时候 (例如图片的像素处理) gpu 会使用小 control 元件和小 cache 来实现同时 load 大量的数据 (这里不大会有 hazard 因为只是同时处理一个向量, 其之间的相关关系非常少)<br>
+在 gpu 中会存在一个叫做 threadBlock 的结构, 每个结构代表多个线程的集合<br>
+<code>__global__</code> 关键字用于定义一个<strong>内核函数(kernel function)</strong>, 该函数将在 GPU 上执行, 返回类型必须是 <code>void</code><br>
+调用 <strong>global</strong> 函数时需要使用 CUDA 特有的语法, 即在函数名后面使用三重尖括号 <code>&lt;&lt;&lt;...&gt;&gt;&gt;</code> 指定线程的布局<br>
+每个线程有各自的 private therad local memory, 每个 thread block 有各自的 block share memory , 总的 app 也会有一整个 global memory<br>
+<img src="/images/gpu_architecture.png" alt="gpu_architecture.png"><br>
+cuda: <strong>Compute Unified Device Architecture</strong></p>
+<h2 id="simt-model">SIMT Model</h2>
+<p>single instruction multiple thread<br>
+assumption: 有超大量的元素在一个 vector 中需要执行类似的操作<br>
+认为每个 element 是一个 thread,  每个指令一次处理 10 - 100 个elements (类似 simd) 同时利用 pipline 的特点在下一个cycle 直接处理下一个 instruction. 这里读取指令可能会来自于其他的 thread (这样 cache miss 不会stall program, 因为 anyway 下一个指令已经开始执行了;当某个线程组 (warp) 在访问内存时遇到缓存未命中时, 该 warp 不会停下来等待数据加载, 而是会被<strong>搁置(suspended)</strong>, 并由调度器选择另一个准备好执行的 warp 来继续进行计算)<br>
+大概拥有 100 个 simd 内核来执行不同的 tread block<br>
+<img src="/images/cuda_core.png" alt="cuda_core.png"><br>
+如图为 cuda 的基本架构, 其中每个 core 可以处理一个线程, 然后多个 core 组成了一个 streaming multiprocessor,  在这个内部的 share 内存的交换速度非常快, 可以在 1 cycle 内进行数据的互换, 因此遇到 miss 的时候可以快速换到另一个线程的指令进行执行而不是等待当前的解决</p>
+<h2 id="sm-streaming-multiprocessor-gpu-的-车间-与并行基本单位">SM(Streaming Multiprocessor): GPU 的&quot;车间&quot;与并行基本单位</h2>
+<p><strong>SM(Streaming Multiprocessor)是 GPU 上真实存在的硬件计算单元</strong>;你可以把它理解成一个&quot;车间/工厂&quot;: GPU 里有很多个 SM, 整体吞吐能力很大程度上随 SM 数量扩展;</p>
+<p>一个 SM 通常包含(概念层面):</p>
+<ul>
+<li><strong>执行单元</strong>: 负责整数/浮点运算(以及专门的矩阵乘单元如 Tensor Cores, 具体名字随架构变化)</li>
+<li><strong>Warp Scheduler</strong>: 选择哪个 warp 在这一拍发射指令(GPU 用&quot;切换到别的 warp&quot;来隐藏内存延迟)</li>
+<li><strong>寄存器文件(Register File)</strong>: thread 私有寄存器的物理存放地(容量有限, 会影响能同时驻留多少线程/warps)</li>
+<li><strong>Shared Memory / L1(片上 SRAM 资源)</strong>: 在 SM 内部的低延迟存储与缓存资源(shared 用于 block 内显式共享; L1 用于缓存部分访存)</li>
+<li>(通常还有)指令缓存, load/store 单元等</li>
+</ul>
+<h3 id="sm-和-block-的关系-关键映射">SM 和 Block 的关系(关键映射)</h3>
+<ul>
+<li><strong>Block 是执行抽象</strong>: 一组 threads 的&quot;协作单元&quot;</li>
+<li><strong>SM 是硬件</strong>: 真正执行 blocks 的地方</li>
+<li>GPU 运行时会把每个 <strong>block 调度到某一个 SM</strong> 上运行; 一个 SM 可以同时驻留多个 blocks(取决于资源够不够: 寄存器/共享内存/最大线程数等)</li>
+</ul>
+<blockquote>
+<p>直觉: SM 像车间, block 像工单;车间可以同时接多个工单, 但每个工单会占用车间的资源预算;</p>
+</blockquote>
+<h3 id="sm-和-warp-的关系-为什么-warp-很重要">SM 和 Warp 的关系(为什么 warp 很重要)</h3>
+<ul>
+<li>SM 的调度与执行通常以 <strong>warp</strong> 为粒度: 同一时刻有很多 warps 驻留在 SM 上</li>
+<li>当某个 warp 因为访问 HBM/global memory 而 stall 时, SM 可以快速切换到其他 ready warp 继续执行, 从而&quot;隐藏内存延迟&quot;</li>
+<li>因此: <strong>让 SM 上同时有足够多的活跃 warps(occupancy)</strong>, 常常是性能的关键之一</li>
+</ul>
+<h2 id="cuda-执行模型与-gpu-内部结构对照-thread-warp-block-grid-vs-sm">CUDA 执行模型与 GPU 内部结构对照 (Thread / Warp / Block / Grid vs SM)</h2>
+<p>这几个概念是<strong>编程抽象</strong>, 但与硬件强绑定;理解它们的关键是:</p>
+<ul>
+<li><strong>SM 是硬件实体(物理&quot;车间&quot;)</strong></li>
+<li><strong>Grid/Block/Warp/Thread 是执行与编程抽象(逻辑&quot;任务切分方式&quot;)</strong></li>
+<li>其中 <strong>Block 会被调度到某一个 SM 上运行</strong>, 所以 block 又是&quot;最贴近硬件&quot;的抽象;</li>
+</ul>
+<h3 id="1-thread-线程-最小执行实例">1) Thread(线程): 最小执行实例</h3>
+<ul>
+<li>你在 kernel 里写的最小执行流;</li>
+<li>每个 thread 有自己的寄存器与局部变量(thread-private), 互不共享;</li>
+</ul>
+<h3 id="2-warp-硬件真正的执行-调度粒度-nvidia-32-threads">2) Warp: 硬件真正的执行/调度粒度(NVIDIA=32 threads)</h3>
+<ul>
+<li><strong>Warp = 32 个线程</strong>(连续 threadIdx)组成的&quot;锁步小队&quot;;</li>
+<li>硬件以 warp 为单位发射指令: 一个 warp 内的线程通常<strong>同时执行同一条指令</strong>(SIMT);</li>
+<li>两个直接的性能后果:
+<ul>
+<li><strong>Divergence(分支分歧)</strong>: 同一 warp 内走不同 if/else, 会被迫&quot;分段串行执行&quot;, 吞吐下降;</li>
+<li><strong>Memory Coalescing(访存合并)</strong>: 同一 warp 的 32 线程若访问连续/对齐地址可合并成更少内存事务, 带宽利用更高;</li>
+</ul>
+</li>
+</ul>
+<h3 id="3-block-线程块-协作边界-资源分配边界">3) Block(线程块): 协作边界 + 资源分配边界</h3>
+<ul>
+<li>Block 是一组 threads(可 1D/2D/3D);</li>
+<li>Block 的意义是让线程<strong>高效协作</strong>:
+<ul>
+<li>block 内线程可通过 <strong>shared memory</strong> 共享数据(低延迟)</li>
+<li>block 内可用 <code>__syncthreads()</code> 做 barrier 同步</li>
+</ul>
+</li>
+<li><strong>硬件映射</strong>: 运行时会把一个 block <strong>分配给某一个 SM</strong> 执行; 一个 SM 可同时驻留多个 blocks(取决于资源: 寄存器数, shared memory 用量, 最大线程/warp 上限等);</li>
+<li>直觉: 把&quot;需要频繁共享/同步&quot;的工作尽量放在同一个 block; 跨 block 协作更慢更重;</li>
+</ul>
+<h3 id="4-grid-一次-kernel-launch-的所有-blocks-的集合">4) Grid: 一次 kernel launch 的所有 blocks 的集合</h3>
+<ul>
+<li>Grid = 你一次 <code>my_kernel&lt;&lt;&lt;gridDim, blockDim&gt;&gt;&gt;(...)</code> 启动产生的<strong>全部 blocks</strong>;</li>
+<li>Grid 是&quot;逻辑抽象&quot;, 不是硬件结构; blocks 的执行顺序一般<strong>不保证</strong>(由调度决定);</li>
+<li>Grid 维度由 <code>gridDim</code> 决定, block 内线程数由 <code>blockDim</code> 决定;</li>
+</ul>
+<h3 id="5-层级关系-从大到小">5) 层级关系(从大到小)</h3>
+<p>Kernel launch<br>
+<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>→</mo></mrow><annotation encoding="application/x-tex">\rightarrow</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">→</span></span></span></span> <strong>Grid(所有 blocks)</strong><br>
+<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>→</mo></mrow><annotation encoding="application/x-tex">\rightarrow</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">→</span></span></span></span> <strong>Block(协作单位: shared + 同步)</strong><br>
+<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>→</mo></mrow><annotation encoding="application/x-tex">\rightarrow</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">→</span></span></span></span> <strong>Warp(执行单位: 32 线程锁步)</strong><br>
+<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>→</mo></mrow><annotation encoding="application/x-tex">\rightarrow</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">→</span></span></span></span> <strong>Thread(编程最小实例)</strong></p>
+<h2 id="内存层级与-共享范围-thread-block-sm-device">内存层级与&quot;共享范围&quot;(Thread / Block / SM / Device)</h2>
+<p>从&quot;谁能看到谁的数据&quot;的角度看:</p>
+<ul>
+<li><strong>Registers</strong>: thread 私有(不共享)</li>
+<li><strong>Shared memory</strong>: block 内共享(语义上按 block 分配/隔离)</li>
+<li><strong>L1 cache</strong>: SM 内共享 cache(同一 SM 上驻留的多个 blocks/warps 共享容量与带宽, 可能互相干扰; 不要把 L1 当作可靠通信介质)</li>
+<li><strong>L2 cache</strong>: 芯片级共享(通常全 GPU 共享)</li>
+<li><strong>HBM/DRAM(global memory)</strong>: 设备级共享(跨 block/跨 SM 通信一般通过它 + 同步原语完成)</li>
+</ul>
+<p>一个实用结论:</p>
+<ul>
+<li><strong>block 内通信</strong>: 用 shared memory + <code>__syncthreads()</code>(便宜, 明确)</li>
+<li><strong>跨 block 通信</strong>: 通常走 global memory(慢), 最好用 kernel 边界作为大同步点; 更复杂场景才用 atomic/fence 等手段;</li>
+</ul>
+<h2 id="giga-thread-scheduler">giga thread scheduler</h2>
+<p>不同于单核的调度器执行依赖于短板效应的 周期 = 最长指令用时, gpu 允许一个 cycle 内将多个 kernel 分别处理各自的内容或者处理存在依赖性的内容<br>
+<img src="/images/gpu_scheduler.png" alt="gpu_scheduler.png"></p>
+<h2 id="双层-cache-结构">双层 cache 结构</h2>
+<p>gpu 会使用两层 cache 结构 L1 和 L2 并且<br>
+<img src="/images/double_cache.png" alt="double_cache.png"></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">Yuchen You (Wesley)</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2026/01/14/mlsys/0.%20%E5%9F%BA%E6%9C%AC%20GPU%20%E6%9E%B6%E6%9E%84/">http://example.com/2026/01/14/mlsys/0.%20%E5%9F%BA%E6%9C%AC%20GPU%20%E6%9E%B6%E6%9E%84/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/mlsys/">mlsys</a><a class="post-meta__tags" href="/tags/cuda/">cuda</a><a class="post-meta__tags" href="/tags/gpu/">gpu</a></div><div class="post_share"><div class="social-share" data-image="/img/me_new.jpeg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2026/03/19/mlsys/1.%20Distributed%20Data%20Parallel/" title="1. Distributed Data Parallel"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Previous</div><div class="prev_info">1. Distributed Data Parallel</div></div></a></div><div class="next-post pull-right"><a href="/2025/12/14/ds/10.tradeoff/" title="10. Tradeoffs btw"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Next</div><div class="next_info">10. Tradeoffs btw</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2026/03/19/mlsys/1.%20Distributed%20Data%20Parallel/" title="1. Distributed Data Parallel"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-19</div><div class="title">1. Distributed Data Parallel</div></div></a></div><div><a href="/2026/03/25/mlsys/Paper/GPipe%20-%20efficient%20training%20of%20giant%20neural%20networks%20using%20pipeline%20parallelism/" title="GPipe - efficient training of giant neural networks using pipeline parallelism"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-26</div><div class="title">GPipe - efficient training of giant neural networks using pipeline parallelism</div></div></a></div><div><a href="/2026/03/25/mlsys/Paper/Megatron-LM%20-%20Training%20Multi-Billion%20Parameter%20Language%20Models%20Using%20Model%20Parallelism/" title="Megatron-LM - Training Multi-Billion Parameter Language Models Using Model Parallelism"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-26</div><div class="title">Megatron-LM - Training Multi-Billion Parameter Language Models Using Model Parallelism</div></div></a></div><div><a href="/2026/03/25/mlsys/Paper/Taming%20Throughput-Latency%20Tradeoff%20in%20LLM%20Inference%20with%20Sarathi-Serve/" title="Taming Throughput-Latency Tradeoff in LLM Inference with Sarathi-Serve"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-26</div><div class="title">Taming Throughput-Latency Tradeoff in LLM Inference with Sarathi-Serve</div></div></a></div><div><a href="/2026/03/28/mlsys/Paper/ZeRO%20-%20memory%20optimizations%20toward%20training%20trillion%20parameter%20models/" title="ZeRO - memory optimizations toward training trillion parameter models"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-29</div><div class="title">ZeRO - memory optimizations toward training trillion parameter models</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/me_new.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Yuchen You (Wesley)</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">102</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">24</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">5</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/1WesleyYou"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/1Wesleyyou" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yuchenxr@umich.edu" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://www.linkedin.com/in/yuchen-you-a74940314/?locale=en_US" target="_blank" title="LinkedIn"><i class="fab fa-linkedin" style="color: #4a4dbe;"></i></a><a class="social-icon" href="/Yuchen_CV.pdf" target="_blank" title="CV"><i class="fas fa-address-card" style="color: #251456;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#data-level-parallelism-dlp"><span class="toc-number">1.</span> <span class="toc-text">Data-Level Parallelism (DLP)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#simd-%E6%96%B9%E6%B3%95%E8%AE%BA"><span class="toc-number">1.1.</span> <span class="toc-text">SIMD 方法论</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#simt-model"><span class="toc-number">2.</span> <span class="toc-text">SIMT Model</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#sm-streaming-multiprocessor-gpu-%E7%9A%84-%E8%BD%A6%E9%97%B4-%E4%B8%8E%E5%B9%B6%E8%A1%8C%E5%9F%BA%E6%9C%AC%E5%8D%95%E4%BD%8D"><span class="toc-number">3.</span> <span class="toc-text">SM(Streaming Multiprocessor): GPU 的&quot;车间&quot;与并行基本单位</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#sm-%E5%92%8C-block-%E7%9A%84%E5%85%B3%E7%B3%BB-%E5%85%B3%E9%94%AE%E6%98%A0%E5%B0%84"><span class="toc-number">3.1.</span> <span class="toc-text">SM 和 Block 的关系(关键映射)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#sm-%E5%92%8C-warp-%E7%9A%84%E5%85%B3%E7%B3%BB-%E4%B8%BA%E4%BB%80%E4%B9%88-warp-%E5%BE%88%E9%87%8D%E8%A6%81"><span class="toc-number">3.2.</span> <span class="toc-text">SM 和 Warp 的关系(为什么 warp 很重要)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#cuda-%E6%89%A7%E8%A1%8C%E6%A8%A1%E5%9E%8B%E4%B8%8E-gpu-%E5%86%85%E9%83%A8%E7%BB%93%E6%9E%84%E5%AF%B9%E7%85%A7-thread-warp-block-grid-vs-sm"><span class="toc-number">4.</span> <span class="toc-text">CUDA 执行模型与 GPU 内部结构对照 (Thread &#x2F; Warp &#x2F; Block &#x2F; Grid vs SM)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-thread-%E7%BA%BF%E7%A8%8B-%E6%9C%80%E5%B0%8F%E6%89%A7%E8%A1%8C%E5%AE%9E%E4%BE%8B"><span class="toc-number">4.1.</span> <span class="toc-text">1) Thread(线程): 最小执行实例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-warp-%E7%A1%AC%E4%BB%B6%E7%9C%9F%E6%AD%A3%E7%9A%84%E6%89%A7%E8%A1%8C-%E8%B0%83%E5%BA%A6%E7%B2%92%E5%BA%A6-nvidia-32-threads"><span class="toc-number">4.2.</span> <span class="toc-text">2) Warp: 硬件真正的执行&#x2F;调度粒度(NVIDIA&#x3D;32 threads)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-block-%E7%BA%BF%E7%A8%8B%E5%9D%97-%E5%8D%8F%E4%BD%9C%E8%BE%B9%E7%95%8C-%E8%B5%84%E6%BA%90%E5%88%86%E9%85%8D%E8%BE%B9%E7%95%8C"><span class="toc-number">4.3.</span> <span class="toc-text">3) Block(线程块): 协作边界 + 资源分配边界</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-grid-%E4%B8%80%E6%AC%A1-kernel-launch-%E7%9A%84%E6%89%80%E6%9C%89-blocks-%E7%9A%84%E9%9B%86%E5%90%88"><span class="toc-number">4.4.</span> <span class="toc-text">4) Grid: 一次 kernel launch 的所有 blocks 的集合</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E5%B1%82%E7%BA%A7%E5%85%B3%E7%B3%BB-%E4%BB%8E%E5%A4%A7%E5%88%B0%E5%B0%8F"><span class="toc-number">4.5.</span> <span class="toc-text">5) 层级关系(从大到小)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E5%B1%82%E7%BA%A7%E4%B8%8E-%E5%85%B1%E4%BA%AB%E8%8C%83%E5%9B%B4-thread-block-sm-device"><span class="toc-number">5.</span> <span class="toc-text">内存层级与&quot;共享范围&quot;(Thread &#x2F; Block &#x2F; SM &#x2F; Device)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#giga-thread-scheduler"><span class="toc-number">6.</span> <span class="toc-text">giga thread scheduler</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%8C%E5%B1%82-cache-%E7%BB%93%E6%9E%84"><span class="toc-number">7.</span> <span class="toc-text">双层 cache 结构</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/03/29/ds/Kubernetes/" title="kubernetes">kubernetes</a><time datetime="2026-03-29T07:35:50.000Z" title="Created 2026-03-29 15:35:50">2026-03-29</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/03/28/mlsys/Paper/ZeRO%20-%20memory%20optimizations%20toward%20training%20trillion%20parameter%20models/" title="ZeRO - memory optimizations toward training trillion parameter models">ZeRO - memory optimizations toward training trillion parameter models</a><time datetime="2026-03-28T20:43:03.283Z" title="Created 2026-03-29 04:43:03">2026-03-29</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/03/25/mlsys/Paper/Megatron-LM%20-%20Training%20Multi-Billion%20Parameter%20Language%20Models%20Using%20Model%20Parallelism/" title="Megatron-LM - Training Multi-Billion Parameter Language Models Using Model Parallelism">Megatron-LM - Training Multi-Billion Parameter Language Models Using Model Parallelism</a><time datetime="2026-03-25T20:03:01.692Z" title="Created 2026-03-26 04:03:01">2026-03-26</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/03/25/mlsys/Paper/Taming%20Throughput-Latency%20Tradeoff%20in%20LLM%20Inference%20with%20Sarathi-Serve/" title="Taming Throughput-Latency Tradeoff in LLM Inference with Sarathi-Serve">Taming Throughput-Latency Tradeoff in LLM Inference with Sarathi-Serve</a><time datetime="2026-03-25T20:03:01.690Z" title="Created 2026-03-26 04:03:01">2026-03-26</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/03/25/mlsys/Paper/GPipe%20-%20efficient%20training%20of%20giant%20neural%20networks%20using%20pipeline%20parallelism/" title="GPipe - efficient training of giant neural networks using pipeline parallelism">GPipe - efficient training of giant neural networks using pipeline parallelism</a><time datetime="2026-03-25T20:03:01.687Z" title="Created 2026-03-26 04:03:01">2026-03-26</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2026 By Yuchen You (Wesley)</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">welcome to my blog!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/fireworks.min.js"></script><script defer="defer" id="fluttering_ribbon" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/canvas-fluttering-ribbon.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading the Database</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="Search for Posts" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=4.13.0"></script></div></div></body></html>
