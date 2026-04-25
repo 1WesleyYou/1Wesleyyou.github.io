@@ -1,0 +1,486 @@
+<!DOCTYPE html><html lang="en-US" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>1. JVM GC 工作思路 | Yuchen You</title><meta name="author" content="Yuchen You (Wesley)"><meta name="copyright" content="Yuchen You (Wesley)"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="📝 术语别名       GC: Garbage Collection, 自动垃圾回收; STW: Stop-The-World, GC 期间所有应用线程被 JVM 冻住; Heap: JVM 管理的对象内存区, 所有 new 出来的东西都在这里; GC Roots: 一组&quot;一定还活着&quot;的引用起点, 可达性分析的种子;   前置: 为什么 Java 需要 GC">
+<meta property="og:type" content="article">
+<meta property="og:title" content="1. JVM GC 工作思路">
+<meta property="og:url" content="http://example.com/2026/04/25/pl/java/1.%20JVM%20GC%20%E5%B7%A5%E4%BD%9C%E6%80%9D%E8%B7%AF/index.html">
+<meta property="og:site_name" content="Yuchen You">
+<meta property="og:description" content="📝 术语别名       GC: Garbage Collection, 自动垃圾回收; STW: Stop-The-World, GC 期间所有应用线程被 JVM 冻住; Heap: JVM 管理的对象内存区, 所有 new 出来的东西都在这里; GC Roots: 一组&quot;一定还活着&quot;的引用起点, 可达性分析的种子;   前置: 为什么 Java 需要 GC">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/img/me_new.jpeg">
+<meta property="article:published_time" content="2026-04-25T06:30:00.000Z">
+<meta property="article:modified_time" content="2026-04-25T21:57:08.056Z">
+<meta property="article:author" content="Yuchen You (Wesley)">
+<meta property="article:tag" content="pl">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="jvm">
+<meta property="article:tag" content="gc">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/me_new.jpeg"><link rel="shortcut icon" href="/img/hackerrank.svg"><link rel="canonical" href="http://example.com/2026/04/25/pl/java/1.%20JVM%20GC%20%E5%B7%A5%E4%BD%9C%E6%80%9D%E8%B7%AF/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '1. JVM GC 工作思路',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-04-26 05:57:08'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 7.2.0"><link href="https://cdn.bootcss.com/KaTeX/0.11.1/katex.min.css" rel="stylesheet" />
+<style>
+.obsidian-callout { margin: 1em 0; }
+.obsidian-callout blockquote { border-left: none; margin: 0; padding: 0; background: transparent; }
+.obsidian-callout p { margin: 0.4em 0; }
+.obsidian-callout details > summary { list-style: none; }
+.obsidian-callout details > summary::-webkit-details-marker { display: none; }
+</style></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/me_new.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">107</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">34</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">6</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/math_master.jpeg')"><nav id="nav"><span id="blog-info"><a href="/" title="Yuchen You"><img class="site-icon" src="/img/avatar.png"/><span class="site-name">Yuchen You</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> Search</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">1. JVM GC 工作思路</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2026-04-25T06:30:00.000Z" title="Created 2026-04-25 14:30:00">2026-04-25</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-04-25T21:57:08.056Z" title="Updated 2026-04-26 05:57:08">2026-04-26</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="1. JVM GC 工作思路"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><div class="obsidian-callout callout-术语别名" style="border-left: 4px solid #448aff; background: #448aff11; border-radius: 4px; padding: 0; margin: 1em 0;">
+  <div style="padding: 8px 16px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+    <span>📝</span> <span>术语别名</span>
+  </div>
+  <div style="padding: 4px 16px 12px 16px;"><ul>
+<li>GC: Garbage Collection, 自动垃圾回收;</li>
+<li>STW: Stop-The-World, GC 期间所有应用线程被 JVM 冻住;</li>
+<li>Heap: JVM 管理的对象内存区, 所有 <code>new</code> 出来的东西都在这里;</li>
+<li>GC Roots: 一组&quot;一定还活着&quot;的引用起点, 可达性分析的种子;</li>
+</ul></div>
+</div>
+<h2 id="前置-为什么-java-需要-gc">前置: 为什么 Java 需要 GC</h2>
+<p>C/C++ 程序员是手动管内存的, 你 <code>malloc</code> 一块就要负责 <code>free</code> 一块, 漏了就内存泄漏, 重复 free 就 double-free crash; Java 把这个负担拿走了, 程序员只负责 <code>new Foo()</code>, <strong>永远不主动释放</strong>;</p>
+<p>那对象怎么消失? 答案是 JVM 启动了一个叫 GC 的后台机制, 周期性扫整个 heap, 把&quot;再也不会被用到的对象&quot;自动清掉, 这一行为的代价是: 扫的时候得短暂冻住应用线程 (STW), 这就是 GC 给你带来的延迟代价;</p>
+<p>所以理解 GC 本质上要回答两个问题:</p>
+<ol>
+<li><strong>怎么判断一个对象&quot;已经死了&quot;</strong>;</li>
+<li><strong>判断完之后, 怎么把死对象腾出来的空间高效利用</strong>;</li>
+</ol>
+<p>下面整篇笔记基本上就是在围绕这两个问题展开;</p>
+<h2 id="gc-的第一个核心问题-怎么判断对象死了">GC 的第一个核心问题: 怎么判断对象死了</h2>
+<h3 id="想法-1-引用计数-reference-counting">想法 1: 引用计数 (Reference Counting)</h3>
+<p>最直觉的做法: 每个对象身上挂一个计数器, 有人引用 +1, 引用没了 -1, 计数为 0 就回收;</p>
+<p>听起来很美但有个致命问题 — <strong>循环引用</strong>:</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">A.next = B</span><br><span class="line">B.next = A</span><br></pre></td></tr></table></figure>
+<p>A 和 B 互相引用, 谁都不会归零, 但其实外面没有任何变量指向它们, 这两个对象是&quot;死了但永远清不掉&quot;; 这种地雷在像链表/图这种数据结构里到处都是;</p>
+<p>所以<strong>主流 JVM (HotSpot) 没有用引用计数</strong>, 用的是下面这个;</p>
+<h3 id="想法-2-可达性分析-reachability-analysis">想法 2: 可达性分析 (Reachability Analysis)</h3>
+<p>换个思路: 不去问&quot;谁在引用这个对象&quot;, 而是问&quot;从一组一定还活着的根出发, 我能不能走到这个对象&quot;; 走得到 = 活, 走不到 = 死;</p>
+<p>这组&quot;一定还活着的根&quot;叫做 <strong>GC Roots</strong>, 直觉上包含:</p>
+<ul>
+<li>当前所有线程栈上的局部变量 (栈帧里的引用);</li>
+<li>所有静态字段 (<code>static</code> 修饰的, 类生命周期级别);</li>
+<li>JNI 引用 (native 代码持有的 Java 对象);</li>
+<li>一些 JVM 内部结构;</li>
+</ul>
+<p>GC 干的事情就是: 从 GC Roots 开始做一次图遍历 (BFS / DFS 都行), 标记所有能达到的对象为&quot;活&quot;; 剩下没标记的就是死的, 可以清;</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">GC Roots (栈 / static / JNI ...)</span><br><span class="line">   │</span><br><span class="line">   ▼</span><br><span class="line">[活对象 A] ──► [活对象 B] ──► [活对象 C]</span><br><span class="line">                   │</span><br><span class="line">                   ▼</span><br><span class="line">               [活对象 D]</span><br><span class="line"></span><br><span class="line">[死对象 X] ──► [死对象 Y]   ← 没有任何 root 走得到, 整片清掉</span><br></pre></td></tr></table></figure>
+<p><strong>循环引用在这里自然不是问题</strong>, 因为只要外面没有 root 能走进这个环, 整个环都被判死;</p>
+<div class="obsidian-callout callout-关键直觉" style="border-left: 4px solid #448aff; background: #448aff11; border-radius: 4px; padding: 0; margin: 1em 0;">
+  <div style="padding: 8px 16px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+    <span>📝</span> <span>关键直觉</span>
+  </div>
+  <div style="padding: 4px 16px 12px 16px;"><ul>
+<li>引用计数: “谁在引用我” — 简单, 但被循环引用打死;</li>
+<li>可达性分析: “我能不能从根走过来” — 复杂一点, 但循环引用天然干净;</li>
+<li>HotSpot JVM 全部走可达性分析;</li>
+</ul></div>
+</div>
+<h2 id="gc-的第二个核心问题-死对象腾出来的空间怎么用">GC 的第二个核心问题: 死对象腾出来的空间怎么用</h2>
+<p>知道哪些对象死了之后, 物理上要怎么把空间释放出来? 这里有三种经典算法, 你之后看任何 GC 收集器, 都是这三种的组合或变种;</p>
+<h3 id="算法-a-mark-sweep-标记-清除">算法 A: Mark-Sweep (标记-清除)</h3>
+<p>最朴素的做法:</p>
+<ol>
+<li><strong>Mark</strong>: 跑一次可达性分析, 把活对象打上 “alive” 标签;</li>
+<li><strong>Sweep</strong>: 扫整个 heap, 没打标签的当垃圾就地标为空闲, 加入一个&quot;空闲块链表&quot;;</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>优点</th>
+<th>缺点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>实现简单</td>
+<td><strong>产生碎片</strong>, 空闲块零碎, 大对象分不出连续空间</td>
+</tr>
+<tr>
+<td>不需要搬对象, 引用地址不变</td>
+<td>分配新对象时还得维护空闲链表, 慢</td>
+</tr>
+</tbody>
+</table>
+<h3 id="算法-b-mark-compact-标记-压缩">算法 B: Mark-Compact (标记-压缩)</h3>
+<p>为了解决碎片问题:</p>
+<ol>
+<li><strong>Mark</strong>: 同上;</li>
+<li><strong>Compact</strong>: 把所有活对象<strong>搬到 heap 一端</strong>, 压实成一块连续区域, 后面整段都是空闲, 直接拿指针往后顺撸就能分配;</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>优点</th>
+<th>缺点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>没有碎片, 分配只要 bump 一个 pointer</td>
+<td>搬对象要重写所有指向它们的引用, 慢</td>
+</tr>
+<tr>
+<td>大对象分配天然友好</td>
+<td>搬动期间需要保证没人在读旧地址 — STW 必要性</td>
+</tr>
+</tbody>
+</table>
+<h3 id="算法-c-copying-复制">算法 C: Copying (复制)</h3>
+<p>针对&quot;大部分对象死得快&quot;这个观察的特化做法:</p>
+<ol>
+<li>把空间分成两半 <code>From</code> 和 <code>To</code>;</li>
+<li>平时只在 <code>From</code> 里分配;</li>
+<li>GC 触发时, 把 <code>From</code> 里所有<strong>活</strong>对象一次性复制到 <code>To</code>, 然后 <code>From</code> 整片清空;</li>
+<li>角色互换, 下次 GC 把 <code>To</code> 当 <code>From</code>;</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>优点</th>
+<th>缺点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>只关心活对象, 死对象一个都不碰, 速度极快</td>
+<td><strong>永远只能用一半空间</strong>, 浪费</td>
+</tr>
+<tr>
+<td>复制完天然连续, 没有碎片</td>
+<td>活对象多的时候反而很亏</td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键洞察</strong>: 如果一个区域 90% 都是死对象, copying 就只搬 10%, 极其便宜; 反过来如果 90% 都是活的, copying 就退化成&quot;白搬一遍&quot;; 所以 copying 适合<strong>死亡率高</strong>的区域 — 这就引出了下一节;</p>
+<h2 id="分代假设-gc-设计的最大杠杆">分代假设: GC 设计的最大杠杆</h2>
+<h3 id="经验观察">经验观察</h3>
+<p>工业界几十年的统计反复确认两条规律:</p>
+<ol>
+<li><strong>绝大多数对象出生没多久就死了</strong> (临时变量, 中间结果, builder 对象 …);</li>
+<li><strong>活过一段时间的对象, 大概率会继续活很久</strong> (单例, 缓存, 长生命周期容器 …);</li>
+</ol>
+<p>这两条合起来叫 <strong>Generational Hypothesis (分代假设)</strong>; 如果它是真的, 那把整个 heap 一视同仁地扫显然亏 — 应该把&quot;刚出生&quot;和&quot;活很久&quot;的对象放在不同区域, <strong>用不同策略</strong>对待;</p>
+<h3 id="hotspot-heap-的分代布局">HotSpot heap 的分代布局</h3>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">┌─────────────────────────────────────────────────────────────────┐</span><br><span class="line">│                         Java Heap                                │</span><br><span class="line">├──────────────────────────┬─────────────────────┬─────────────────┤</span><br><span class="line">│   Young Generation        │   Old / Tenured     │   Metaspace     │</span><br><span class="line">│   (新对象出生地)           │   (老兵养老院)        │   (Class 元数据) │</span><br><span class="line">│                           │                      │                 │</span><br><span class="line">│   Eden + S0 + S1          │   一整块连续区域      │   不在 heap 里   │</span><br><span class="line">│   死亡率极高              │   死亡率低            │   几乎不变       │</span><br><span class="line">│   → 用 Copying            │   → 用 Mark-Compact  │   只在卸载类时清  │</span><br><span class="line">│   清扫频繁但很便宜          │   清扫罕见但很贵      │                 │</span><br><span class="line">└──────────────────────────┴─────────────────────┴─────────────────┘</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>Young Generation</strong> 内部又分 <code>Eden + Survivor 0 + Survivor 1</code> 三块, 这是 copying 算法的工程化变种, 把两块 To/From 改成一块 Eden 主分配区 + 两块小的 Survivor 互倒; 这样能让&quot;活了一两轮但还没那么老&quot;的对象有缓冲区, 不会一活下来就被搬到 Old;</li>
+<li><strong>Old Generation</strong> 容纳那些&quot;活过 N 次 Young GC&quot;的老兵; 这里活对象比例高, copying 不划算, 改用 Mark-Compact;</li>
+<li><strong>Metaspace</strong> 装的是 class 元数据 (字段表/方法表/常量池这种), 不是用户对象, 大多数应用启动后基本就稳定了, 所以这里 GC 极少;</li>
+</ul>
+<h3 id="young-gc-与-full-gc">Young GC 与 Full GC</h3>
+<p>由此自然产生两种 GC:</p>
+<table>
+<thead>
+<tr>
+<th>名字</th>
+<th>触发条件</th>
+<th>扫描范围</th>
+<th>速度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Young GC (Minor GC)</strong></td>
+<td>Young 区分配不出新对象</td>
+<td>只扫 Young</td>
+<td>快, ms 级</td>
+</tr>
+<tr>
+<td><strong>Full GC (Major GC)</strong></td>
+<td>Old 满了 / 显式 <code>System.gc()</code> / Metaspace 满</td>
+<td><strong>整个 heap</strong></td>
+<td>慢, 几十到几百 ms</td>
+</tr>
+</tbody>
+</table>
+<p>线上调优最重要的一条铁律: <strong>Full GC 越少越好</strong>, 因为 Full GC 一次几百 ms 的 STW 直接打穿 P99 延迟;</p>
+<div class="obsidian-callout callout-这一段的关键直觉" style="border-left: 4px solid #448aff; background: #448aff11; border-radius: 4px; padding: 0; margin: 1em 0;">
+  <div style="padding: 8px 16px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+    <span>📝</span> <span>这一段的关键直觉</span>
+  </div>
+  <div style="padding: 4px 16px 12px 16px;"><ul>
+<li>分代假设是一个<strong>观测出来的经验规律</strong>, 不是数学定理;</li>
+<li>它把 GC 从&quot;全 heap 一刀切&quot;变成&quot;小而快地扫年轻区, 偶尔慢一次扫整片&quot;, 这是数量级的优化;</li>
+<li>Young 区死得多 → copying 只搬活的, 极便宜;</li>
+<li>Old 区死得少 → mark-compact 整理碎片, 慢但不频繁;</li>
+</ul></div>
+</div>
+<h2 id="stw-为什么扫的时候必须停世界">STW: 为什么扫的时候必须停世界</h2>
+<p>到这里你可能会问: 为什么 GC 不能边跑边扫? 应用线程一边在改对象引用, GC 一边跟着扫不行吗?</p>
+<p>不行, 至少朴素版本不行, 想象这个场景:</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">GC 扫到 A 时:        A.next = B   ← B 被标记为活</span><br><span class="line">GC 还没扫到 B 时:    应用线程把 A.next 改成 C, B 不再被引用</span><br><span class="line">GC 继续扫:           B 仍然是 alive 标签 (但其实已经死了)</span><br><span class="line">                     C 没被扫到 (但其实是活的) ← 极端情况下被回收, 应用 crash</span><br></pre></td></tr></table></figure>
+<p>引用图在 GC 中途被改, 标记结果就不一致了; 最干脆的解法就是<strong>短暂冻住所有应用线程, 让引用图静止</strong>, 这就是 STW;</p>
+<p>STW 是一切朴素 GC 的根基, 所有现代低延迟 GC 都是在想办法<strong>缩短 STW</strong>, 而不是消灭它 — 通常少不了至少几次几毫秒级的 STW;</p>
+<h3 id="safepoint-stw-的实现机制">Safepoint: STW 的实现机制</h3>
+<p>JVM 不能粗暴地一个信号把线程钉死在任意指令上, 比如线程正卡在一行 native call 里, 你强行停了它内部数据结构可能不一致; JVM 的解法是 <strong>safepoint</strong>:</p>
+<ul>
+<li>JIT 编译出来的机器码里, 每隔几条指令就插入一个 “safepoint poll” — 类似 “老大喊停了吗?” 的小检查;</li>
+<li>JVM 想做 STW 时, 设一个全局 flag;</li>
+<li>每个线程跑到下一个 poll 时主动停下, 报告&quot;我到了&quot;;</li>
+<li><strong>所有线程都到 safepoint</strong> 之后, JVM 才正式开始干 GC 这种全局工作;</li>
+</ul>
+<p>这就解释了为什么&quot;Stopping threads took&quot;这个指标这么重要: 它衡量的是<strong>把所有线程拉到 safepoint 集合点的时间</strong>, 跟 GC 干活快不快无关; 如果某个线程卡在 native 调用或者被 OS 调度饿了, 整个 STW 都会被它拖长, 别的线程白等;</p>
+<h2 id="主流-jvm-gc-收集器的设计思路">主流 JVM GC 收集器的设计思路</h2>
+<p>下面这部分不展开实现细节, 只讲每一代收集器<strong>为什么这样设计</strong>, 看完你能用一句话总结每一种;</p>
+<table>
+<thead>
+<tr>
+<th>收集器</th>
+<th>设计思路一句话总结</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Serial GC</strong></td>
+<td>单线程, 简单到极致, STW 期间一颗核扫整个 heap</td>
+<td>小堆 (&lt;1 GB), 嵌入式, 单核环境</td>
+</tr>
+<tr>
+<td><strong>Parallel GC</strong></td>
+<td>把 Serial 的扫描多线程化, 减短 STW, 但仍是 STW</td>
+<td>看重吞吐, 不在意单次延迟</td>
+</tr>
+<tr>
+<td><strong>CMS (历史)</strong></td>
+<td>把 Old 区的 mark 阶段改成<strong>和应用并发跑</strong>, 牺牲 CPU 换更短 STW</td>
+<td>已废弃, JDK 9 deprecated</td>
+</tr>
+<tr>
+<td><strong>G1 GC</strong></td>
+<td>把 heap 切成大量等大小的 <strong>region</strong>, 每次只挑&quot;垃圾最多的几个&quot; 部分增量回收</td>
+<td>大堆 (4 GB+), 想要可控的 pause time</td>
+</tr>
+<tr>
+<td><strong>ZGC / Shenandoah</strong></td>
+<td><strong>几乎所有阶段都和应用并发</strong>, 只剩亚毫秒级 STW, 通过着色指针 / 读屏障搞定一致性</td>
+<td>TB 级堆, 极致低延迟</td>
+</tr>
+</tbody>
+</table>
+<h3 id="一些值得记住的设计转折点">一些值得记住的设计转折点</h3>
+<ol>
+<li><strong>Serial → Parallel</strong>: 简单的并行化, 多核时代红利;</li>
+<li><strong>Parallel → CMS</strong>: 第一次尝试&quot;边扫边跑&quot;, 但 CMS 的 mark-sweep 不做 compact, 长期有碎片问题, 最终被 G1 取代;</li>
+<li><strong>CMS → G1</strong>: 把&quot;大块区域&quot;改成&quot;很多小 region&quot;, 引入 <strong>可达性集合 (RSet)</strong> 跟踪跨 region 引用, 让 GC 可以局部回收, 不再是&quot;年轻代/老年代&quot;二元;</li>
+<li><strong>G1 → ZGC</strong>: 利用 64 位指针的高位插入颜色标记 (colored pointers), 配合<strong>读屏障</strong>让 GC 和应用并发跑得更彻底, STW 跌到亚毫秒;</li>
+</ol>
+<div class="obsidian-callout callout-不必死记" style="border-left: 4px solid #448aff; background: #448aff11; border-radius: 4px; padding: 0; margin: 1em 0;">
+  <div style="padding: 8px 16px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+    <span>📝</span> <span>不必死记</span>
+  </div>
+  <div style="padding: 4px 16px 12px 16px;"><p>不用记每个收集器的内部细节, 你只要记住一个趋势线: <strong>STW 占比一代比一代低, 代价是 GC 自己更复杂, 用更多 CPU 和更多元数据</strong>; 这是工程上的典型 tradeoff;</p></div>
+</div>
+<h2 id="一个-gc-事件长什么样">一个 GC 事件长什么样</h2>
+<p>JDK 11+ 的 unified log 格式, 一次 Young GC 大概长这样:</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[18:00:59.569][gc,start    ] GC(0) Pause Young (Allocation Failure)</span><br><span class="line">[18:00:59.589][gc,heap     ] GC(0) DefNew:   104960K -&gt; 7205K  (118016K)</span><br><span class="line">[18:00:59.589][gc,heap     ] GC(0) Tenured:  0K      -&gt; 0K     (262144K)</span><br><span class="line">[18:00:59.589][gc,metaspace] GC(0) Metaspace:12278K  -&gt; 12278K (1060864K)</span><br><span class="line">[18:00:59.589][gc          ] GC(0) Pause Young (Allocation Failure) 102M -&gt; 7M (371M) 20.116ms</span><br><span class="line">[18:00:59.589][gc,cpu      ] GC(0) User=0.01s Sys=0.01s Real=0.02s</span><br></pre></td></tr></table></figure>
+<p>逐行翻译:</p>
+<ul>
+<li><code>GC(0) Pause Young (Allocation Failure)</code>: 第 0 次 GC, 类型是 Young, 触发原因是 “Eden 分配新对象失败”;</li>
+<li><code>DefNew: 104960K -&gt; 7205K (118016K)</code>: Young 区从 102.5 MB 降到 7 MB, 容量 118 MB; 这一次 GC 干掉了约 95 MB 的死对象 (典型的高 Young 死亡率);</li>
+<li><code>Tenured: 0K -&gt; 0K</code>: Old 区没动, 因为这是首次 GC, 还没人晋升过去;</li>
+<li><code>Metaspace: 12278K -&gt; 12278K</code>: 元数据区也没动;</li>
+<li><code>... 20.116ms</code>: <strong>应用被冻了 20 ms</strong> — 这就是这次 GC 对业务的真实代价;</li>
+<li><code>User=0.01s Sys=0.01s Real=0.02s</code>: User+Sys ≈ Real, 说明这次 GC 是单线程跑的 (Serial GC 的特征);</li>
+</ul>
+<p>如果是 Parallel GC, 你会看到 User+Sys &gt; Real, 因为多线程并行;</p>
+<h2 id="调优时该盯什么指标">调优时该盯什么指标</h2>
+<p>绝大多数线上 GC 调优问题不是&quot;算法不够好&quot;, 而是&quot;参数没配对&quot;; 常见的几个可观测信号:</p>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>含义</th>
+<th>红线建议</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>STW 累计占比</strong></td>
+<td>单位时间应用被冻多久 / 总时长</td>
+<td>&lt; 5%; 超过 10% 严重</td>
+</tr>
+<tr>
+<td><strong>单次 STW 最大值</strong></td>
+<td>max pause</td>
+<td>看业务 SLA, 一般 &lt; 200 ms</td>
+</tr>
+<tr>
+<td><strong>Young GC 频率</strong></td>
+<td>每秒几次</td>
+<td>太频繁说明 Young 太小</td>
+</tr>
+<tr>
+<td><strong>Full GC 频率</strong></td>
+<td>每分钟几次</td>
+<td>理想 0; 出现就要查 Old 是不是泄漏</td>
+</tr>
+<tr>
+<td><strong>晋升速率</strong></td>
+<td>单位时间从 Young 进 Old 的字节数</td>
+<td>越低越好, 高了说明对象太早被升老</td>
+</tr>
+</tbody>
+</table>
+<p>调优思路上有两个互相打架的目标 — <strong>吞吐 (throughput) vs 延迟 (latency)</strong>, 不可兼得:</p>
+<ul>
+<li>想要<strong>吞吐</strong>最大: 用 Parallel GC, 让 STW 集中爆发, GC 期间多核全速干, 总 GC 时间最短;</li>
+<li>想要<strong>延迟</strong>稳定: 用 G1 / ZGC, 接受 GC 用更多 CPU 和内存, 换 STW 极短;</li>
+</ul>
+<p>业务方向决定选哪个, 比如:</p>
+<ul>
+<li><strong>离线批处理 / 大数据计算</strong> → 吞吐优先, Parallel GC;</li>
+<li><strong>在线请求服务 / 交易系统</strong> → 延迟优先, G1 起步, 严苛场景上 ZGC;</li>
+</ul>
+<div class="obsidian-callout callout-论文主流观点总结" style="border-left: 4px solid #448aff; background: #448aff11; border-radius: 4px; padding: 0; margin: 1em 0;">
+  <div style="padding: 8px 16px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+    <span>📝</span> <span>论文主流观点总结</span>
+  </div>
+  <div style="padding: 4px 16px 12px 16px;"><p>把整篇浓缩成几句, JVM GC 的设计思路可以总结为:</p>
+<ol>
+<li>用<strong>可达性分析</strong>代替引用计数, 从 GC Roots 出发遍历, 自然解决循环引用;</li>
+<li>用<strong>分代假设</strong>把 heap 分成 Young / Old, 不同区域用不同算法 (copying / mark-compact);</li>
+<li><strong>STW 是不可避免的</strong>, 现代 GC 的全部工程努力都在缩短 STW, 不是消灭它;</li>
+<li><strong>Safepoint</strong> 是 STW 的实际实现机制, 拉所有线程到 safepoint 的时间是独立信号, 跟 GC 算法快不快无关;</li>
+<li>收集器演进趋势: Serial → Parallel → CMS → G1 → ZGC, 每一代都在用更复杂的内部结构换更短的 STW;</li>
+<li>调优本质是在<strong>吞吐和延迟之间挑一个</strong>, 别想两个都要;</li>
+</ol></div>
+</div>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">Yuchen You (Wesley)</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2026/04/25/pl/java/1.%20JVM%20GC%20%E5%B7%A5%E4%BD%9C%E6%80%9D%E8%B7%AF/">http://example.com/2026/04/25/pl/java/1.%20JVM%20GC%20%E5%B7%A5%E4%BD%9C%E6%80%9D%E8%B7%AF/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/pl/">pl</a><a class="post-meta__tags" href="/tags/java/">java</a><a class="post-meta__tags" href="/tags/jvm/">jvm</a><a class="post-meta__tags" href="/tags/gc/">gc</a></div><div class="post_share"><div class="social-share" data-image="/img/me_new.jpeg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2026/04/25/network/6.%20Unix%20ping%20%E4%B8%8E%20ICMP%20%E5%8D%8F%E8%AE%AE/" title="6. Unix ping 与 ICMP 协议"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Next</div><div class="next_info">6. Unix ping 与 ICMP 协议</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/me_new.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Yuchen You (Wesley)</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">107</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">34</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">6</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/1WesleyYou"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/1Wesleyyou" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yuchenxr@umich.edu" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://www.linkedin.com/in/yuchen-you-a74940314/?locale=en_US" target="_blank" title="LinkedIn"><i class="fab fa-linkedin" style="color: #4a4dbe;"></i></a><a class="social-icon" href="/Yuchen_CV.pdf" target="_blank" title="CV"><i class="fas fa-address-card" style="color: #251456;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E7%BD%AE-%E4%B8%BA%E4%BB%80%E4%B9%88-java-%E9%9C%80%E8%A6%81-gc"><span class="toc-number">1.</span> <span class="toc-text">前置: 为什么 Java 需要 GC</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#gc-%E7%9A%84%E7%AC%AC%E4%B8%80%E4%B8%AA%E6%A0%B8%E5%BF%83%E9%97%AE%E9%A2%98-%E6%80%8E%E4%B9%88%E5%88%A4%E6%96%AD%E5%AF%B9%E8%B1%A1%E6%AD%BB%E4%BA%86"><span class="toc-number">2.</span> <span class="toc-text">GC 的第一个核心问题: 怎么判断对象死了</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%83%B3%E6%B3%95-1-%E5%BC%95%E7%94%A8%E8%AE%A1%E6%95%B0-reference-counting"><span class="toc-number">2.1.</span> <span class="toc-text">想法 1: 引用计数 (Reference Counting)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%83%B3%E6%B3%95-2-%E5%8F%AF%E8%BE%BE%E6%80%A7%E5%88%86%E6%9E%90-reachability-analysis"><span class="toc-number">2.2.</span> <span class="toc-text">想法 2: 可达性分析 (Reachability Analysis)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#gc-%E7%9A%84%E7%AC%AC%E4%BA%8C%E4%B8%AA%E6%A0%B8%E5%BF%83%E9%97%AE%E9%A2%98-%E6%AD%BB%E5%AF%B9%E8%B1%A1%E8%85%BE%E5%87%BA%E6%9D%A5%E7%9A%84%E7%A9%BA%E9%97%B4%E6%80%8E%E4%B9%88%E7%94%A8"><span class="toc-number">3.</span> <span class="toc-text">GC 的第二个核心问题: 死对象腾出来的空间怎么用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AE%97%E6%B3%95-a-mark-sweep-%E6%A0%87%E8%AE%B0-%E6%B8%85%E9%99%A4"><span class="toc-number">3.1.</span> <span class="toc-text">算法 A: Mark-Sweep (标记-清除)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AE%97%E6%B3%95-b-mark-compact-%E6%A0%87%E8%AE%B0-%E5%8E%8B%E7%BC%A9"><span class="toc-number">3.2.</span> <span class="toc-text">算法 B: Mark-Compact (标记-压缩)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AE%97%E6%B3%95-c-copying-%E5%A4%8D%E5%88%B6"><span class="toc-number">3.3.</span> <span class="toc-text">算法 C: Copying (复制)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E4%BB%A3%E5%81%87%E8%AE%BE-gc-%E8%AE%BE%E8%AE%A1%E7%9A%84%E6%9C%80%E5%A4%A7%E6%9D%A0%E6%9D%86"><span class="toc-number">4.</span> <span class="toc-text">分代假设: GC 设计的最大杠杆</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%8F%E9%AA%8C%E8%A7%82%E5%AF%9F"><span class="toc-number">4.1.</span> <span class="toc-text">经验观察</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#hotspot-heap-%E7%9A%84%E5%88%86%E4%BB%A3%E5%B8%83%E5%B1%80"><span class="toc-number">4.2.</span> <span class="toc-text">HotSpot heap 的分代布局</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#young-gc-%E4%B8%8E-full-gc"><span class="toc-number">4.3.</span> <span class="toc-text">Young GC 与 Full GC</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#stw-%E4%B8%BA%E4%BB%80%E4%B9%88%E6%89%AB%E7%9A%84%E6%97%B6%E5%80%99%E5%BF%85%E9%A1%BB%E5%81%9C%E4%B8%96%E7%95%8C"><span class="toc-number">5.</span> <span class="toc-text">STW: 为什么扫的时候必须停世界</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#safepoint-stw-%E7%9A%84%E5%AE%9E%E7%8E%B0%E6%9C%BA%E5%88%B6"><span class="toc-number">5.1.</span> <span class="toc-text">Safepoint: STW 的实现机制</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BB%E6%B5%81-jvm-gc-%E6%94%B6%E9%9B%86%E5%99%A8%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%80%9D%E8%B7%AF"><span class="toc-number">6.</span> <span class="toc-text">主流 JVM GC 收集器的设计思路</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E4%BA%9B%E5%80%BC%E5%BE%97%E8%AE%B0%E4%BD%8F%E7%9A%84%E8%AE%BE%E8%AE%A1%E8%BD%AC%E6%8A%98%E7%82%B9"><span class="toc-number">6.1.</span> <span class="toc-text">一些值得记住的设计转折点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E4%B8%AA-gc-%E4%BA%8B%E4%BB%B6%E9%95%BF%E4%BB%80%E4%B9%88%E6%A0%B7"><span class="toc-number">7.</span> <span class="toc-text">一个 GC 事件长什么样</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B0%83%E4%BC%98%E6%97%B6%E8%AF%A5%E7%9B%AF%E4%BB%80%E4%B9%88%E6%8C%87%E6%A0%87"><span class="toc-number">8.</span> <span class="toc-text">调优时该盯什么指标</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/04/25/pl/java/1.%20JVM%20GC%20%E5%B7%A5%E4%BD%9C%E6%80%9D%E8%B7%AF/" title="1. JVM GC 工作思路">1. JVM GC 工作思路</a><time datetime="2026-04-25T06:30:00.000Z" title="Created 2026-04-25 14:30:00">2026-04-25</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/04/25/network/6.%20Unix%20ping%20%E4%B8%8E%20ICMP%20%E5%8D%8F%E8%AE%AE/" title="6. Unix ping 与 ICMP 协议">6. Unix ping 与 ICMP 协议</a><time datetime="2026-04-25T05:50:00.000Z" title="Created 2026-04-25 13:50:00">2026-04-25</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/04/25/searchengine/Crawl-Me-Maybe%20Tech%20Report/" title="Crawl-Me-Maybe Search Engine Tech Report">Crawl-Me-Maybe Search Engine Tech Report</a><time datetime="2026-04-25T05:35:04.000Z" title="Created 2026-04-25 13:35:04">2026-04-25</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/04/24/network/5.%20Docker%20%E7%BD%91%E7%BB%9C%E6%A0%88%E5%8D%8F%E8%AE%AE/" title="5. Docker 网络栈协议">5. Docker 网络栈协议</a><time datetime="2026-04-24T08:44:13.000Z" title="Created 2026-04-24 16:44:13">2026-04-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/04/23/agentsys/memory/MemGPT%20-%20Towards%20LLMs%20as%20Operating%20Systems/" title="MemGPT - Towards LLMs as Operating Systems">MemGPT - Towards LLMs as Operating Systems</a><time datetime="2026-04-24T01:49:35.836Z" title="Created 2026-04-24 09:49:35">2026-04-24</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2026 By Yuchen You (Wesley)</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">welcome to my blog!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/fireworks.min.js"></script><script defer="defer" id="fluttering_ribbon" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/canvas-fluttering-ribbon.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading the Database</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="Search for Posts" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=4.13.0"></script></div></div></body></html>
