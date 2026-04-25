@@ -1,0 +1,12 @@
+/* === Post page only: widen content area === */
+/* Post pages have .post class on #body-wrap */
+@media screen and (min-width: 900px) {
+  .post #content-inner {
+    max-width: 1400px;
+  }
+
+  .post #aside-content {
+    width: 260px;
+    min-width: 260px;
+  }
+}
