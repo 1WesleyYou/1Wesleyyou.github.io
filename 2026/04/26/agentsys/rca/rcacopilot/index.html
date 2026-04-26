@@ -1,0 +1,492 @@
+<!DOCTYPE html><html lang="en-US" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>RCACopilot - Automatic Root Cause Analysis via Large Language Models for Cloud Incidents | Yuchen You</title><meta name="author" content="Yuchen You (Wesley)"><meta name="copyright" content="Yuchen You (Wesley)"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="📝 术语别名       RCA: Root Cause Analysis, 根因分析, 找到事故的真正起因; OCE: On-Call Engineer, 轮值工程师, 收到告警的那个人; Handler: 一段事先写好的诊断流程, 由 OCE 编写, 系统按 alert 类型匹配执行; Diagnostic Information: handler 收集到的所有运行时证据 (">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RCACopilot - Automatic Root Cause Analysis via Large Language Models for Cloud Incidents">
+<meta property="og:url" content="http://example.com/2026/04/26/agentsys/rca/rcacopilot/index.html">
+<meta property="og:site_name" content="Yuchen You">
+<meta property="og:description" content="📝 术语别名       RCA: Root Cause Analysis, 根因分析, 找到事故的真正起因; OCE: On-Call Engineer, 轮值工程师, 收到告警的那个人; Handler: 一段事先写好的诊断流程, 由 OCE 编写, 系统按 alert 类型匹配执行; Diagnostic Information: handler 收集到的所有运行时证据 (">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/img/me_new.jpeg">
+<meta property="article:published_time" content="2026-04-26T19:00:41.587Z">
+<meta property="article:modified_time" content="2026-04-26T19:00:41.588Z">
+<meta property="article:author" content="Yuchen You (Wesley)">
+<meta property="article:tag" content="agentsys">
+<meta property="article:tag" content="rca">
+<meta property="article:tag" content="llm">
+<meta property="article:tag" content="cloud_incidents">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/me_new.jpeg"><link rel="shortcut icon" href="/img/hackerrank.svg"><link rel="canonical" href="http://example.com/2026/04/26/agentsys/rca/rcacopilot/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'RCACopilot - Automatic Root Cause Analysis via Large Language Models for Cloud Incidents',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-04-27 03:00:41'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 7.2.0"><link href="https://cdn.bootcss.com/KaTeX/0.11.1/katex.min.css" rel="stylesheet" />
+<style>
+.obsidian-callout { margin: 1em 0; }
+.obsidian-callout blockquote { border-left: none; margin: 0; padding: 0; background: transparent; }
+.obsidian-callout p { margin: 0.4em 0; }
+.obsidian-callout details > summary { list-style: none; }
+.obsidian-callout details > summary::-webkit-details-marker { display: none; }
+</style></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/me_new.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">108</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">37</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">6</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/math_master.jpeg')"><nav id="nav"><span id="blog-info"><a href="/" title="Yuchen You"><img class="site-icon" src="/img/avatar.png"/><span class="site-name">Yuchen You</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> Search</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">RCACopilot - Automatic Root Cause Analysis via Large Language Models for Cloud Incidents</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2026-04-26T19:00:41.587Z" title="Created 2026-04-27 03:00:41">2026-04-27</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-04-26T19:00:41.588Z" title="Updated 2026-04-27 03:00:41">2026-04-27</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/agentsys/">agentsys</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="RCACopilot - Automatic Root Cause Analysis via Large Language Models for Cloud Incidents"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><div class="obsidian-callout callout-术语别名" style="border-left: 4px solid #448aff; background: #448aff11; border-radius: 4px; padding: 0; margin: 1em 0;">
+  <div style="padding: 8px 16px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+    <span>📝</span> <span>术语别名</span>
+  </div>
+  <div style="padding: 4px 16px 12px 16px;"><ul>
+<li>RCA: Root Cause Analysis, 根因分析, 找到事故的真正起因;</li>
+<li>OCE: On-Call Engineer, 轮值工程师, 收到告警的那个人;</li>
+<li>Handler: 一段事先写好的诊断流程, 由 OCE 编写, 系统按 alert 类型匹配执行;</li>
+<li>Diagnostic Information: handler 收集到的所有运行时证据 (logs / metrics / traces / configs 等);</li>
+<li>CoT: Chain-of-Thought, 让 LLM 先一步步推理再下结论的 prompt 技巧;</li>
+<li>In-context Learning / Few-shot: 在 prompt 里给 LLM 几条相似历史例子作为参考;</li>
+</ul></div>
+</div>
+<h2 id="前置-cloud-incident-rca-是个什么问题">前置: cloud incident RCA 是个什么问题</h2>
+<p>云服务一旦出事 (latency 飙高、error rate 飙升、磁盘炸了、配置错了), 监控系统会在毫秒到秒级吐出一条 incident 警报, 然后<strong>人</strong>接手:</p>
+<ol>
+<li>OCE 起夜接到 page;</li>
+<li>翻 dashboard, 看 metrics 异常时间段;</li>
+<li>拉日志 (<code>kusto query</code> / KQL / Splunk / <code>grep</code>), 找 error pattern;</li>
+<li>看 trace, 定位到具体哪个 service 哪段调用挂了;</li>
+<li>形成假设, 在系统里验证;</li>
+<li>找到根因, 写报告, 决定 mitigation;</li>
+</ol>
+<p>这套流程<strong>慢、费眼睛、依赖经验</strong>; OCE 资深与否直接决定恢复时间; 而每个团队、每种 alert 又都有自己的诊断套路, 这种隐性知识很难规模化复用 — RCACopilot 想解决的就是这个;</p>
+<h2 id="前置-把-rca-自动化为什么不容易">前置: 把 RCA 自动化为什么不容易</h2>
+<p>直觉上你会想: 把日志和 metrics 都扔给 GPT, 让它推根因不就好了; 实际上不行, 主要三个原因:</p>
+<ol>
+<li><strong>LLM 不知道你的 telemetry 系统怎么查</strong>: 不同公司用 Kusto/Splunk/Prom/Loki/自研一堆, LLM 没法生成对的查询;</li>
+<li><strong>数据量太大</strong>: 一个事故关联的日志可以是 GB 级的, 直接灌 LLM token 预算炸穿;</li>
+<li><strong>诊断顺序也是知识</strong>: “先看 CPU 还是先看 GC, 看完不对再切到哪个 region” 这种 SOP 不是从日志能推出来的, 是 OCE 脑里的经验;</li>
+</ol>
+<p>所以纯 prompt-engineering 解决不了这事, 必须有一层<strong>确定性的诊断流程脚手架</strong>, LLM 才能在已经收齐证据的基础上做它擅长的事 — <strong>基于证据归因 + 自然语言解释</strong>;</p>
+<h2 id="论文定位">论文定位</h2>
+<p>RCACopilot 是一套<strong>部署在 Microsoft 内部的 on-call 系统</strong>, 把 OCE 的诊断 SOP 编码成可执行的 handler, handler 自动跑完后用 LLM 做最后一步根因分类与解释;</p>
+<p>设计上的关键判断: <strong>将&quot;取证据&quot;和&quot;做归因&quot;彻底分离, 取证据由人写的 handler 做 (确定性), 做归因由 LLM 做 (概率性)</strong>; 这是它跟一刀切的端到端 LLM 方案最大的不同;</p>
+<p>论文 claim 的最强结果: 在 Microsoft 真实一年的 incident 数据上达到 <strong>0.766</strong> 根因分类准确率, 而且诊断收集模块 (Stage 1) 在 MS 已经<strong>生产部署 4+ 年</strong>;</p>
+<h2 id="论文解决的核心问题">论文解决的核心问题</h2>
+<p>具体回答的是这几个问题:</p>
+<ol>
+<li>怎么把 OCE 的诊断 SOP 用一种<strong>可扩展、可让团队自己写</strong>的方式编码下来?</li>
+<li>handler 跑完拿到一堆 raw 数据, 怎么压缩成 LLM 能吃的形式?</li>
+<li>怎么让 LLM 借鉴<strong>历史相似 incident 的根因经验</strong>, 而不是从零推断?</li>
+<li>整套系统怎么部署到 Microsoft 真实生产并跑出工业可接受的准确率?</li>
+</ol>
+<h2 id="整体架构-两阶段四存储">整体架构: 两阶段四存储</h2>
+<p>整个系统横向分两阶段, 各有自己的输入输出, 中间用结构化 diagnostic info 过渡:</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">             Collection Stage                       Prediction Stage</span><br><span class="line">┌───────────────────────────────────┐    ┌───────────────────────────────────┐</span><br><span class="line">│                                   │    │                                   │</span><br><span class="line">│  Incident Parsing                 │    │  Incident Summarization (LLM)     │</span><br><span class="line">│       │                           │    │       │                           │</span><br><span class="line">│       ▼                           │    │       ▼                           │</span><br><span class="line">│  Handler Matching ◄─ Load handler │    │  FastText Embedding               │</span><br><span class="line">│       │                ┌────────┐ │    │       │                           │</span><br><span class="line">│       ▼                │ DB     │ │    │       ▼                           │</span><br><span class="line">│  Info. Collection ─────► (handler│ │    │  Neighbor Search ◄─ ┌──────────┐ │</span><br><span class="line">│  (handler 三种 action) │  + diag│ │    │  (top-K KNN)        │ Embedding│ │</span><br><span class="line">│                        │  info)  │ │    │       │              │ vector DB│ │</span><br><span class="line">│                        └────────┘ │    │       ▼              └──────────┘ │</span><br><span class="line">│                                   │    │  CoT Prompt → LLM → 根因 + 解释  │</span><br><span class="line">└─────────────────┬─────────────────┘    └─────────────────┬─────────────────┘</span><br><span class="line">                  │                                         │</span><br><span class="line">                  └───────► Diagnostic Information ─────────┘</span><br><span class="line">                                                            │</span><br><span class="line">                                                            ▼</span><br><span class="line">                                                           OCE</span><br></pre></td></tr></table></figure>
+<p>注意系统里有<strong>两个独立的存储</strong>:</p>
+<ul>
+<li>左边 Collection Stage 的 DB: 存所有团队写好的 handler 定义, 还存历次跑出来的诊断结果;</li>
+<li>右边 Prediction Stage 的 <strong>Embedding vector DB</strong>: 存历史 incident 的 FastText 向量, 用来做 KNN 检索;</li>
+</ul>
+<p>paper 没明说这两个 DB 的具体技术栈, 考虑到部署在 Microsoft, <strong>大概率是 Cosmos DB / Kusto 这种自家服务</strong>; vector DB 因为 FastText 300 维 + incident 量级在 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><msup><mn>0</mn><mn>3</mn></msup><mo>∼</mo><mn>1</mn><msup><mn>0</mn><mn>4</mn></msup></mrow><annotation encoding="application/x-tex">10^3 \sim 10^4</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord">1</span><span class="mord"><span class="mord">0</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">∼</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord">1</span><span class="mord"><span class="mord">0</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">4</span></span></span></span></span></span></span></span></span></span></span>, 实现上<strong>可以非常轻</strong>, 哪怕是个 in-memory FAISS index 都够;</p>
+<h2 id="stage-1-diagnostic-information-collection">Stage 1: Diagnostic Information Collection</h2>
+<p>这一阶段的目的是: <strong>拿到 incident alert 后, 系统化地把所有相关诊断证据按 SOP 收齐</strong>;</p>
+<h3 id="1-1-incident-parsing">1.1 Incident Parsing</h3>
+<p>incident 进系统的第一步是解析关键字段:</p>
+<ul>
+<li>ID</li>
+<li>Title</li>
+<li>OwningTenant / OwningTeam (谁的服务)</li>
+<li>Severity (优先级)</li>
+<li>Active 状态</li>
+</ul>
+<p>这一步纯字符串处理, 没什么 magic;</p>
+<h3 id="1-2-handler-matching">1.2 Handler Matching</h3>
+<p>按 OwningTeam + alert type 在 handler DB 里查到对应的 handler; <strong>一个团队会预先写一组 handler</strong>, 每个 handler 对应一种典型 alert (例如 “Latency spike on service X”, “Disk full on storage tier Y”);</p>
+<div class="obsidian-callout callout-关键设计决策" style="border-left: 4px solid #448aff; background: #448aff11; border-radius: 4px; padding: 0; margin: 1em 0;">
+  <div style="padding: 8px 16px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+    <span>📝</span> <span>关键设计决策</span>
+  </div>
+  <div style="padding: 4px 16px 12px 16px;"><p>handler 是 <strong>OCE 手写</strong>, 不是 AI 自动生成; 这是 paper 一个很务实的判断 — 团队自己最清楚要看什么, 不要把这个负担转嫁给 LLM; 而且这样系统永远是<strong>可解释、可审计</strong>的;</p></div>
+</div>
+<h3 id="1-3-information-collection-三种-action-原语">1.3 Information Collection: 三种 action 原语</h3>
+<p>handler 是一段控制流, 由三类 action 拼接而成:</p>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>干嘛</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Scope Switching</strong></td>
+<td>动态调整调查范围</td>
+<td>单 instance 失败 → 看整个 cluster, 单 region 异常 → 看 partner region 对照</td>
+</tr>
+<tr>
+<td><strong>Query</strong></td>
+<td>调外部系统拉数据, 输出 KV 对</td>
+<td>KQL 查日志, Prometheus 查 metrics, 查配置库, 查 trace 系统</td>
+</tr>
+<tr>
+<td><strong>Mitigation</strong></td>
+<td>直接采取行动</td>
+<td>重启服务, 切流量, 升级二线 oncall, 触发 failover</td>
+</tr>
+</tbody>
+</table>
+<div class="obsidian-callout callout-关键设计直觉" style="border-left: 4px solid #448aff; background: #448aff11; border-radius: 4px; padding: 0; margin: 1em 0;">
+  <div style="padding: 8px 16px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+    <span>📝</span> <span>关键设计直觉</span>
+  </div>
+  <div style="padding: 4px 16px 12px 16px;"><p>Query action 输出的是<strong>结构化 KV 对</strong>, 不是原始日志倾倒; 这意味着<strong>OCE 写 query 的时候已经做了一次粗压缩</strong> — KQL 里的 group by, summarize, take top N 这些操作把原始数据压成了 LLM 友好的形式; paper 没显式讲&quot;日志怎么 summarize&quot;, 因为它把这个责任交给了写 handler 的 OCE;</p></div>
+</div>
+<h3 id="1-4-三种-telemetry-信号在-handler-里的不同处理">1.4 三种 telemetry 信号在 handler 里的不同处理</h3>
+<p>这是 paper 没明说但能从设计推出的:</p>
+<table>
+<thead>
+<tr>
+<th>信号</th>
+<th>handler 端通常怎么处理</th>
+<th>进入 Stage 2 时的形态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Logs</strong></td>
+<td>KQL/Splunk 加 filter + group by + take top N</td>
+<td>半结构化 KV, 但仍可能含原始 lines</td>
+</tr>
+<tr>
+<td><strong>Metrics</strong></td>
+<td>Prom/Geneva 查询返回数字 (P99, count, rate)</td>
+<td>几乎是纯数字 KV</td>
+</tr>
+<tr>
+<td><strong>Traces</strong></td>
+<td>取关键 span 或 critical path</td>
+<td>带结构的 latency 拆解</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Logs 是最难处理的</strong>, 这就是为什么 Stage 2 第一步要再做一次 LLM-based summarization;</p>
+<h2 id="stage-2-root-cause-prediction">Stage 2: Root Cause Prediction</h2>
+<p>这一阶段的目的是: <strong>拿到诊断信息后, 借助历史经验推根因, 输出可读解释</strong>;</p>
+<h3 id="2-1-incident-summarization-llm-第一次出场">2.1 Incident Summarization (LLM 第一次出场)</h3>
+<p>handler 跑出来的 diagnostic info 经常 &gt; 2000 tokens, 不仅 token 预算吃紧, 而且<strong>人读起来都费劲</strong>; 所以这里有一道显式的 LLM-based summarization:</p>
+<ul>
+<li>输入: handler 输出的全量诊断信息;</li>
+<li>输出: <strong>约 120-140 词</strong>的 readable note;</li>
+<li>模型: 同一个 LLM (跟 prediction 阶段共用);</li>
+</ul>
+<p>这个 summary 后面会被两次使用:</p>
+<ol>
+<li>拿去做 embedding, 用于 KNN 检索;</li>
+<li>拼进 prediction prompt, 让 LLM 看到&quot;这次的简明病情&quot;;</li>
+</ol>
+<blockquote>
+<p>[!此处的小 tradeoff]</p>
+<p>同一个 LLM 既做 summarize 又做 predict, 第一次的偏差会传染给第二次; paper 没特别 mitigate 这一点, 是后续工作的口子;</p>
+</blockquote>
+<h3 id="2-2-embedding-vector-db-neighbor-search">2.2 Embedding + Vector DB + Neighbor Search</h3>
+<p>这是整个 RAG (retrieval-augmented generation) 流水的核心:</p>
+<ul>
+<li><strong>Embedding model</strong>: FastText, 输出约 300 维向量;</li>
+<li><strong>Distance</strong>: 欧几里得距离;</li>
+<li><strong>存储</strong>: Embedding vector DB (paper 没说具体产品);</li>
+<li><strong>检索</strong>: 找当前 incident 的 top-K 最近邻历史 incident;</li>
+</ul>
+<p>为什么用 FastText 而不是 GPT embedding 或 sentence-transformers:</p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>FastText</th>
+<th>GPT embedding</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>速度</td>
+<td>极快, 离线训完直接跑</td>
+<td>每次要调 API 或推理</td>
+</tr>
+<tr>
+<td>成本</td>
+<td>几乎为 0</td>
+<td>按 token 付费</td>
+</tr>
+<tr>
+<td>维度</td>
+<td>~300d, 内存友好</td>
+<td>~1500d 起</td>
+</tr>
+<tr>
+<td>准确率</td>
+<td>一般</td>
+<td>高</td>
+</tr>
+</tbody>
+</table>
+<p>paper 选 FastText 是个<strong>工程优先级判断</strong>: 这是一个频繁触发的内嵌系统, 不能每来一次 incident 就调一次 OpenAI; 准确率的损失通过后续 LLM 弥补;</p>
+<blockquote>
+<p>[!为什么不上重型 vector DB]</p>
+<p>Microsoft 一年的 incident 量虽然不小, 但<strong>单团队 / 单类 alert 下的历史 incident 通常在 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><msup><mn>0</mn><mn>3</mn></msup><mo>∼</mo><mn>1</mn><msup><mn>0</mn><mn>4</mn></msup></mrow><annotation encoding="application/x-tex">10^3 \sim 10^4</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord">1</span><span class="mord"><span class="mord">0</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">∼</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord">1</span><span class="mord"><span class="mord">0</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">4</span></span></span></span></span></span></span></span></span></span></span> 条</strong>; 加上 FastText 300 维, 一次 KNN 暴力算就 ms 级; 论文用了 vector DB 抽象, 但实现上完全不需要 Pinecone 这种托管服务, 一个 in-memory FAISS index 就够了;</p>
+</blockquote>
+<h3 id="2-3-chain-of-thought-prediction-llm-第二次出场">2.3 Chain-of-Thought Prediction (LLM 第二次出场)</h3>
+<p>最后一步把所有线索捏成 prompt 喂给 LLM:</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">Prompt 结构 (示意):</span><br><span class="line"></span><br><span class="line">  ### 当前 incident</span><br><span class="line">  Title: ...</span><br><span class="line">  OwningTeam: ...</span><br><span class="line">  Diagnostic Info Summary: &lt;120-140 词的 summary&gt;</span><br><span class="line"></span><br><span class="line">  ### 历史相似 incident 1 (距离 0.12)</span><br><span class="line">  Title: ...</span><br><span class="line">  Diagnostic Info: ...</span><br><span class="line">  Root Cause Category: &lt;label&gt;</span><br><span class="line">  OCE Notes: &lt;历史根因解释&gt;</span><br><span class="line"></span><br><span class="line">  ### 历史相似 incident 2 (距离 0.18)</span><br><span class="line">  ...</span><br><span class="line"></span><br><span class="line">  ### 历史相似 incident K (距离 0.31)</span><br><span class="line">  ...</span><br><span class="line"></span><br><span class="line">  ### 任务</span><br><span class="line">  请按照上面例子的思路, 一步步推理当前 incident 的根因类别;</span><br><span class="line">  如果以上历史 case 都不像, 请返回 &quot;Unseen Incident&quot;;</span><br><span class="line">  最终输出根因类别 + 解释;</span><br></pre></td></tr></table></figure>
+<p>这是标准的 <strong>few-shot in-context learning + Chain-of-Thought</strong>, 要点:</p>
+<ol>
+<li><strong>few-shot</strong>: top-K 历史相似 incident 当例子, 教 LLM “这种症状对应这种根因”;</li>
+<li><strong>CoT</strong>: 提示词里写 “step by step”, 让 LLM 先推导再下结论, 减少瞎猜;</li>
+<li><strong>Unseen 退路</strong>: 如果检索回来的 K 个都不相似, 显式允许 LLM 说 “我没见过这种, 兜底交给 OCE”;</li>
+</ol>
+<p>LLM 输出两块内容:</p>
+<ul>
+<li><strong>Root Cause Category</strong>: 一个离散标签, 从已有根因类别里选;</li>
+<li><strong>Explanatory Narrative</strong>: 一段自然语言解释, 给 OCE 看为什么是这个原因, 含 CoT 中间过程;</li>
+</ul>
+<h2 id="关键设计决策的-tradeoff">关键设计决策的 tradeoff</h2>
+<p>把这套架构里几个值得拎出来的判断列一下:</p>
+<table>
+<thead>
+<tr>
+<th>决策</th>
+<th>取舍</th>
+<th>paper 的回答</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>handler 谁写</td>
+<td>OCE 手写 vs LLM 自动生成</td>
+<td><strong>OCE 手写</strong>, 牺牲 generality 换可解释性和正确性</td>
+</tr>
+<tr>
+<td>数据怎么压缩</td>
+<td>规则 vs LLM-based summarization</td>
+<td><strong>handler-level 隐式压缩 + LLM-level 显式总结</strong>, 两层夹击</td>
+</tr>
+<tr>
+<td>Embedding model</td>
+<td>FastText vs GPT embedding</td>
+<td><strong>FastText</strong>, 牺牲一点准确率换速度和成本</td>
+</tr>
+<tr>
+<td>Vector DB</td>
+<td>自研 vs 现成</td>
+<td>paper 没说, 多半是 MS 内部存储</td>
+</tr>
+<tr>
+<td>Prediction model</td>
+<td>微调 vs 提示工程</td>
+<td><strong>纯 in-context learning</strong>, 不微调, 换模型零成本</td>
+</tr>
+<tr>
+<td>处理 Unseen</td>
+<td>强行猜 vs 显式 reject</td>
+<td><strong>显式 reject 选项</strong>, 放给 OCE 兜底</td>
+</tr>
+</tbody>
+</table>
+<p>这一套组合拳的共同主题是: <strong>能用确定性手段做的就不交给 LLM, LLM 只在最后一步做归因</strong>; 这是 LLM-for-Ops 这一类系统设计的一个示范模板;</p>
+<h2 id="评测亮点">评测亮点</h2>
+<p>paper 的评测部分主要打三件事:</p>
+<ol>
+<li><strong>准确率</strong>: 在一年真实 MS incident 上达到 <strong>0.766</strong> 根因分类准确率, 比纯 LLM baseline 高出 ~26 个百分点;</li>
+<li><strong>消融</strong>: 去掉 in-context learning (即不检索历史) 准确率明显下降, 验证 RAG 的必要性;</li>
+<li><strong>生产部署</strong>: Stage 1 (诊断收集) 已在 MS 跑了 <strong>4+ 年</strong>, 处理过大量真实事故 — 这是工业系统 paper 最硬的背书;</li>
+</ol>
+<h2 id="一些值得讨论的局限">一些值得讨论的局限</h2>
+<ul>
+<li><strong>Handler 质量上限决定整体上限</strong>: 如果 OCE 写的 KQL 没把关键信息查到, 后续 LLM 怎么也救不回来; 系统<strong>自动化的是执行</strong>, 不是诊断思路本身;</li>
+<li><strong>历史依赖</strong>: 全新类型的 incident (前所未见) 这个系统帮不上忙, 只能 fall back 到 OCE; 长期看是好事 — 它把&quot;重复劳动&quot;自动化了, 真新问题反正也得人来;</li>
+<li><strong>同一 LLM 做 summarize + predict</strong>: 错误传染没显式处理;</li>
+<li><strong>跨服务事件</strong>: 多个服务联动的复杂事故, 单一 handler 不够覆盖, paper 没深入讨论这种 case;</li>
+<li><strong>可复现性</strong>: paper 没公开 handler 模板、不公开具体后端、不公开 vector DB 产品, 想在外部完整复刻只能照思路重写一套;</li>
+</ul>
+<h2 id="复刻到-oss-栈的对应表">复刻到 OSS 栈的对应表</h2>
+<p>如果你想用开源工具搭一套类似系统, 大致的对应是:</p>
+<table>
+<thead>
+<tr>
+<th>RCACopilot 里</th>
+<th>开源等价</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Kusto / KQL (logs)</td>
+<td>Loki + LogQL</td>
+</tr>
+<tr>
+<td>Geneva (metrics)</td>
+<td>Prometheus + PromQL</td>
+</tr>
+<tr>
+<td>Geneva (traces)</td>
+<td>Tempo / Jaeger</td>
+</tr>
+<tr>
+<td>Handler DSL</td>
+<td>自定义 YAML / DAG, 或直接 Python</td>
+</tr>
+<tr>
+<td>FastText + 自研向量库</td>
+<td>sentence-transformers + FAISS / Chroma</td>
+</tr>
+<tr>
+<td>内部 LLM endpoint</td>
+<td>OpenAI / Azure OpenAI / 本地 vLLM</td>
+</tr>
+<tr>
+<td>OCE 手写 handler 的 UI</td>
+<td>自己撸一个 web form, 或用 Argo / n8n 这类工作流引擎</td>
+</tr>
+</tbody>
+</table>
+<div class="obsidian-callout callout-论文主流观点总结" style="border-left: 4px solid #448aff; background: #448aff11; border-radius: 4px; padding: 0; margin: 1em 0;">
+  <div style="padding: 8px 16px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+    <span>📝</span> <span>论文主流观点总结</span>
+  </div>
+  <div style="padding: 4px 16px 12px 16px;"><p>把 RCACopilot 的设计思路浓缩成几句, 它的主流观点可以总结为:</p>
+<ol>
+<li>把云事故 RCA 拆成两个性质不同的阶段: <strong>取证据 (确定性) + 做归因 (概率性)</strong>, 不要让 LLM 同时干这两件事;</li>
+<li>取证据这一步交给 <strong>OCE 手写 handler</strong>, 用 Scope Switching / Query / Mitigation 三类 action 拼出诊断 SOP, 不让 LLM 自动生成查询;</li>
+<li>handler 输出的诊断信息再用 <strong>LLM 自己做一道 summarization</strong> 压到 ~120 词, 解决 token 预算问题;</li>
+<li>用 <strong>FastText embedding + vector DB</strong> 检索 top-K 相似历史 incident, 走 RAG 把&quot;过往经验&quot;喂给 LLM;</li>
+<li>用 <strong>few-shot + Chain-of-Thought</strong> prompt 让 LLM 输出根因类别 + 解释, 同时保留 “Unseen” 退路给 OCE 兜底;</li>
+<li>整个系统选型上<strong>该轻就轻</strong> (FastText 而不是 GPT embed, 简单 KNN 而不是高级 ANN), 工程上不是炫技导向, 这是它能在 MS 跑 4+ 年的关键;</li>
+</ol></div>
+</div>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">Yuchen You (Wesley)</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2026/04/26/agentsys/rca/rcacopilot/">http://example.com/2026/04/26/agentsys/rca/rcacopilot/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/agentsys/">agentsys</a><a class="post-meta__tags" href="/tags/rca/">rca</a><a class="post-meta__tags" href="/tags/llm/">llm</a><a class="post-meta__tags" href="/tags/cloud-incidents/">cloud_incidents</a></div><div class="post_share"><div class="social-share" data-image="/img/me_new.jpeg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2026/04/25/pl/java/1.%20JVM%20GC%20%E5%B7%A5%E4%BD%9C%E6%80%9D%E8%B7%AF/" title="1. JVM GC 工作思路"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Next</div><div class="next_info">1. JVM GC 工作思路</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2026/04/23/agentsys/memory/MemGPT%20-%20Towards%20LLMs%20as%20Operating%20Systems/" title="MemGPT - Towards LLMs as Operating Systems"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-04-24</div><div class="title">MemGPT - Towards LLMs as Operating Systems</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/me_new.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Yuchen You (Wesley)</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">108</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">37</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">6</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/1WesleyYou"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/1Wesleyyou" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yuchenxr@umich.edu" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://www.linkedin.com/in/yuchen-you-a74940314/?locale=en_US" target="_blank" title="LinkedIn"><i class="fab fa-linkedin" style="color: #4a4dbe;"></i></a><a class="social-icon" href="/Yuchen_CV.pdf" target="_blank" title="CV"><i class="fas fa-address-card" style="color: #251456;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E7%BD%AE-cloud-incident-rca-%E6%98%AF%E4%B8%AA%E4%BB%80%E4%B9%88%E9%97%AE%E9%A2%98"><span class="toc-number">1.</span> <span class="toc-text">前置: cloud incident RCA 是个什么问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E7%BD%AE-%E6%8A%8A-rca-%E8%87%AA%E5%8A%A8%E5%8C%96%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E5%AE%B9%E6%98%93"><span class="toc-number">2.</span> <span class="toc-text">前置: 把 RCA 自动化为什么不容易</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BA%E6%96%87%E5%AE%9A%E4%BD%8D"><span class="toc-number">3.</span> <span class="toc-text">论文定位</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BA%E6%96%87%E8%A7%A3%E5%86%B3%E7%9A%84%E6%A0%B8%E5%BF%83%E9%97%AE%E9%A2%98"><span class="toc-number">4.</span> <span class="toc-text">论文解决的核心问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84-%E4%B8%A4%E9%98%B6%E6%AE%B5%E5%9B%9B%E5%AD%98%E5%82%A8"><span class="toc-number">5.</span> <span class="toc-text">整体架构: 两阶段四存储</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#stage-1-diagnostic-information-collection"><span class="toc-number">6.</span> <span class="toc-text">Stage 1: Diagnostic Information Collection</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-incident-parsing"><span class="toc-number">6.1.</span> <span class="toc-text">1.1 Incident Parsing</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-handler-matching"><span class="toc-number">6.2.</span> <span class="toc-text">1.2 Handler Matching</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-information-collection-%E4%B8%89%E7%A7%8D-action-%E5%8E%9F%E8%AF%AD"><span class="toc-number">6.3.</span> <span class="toc-text">1.3 Information Collection: 三种 action 原语</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-%E4%B8%89%E7%A7%8D-telemetry-%E4%BF%A1%E5%8F%B7%E5%9C%A8-handler-%E9%87%8C%E7%9A%84%E4%B8%8D%E5%90%8C%E5%A4%84%E7%90%86"><span class="toc-number">6.4.</span> <span class="toc-text">1.4 三种 telemetry 信号在 handler 里的不同处理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#stage-2-root-cause-prediction"><span class="toc-number">7.</span> <span class="toc-text">Stage 2: Root Cause Prediction</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-incident-summarization-llm-%E7%AC%AC%E4%B8%80%E6%AC%A1%E5%87%BA%E5%9C%BA"><span class="toc-number">7.1.</span> <span class="toc-text">2.1 Incident Summarization (LLM 第一次出场)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-embedding-vector-db-neighbor-search"><span class="toc-number">7.2.</span> <span class="toc-text">2.2 Embedding + Vector DB + Neighbor Search</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-chain-of-thought-prediction-llm-%E7%AC%AC%E4%BA%8C%E6%AC%A1%E5%87%BA%E5%9C%BA"><span class="toc-number">7.3.</span> <span class="toc-text">2.3 Chain-of-Thought Prediction (LLM 第二次出场)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E8%AE%BE%E8%AE%A1%E5%86%B3%E7%AD%96%E7%9A%84-tradeoff"><span class="toc-number">8.</span> <span class="toc-text">关键设计决策的 tradeoff</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%84%E6%B5%8B%E4%BA%AE%E7%82%B9"><span class="toc-number">9.</span> <span class="toc-text">评测亮点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E4%BA%9B%E5%80%BC%E5%BE%97%E8%AE%A8%E8%AE%BA%E7%9A%84%E5%B1%80%E9%99%90"><span class="toc-number">10.</span> <span class="toc-text">一些值得讨论的局限</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%8D%E5%88%BB%E5%88%B0-oss-%E6%A0%88%E7%9A%84%E5%AF%B9%E5%BA%94%E8%A1%A8"><span class="toc-number">11.</span> <span class="toc-text">复刻到 OSS 栈的对应表</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/04/26/agentsys/rca/rcacopilot/" title="RCACopilot - Automatic Root Cause Analysis via Large Language Models for Cloud Incidents">RCACopilot - Automatic Root Cause Analysis via Large Language Models for Cloud Incidents</a><time datetime="2026-04-26T19:00:41.587Z" title="Created 2026-04-27 03:00:41">2026-04-27</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/04/25/pl/java/1.%20JVM%20GC%20%E5%B7%A5%E4%BD%9C%E6%80%9D%E8%B7%AF/" title="1. JVM GC 工作思路">1. JVM GC 工作思路</a><time datetime="2026-04-25T06:30:00.000Z" title="Created 2026-04-25 14:30:00">2026-04-25</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/04/25/network/6.%20Unix%20ping%20%E4%B8%8E%20ICMP%20%E5%8D%8F%E8%AE%AE/" title="6. Unix ping 与 ICMP 协议">6. Unix ping 与 ICMP 协议</a><time datetime="2026-04-25T05:50:00.000Z" title="Created 2026-04-25 13:50:00">2026-04-25</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/04/25/searchengine/Crawl-Me-Maybe%20Tech%20Report/" title="Crawl-Me-Maybe Search Engine Tech Report">Crawl-Me-Maybe Search Engine Tech Report</a><time datetime="2026-04-25T05:35:04.000Z" title="Created 2026-04-25 13:35:04">2026-04-25</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/04/24/network/5.%20Docker%20%E7%BD%91%E7%BB%9C%E6%A0%88%E5%8D%8F%E8%AE%AE/" title="5. Docker 网络栈协议">5. Docker 网络栈协议</a><time datetime="2026-04-24T08:44:13.000Z" title="Created 2026-04-24 16:44:13">2026-04-24</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2026 By Yuchen You (Wesley)</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">welcome to my blog!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/fireworks.min.js"></script><script defer="defer" id="fluttering_ribbon" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/canvas-fluttering-ribbon.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading the Database</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="Search for Posts" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=4.13.0"></script></div></div></body></html>
