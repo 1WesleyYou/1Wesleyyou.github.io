@@ -1,0 +1,455 @@
+<!DOCTYPE html><html lang="en-US" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Onion - Identifying Incident-indicating Logs for Cloud Systems | Yuchen You</title><meta name="author" content="Yuchen You (Wesley)"><meta name="copyright" content="Yuchen You (Wesley)"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="📝 术语别名       II-log: Incident-Indicating Log, 真正能告诉你故障在哪的那批 log; Log clique: 一组高度相似 &#x2F; 频繁共现的 log template, 是 Onion 聚类的产物; Anomalous server: incident 时段触发了 alert 或 metric 异常的实例; Normal server:">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Onion - Identifying Incident-indicating Logs for Cloud Systems">
+<meta property="og:url" content="http://example.com/2026/04/26/agentsys/rca/onion/index.html">
+<meta property="og:site_name" content="Yuchen You">
+<meta property="og:description" content="📝 术语别名       II-log: Incident-Indicating Log, 真正能告诉你故障在哪的那批 log; Log clique: 一组高度相似 &#x2F; 频繁共现的 log template, 是 Onion 聚类的产物; Anomalous server: incident 时段触发了 alert 或 metric 异常的实例; Normal server:">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/img/me_new.jpeg">
+<meta property="article:published_time" content="2026-04-26T22:29:11.871Z">
+<meta property="article:modified_time" content="2026-04-26T22:29:11.872Z">
+<meta property="article:author" content="Yuchen You (Wesley)">
+<meta property="article:tag" content="agentsys">
+<meta property="article:tag" content="rca">
+<meta property="article:tag" content="cloud_incidents">
+<meta property="article:tag" content="log_analysis">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/me_new.jpeg"><link rel="shortcut icon" href="/img/hackerrank.svg"><link rel="canonical" href="http://example.com/2026/04/26/agentsys/rca/onion/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Onion - Identifying Incident-indicating Logs for Cloud Systems',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-04-27 06:29:11'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 7.2.0"><link href="https://cdn.bootcss.com/KaTeX/0.11.1/katex.min.css" rel="stylesheet" />
+<style>
+.obsidian-callout { margin: 1em 0; }
+.obsidian-callout blockquote { border-left: none; margin: 0; padding: 0; background: transparent; }
+.obsidian-callout p { margin: 0.4em 0; }
+.obsidian-callout details > summary { list-style: none; }
+.obsidian-callout details > summary::-webkit-details-marker { display: none; }
+</style></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/me_new.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">109</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">38</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">6</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/math_master.jpeg')"><nav id="nav"><span id="blog-info"><a href="/" title="Yuchen You"><img class="site-icon" src="/img/avatar.png"/><span class="site-name">Yuchen You</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> Search</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Onion - Identifying Incident-indicating Logs for Cloud Systems</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2026-04-26T22:29:11.871Z" title="Created 2026-04-27 06:29:11">2026-04-27</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-04-26T22:29:11.872Z" title="Updated 2026-04-27 06:29:11">2026-04-27</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/agentsys/">agentsys</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Onion - Identifying Incident-indicating Logs for Cloud Systems"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><div class="obsidian-callout callout-术语别名" style="border-left: 4px solid #448aff; background: #448aff11; border-radius: 4px; padding: 0; margin: 1em 0;">
+  <div style="padding: 8px 16px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+    <span>📝</span> <span>术语别名</span>
+  </div>
+  <div style="padding: 4px 16px 12px 16px;"><ul>
+<li>II-log: Incident-Indicating Log, 真正能告诉你故障在哪的那批 log;</li>
+<li>Log clique: 一组高度相似 / 频繁共现的 log template, 是 Onion 聚类的产物;</li>
+<li>Anomalous server: incident 时段触发了 alert 或 metric 异常的实例;</li>
+<li>Normal server: 同服务下未受影响的同伴实例;</li>
+<li>Bilateral: 双边对比, 这里指 anomalous 集 vs normal 集的对比;</li>
+</ul></div>
+</div>
+<h2 id="前置-为什么-raw-log-不能直接喂给-rca-系统">前置: 为什么 raw log 不能直接喂给 RCA 系统</h2>
+<p>云服务一次 incident 的 log 量级通常是<strong>百万到亿条</strong>, 真正与故障有因果关系的可能只有几十条; 中间夹着大量噪声:</p>
+<ul>
+<li>routine heartbeat;</li>
+<li>健康探针 (<code>GET /health 200</code>);</li>
+<li>周期性 batch / cron 任务的常规 log;</li>
+<li>跨实例都有的全局事件 (版本 reload, 集群配置 push);</li>
+<li>上下游服务的非关键 warning;</li>
+</ul>
+<p>如果直接把全量 log 倒给下游 (人或者 LLM 或者经典 RCA model), 信号会被噪声淹没; 所以<strong>先做一道 incident-indicating log 过滤是 RCA pipeline 的刚需</strong>;</p>
+<p>Onion 解决的就是这一步; 它<strong>不试图直接给出 root cause</strong>, 只回答一个更窄的问题:</p>
+<blockquote>
+<p>“在这堆 log 里, 哪几十条是真正跟这次事故相关的?”</p>
+</blockquote>
+<h2 id="论文定位">论文定位</h2>
+<p>Onion 是 <strong>Microsoft 内部生产部署</strong>的一个 log filter, 在 ESEC/FSE 2021 发出来; 它有几个工业系统 paper 的硬指标特征:</p>
+<ul>
+<li><strong>F1 = 0.95</strong> (在 MS 真实事故数据上);</li>
+<li><strong>百万级 log 几分钟跑完</strong> (单机 CPU);</li>
+<li><strong>不需要训练数据、不需要标注、没有 GPU 需求</strong>;</li>
+</ul>
+<p>这三个数字组合直接告诉你: 它<strong>不是 DL, 不是 trained model</strong>, 是<strong>纯经典统计 + 图论 + 聚类</strong>; 这是它能在生产里活得下去的关键 — 部署门槛低, 在线开销低, 可解释性高;</p>
+<p>Onion 的位置在 RCA pipeline 里非常清晰:</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">raw logs ──► [Onion] ──► incident-indicating logs ──► [downstream RCA]</span><br><span class="line">                                                              │</span><br><span class="line">                                                              ├─► 人类 OCE</span><br><span class="line">                                                              ├─► RCACopilot 类 LLM</span><br><span class="line">                                                              └─► 任何 root cause 分类器</span><br></pre></td></tr></table></figure>
+<p>它是<strong>前置过滤器</strong>, 不是 end-to-end RCA; 不要把它误读成&quot;输入 log 输出 root cause&quot;;</p>
+<h2 id="论文解决的核心问题">论文解决的核心问题</h2>
+<p>具体回答的问题是:</p>
+<ol>
+<li>怎么定义&quot;跟 incident 相关&quot;才能既精准又不依赖人工标注?</li>
+<li>怎么把&quot;判定相关&quot;这件事做到既快又稳, 适合工业流量?</li>
+<li>怎么处理&quot;流量自然波动 / 周期任务 / 版本上线&quot; 这些<strong>跟 incident 同时段但无关</strong>的噪声?</li>
+</ol>
+<h2 id="核心机制-1-三个-incident-indicating-准则-核心-insight">核心机制 1: 三个 incident-indicating 准则 (核心 insight)</h2>
+<p>这是 Onion 最有价值的方法论贡献, 把&quot;什么 log 才算 incident-indicating&quot; 拆成三个<strong>互相正交、各自打不同噪声</strong>的统计指标:</p>
+<h3 id="consistency-一致性">Consistency (一致性)</h3>
+<blockquote>
+<p>同类 incident 反复出现时, 这个 log 是不是反复出现?</p>
+</blockquote>
+<p>衡量: 一个 log template 在<strong>历史相似 incident 里的复现率</strong>;</p>
+<p>防的是什么:</p>
+<ul>
+<li><strong>偶发噪声</strong>: 某次 incident 凑巧出现一次的 log, Consistency 低, 不是真信号;</li>
+<li><strong>incident-specific quirks</strong>: 单次 incident 的特殊记录, 不能泛化;</li>
+</ul>
+<p>形式上类似:</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext>Consistency</mtext><mo stretchy="false">(</mo><mi>t</mi><mo stretchy="false">)</mo><mo>:</mo><mo>=</mo><mfrac><mrow><mi mathvariant="normal">#</mi><mo stretchy="false">{</mo><mtext>historical incidents 中含 template </mtext><mi>t</mi><mo stretchy="false">}</mo></mrow><mrow><mi mathvariant="normal">#</mi><mo stretchy="false">{</mo><mtext>historical incidents 总数</mtext><mo stretchy="false">}</mo></mrow></mfrac></mrow><annotation encoding="application/x-tex">\text{Consistency}(t) := \frac{\#\{\text{historical incidents 中含 template } t\}}{\#\{\text{historical incidents 总数}\}}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord text"><span class="mord">Consistency</span></span><span class="mopen">(</span><span class="mord mathdefault">t</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">:</span></span><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:2.363em;vertical-align:-0.936em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.427em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">#</span><span class="mopen">{</span><span class="mord text"><span class="mord">historical incidents </span><span class="mord cjk_fallback">总数</span></span><span class="mclose">}</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">#</span><span class="mopen">{</span><span class="mord text"><span class="mord">historical incidents </span><span class="mord cjk_fallback">中含</span><span class="mord"> template </span></span><span class="mord mathdefault">t</span><span class="mclose">}</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.936em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></p>
+<p>高 Consistency 的 log = “<strong>这种事故反复出现的指纹</strong>”;</p>
+<h3 id="impact-影响力">Impact (影响力)</h3>
+<blockquote>
+<p>这个 log 的出现规模和时间集中度够不够 prominent?</p>
+</blockquote>
+<p>衡量: log template 在 incident 时段的<strong>出现量级 × 时间集中程度</strong>;</p>
+<p>防的是什么:</p>
+<ul>
+<li><strong>低频偶发记录</strong>: 一次 incident 里只出现 2-3 次的 log, 即使 Consistency 高也大概率是噪声;</li>
+<li><strong>时间扩散的 log</strong>: 在 incident 时段均匀分布、看不出 burst 的 log, 跟 incident 关联弱;</li>
+</ul>
+<p>形式上像:</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext>Impact</mtext><mo stretchy="false">(</mo><mi>t</mi><mo stretchy="false">)</mo><mo>:</mo><mo>=</mo><mtext>count</mtext><mo stretchy="false">(</mo><mi>t</mi><mo separator="true">,</mo><mtext>incident window</mtext><mo stretchy="false">)</mo><mo>⋅</mo><mtext>burstiness</mtext><mo stretchy="false">(</mo><mi>t</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\text{Impact}(t) := \text{count}(t, \text{incident window}) \cdot \text{burstiness}(t)
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord text"><span class="mord">Impact</span></span><span class="mopen">(</span><span class="mord mathdefault">t</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">:</span></span><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord text"><span class="mord">count</span></span><span class="mopen">(</span><span class="mord mathdefault">t</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord text"><span class="mord">incident window</span></span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord text"><span class="mord">burstiness</span></span><span class="mopen">(</span><span class="mord mathdefault">t</span><span class="mclose">)</span></span></span></span></span></p>
+<p>burstiness 度量&quot;这些 log 是不是集中在很短一段时间爆发&quot;, 高 burstiness 意味着事件性强;</p>
+<p>高 Impact 的 log = “<strong>确实在 incident 时段被大量、集中触发</strong>”;</p>
+<h3 id="bilateral-difference-双边差异">Bilateral-Difference (双边差异) ⭐</h3>
+<blockquote>
+<p>这个 log 在 anomalous 实例上和 normal 实例上的频率差距大吗?</p>
+</blockquote>
+<p>衡量: 同一时段内, log template 在 <strong>anomalous server 集合上的频率</strong> 和在 <strong>normal server 集合上的频率</strong> 之间的差异;</p>
+<p>形式上:</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext>Bilateral-Diff</mtext><mo stretchy="false">(</mo><mi>t</mi><mo stretchy="false">)</mo><mo>:</mo><mo>=</mo><mi mathvariant="normal">∣</mi><msub><mtext>freq</mtext><mtext>anomalous</mtext></msub><mo stretchy="false">(</mo><mi>t</mi><mo stretchy="false">)</mo><mo>−</mo><msub><mtext>freq</mtext><mtext>normal</mtext></msub><mo stretchy="false">(</mo><mi>t</mi><mo stretchy="false">)</mo><mi mathvariant="normal">∣</mi></mrow><annotation encoding="application/x-tex">\text{Bilateral-Diff}(t) := |\text{freq}_{\text{anomalous}}(t) - \text{freq}_{\text{normal}}(t)|
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord text"><span class="mord">Bilateral-Diff</span></span><span class="mopen">(</span><span class="mord mathdefault">t</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">:</span></span><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">∣</span><span class="mord"><span class="mord text"><span class="mord">freq</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.24196799999999993em;"><span style="top:-2.4558600000000004em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord text mtight"><span class="mord mtight">anomalous</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.24414em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord mathdefault">t</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord text"><span class="mord">freq</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.24196799999999993em;"><span style="top:-2.4558600000000004em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord text mtight"><span class="mord mtight">normal</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.24414em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord mathdefault">t</span><span class="mclose">)</span><span class="mord">∣</span></span></span></span></span></p>
+<p>防的是什么 (这是 Onion 最有威力的设计):</p>
+<table>
+<thead>
+<tr>
+<th>噪声源</th>
+<th>为什么 Bilateral 能滤掉它</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>流量自然涨跌</strong></td>
+<td>周一上午全部实例 log 都涨, anomalous/normal 同步涨, 差为 0</td>
+</tr>
+<tr>
+<td><strong>batch / cron 任务</strong></td>
+<td>备份任务在所有实例上都跑, 抵消</td>
+</tr>
+<tr>
+<td><strong>版本上线</strong></td>
+<td>新格式日志在所有实例上都有, 抵消</td>
+</tr>
+<tr>
+<td><strong>全局配置 push</strong></td>
+<td>同样所有实例都有, 抵消</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>[!这就是 Bilateral 的精髓]</p>
+<p>Onion 用<strong>空间维度的对比</strong> (同时段不同实例) 替代 / 补充 <strong>时间维度的对比</strong> (同实例不同时段); 大量噪声会同时打在所有实例上, 空间对比让它们天然抵消, 留下来的差异才是 incident-specific 真信号;</p>
+</blockquote>
+<h3 id="三个准则的分工">三个准则的分工</h3>
+<p>这是为什么 Onion 用三个不是一个的核心:</p>
+<table>
+<thead>
+<tr>
+<th>准则</th>
+<th>防什么噪声</th>
+<th>单独够用吗</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Consistency</td>
+<td>偶发的 single-incident 噪声</td>
+<td>不够, 高频但跟事故无关的 log 也能高 Consistency</td>
+</tr>
+<tr>
+<td>Impact</td>
+<td>低频 / 时间扩散的非事件性 log</td>
+<td>不够, 周期性高频 log (cron) 也能高 Impact</td>
+</tr>
+<tr>
+<td>Bilateral-Diff</td>
+<td>同时段所有实例都有的全局噪声</td>
+<td>不够, 单实例独有的偶发 log 也能高 Bilateral</td>
+</tr>
+</tbody>
+</table>
+<p><strong>三者 AND 起来才能锁定真信号</strong>; 任何单一准则都有它打不到的噪声死角, 三者互补才能拿到 0.95 F1;</p>
+<h2 id="核心机制-2-incident-aware-representation">核心机制 2: Incident-aware Representation</h2>
+<p>这是 Onion 把 log 变成数值向量的方式, 关键判断: <strong>不是 word2vec, 不是学到的 embedding, 不需要训练</strong>;</p>
+<p>它本质上是<strong>带权 TF-IDF 类的统计向量</strong>, 但<strong>权重是 incident-aware 的</strong>;</p>
+<h3 id="朴素-tf-idf-不够用">朴素 TF-IDF 不够用</h3>
+<p>如果直接用 TF-IDF, 每个 log template 的权重只反映它在所有 log 里的&quot;罕见度&quot;; 这跟 incident 没关系 — 一些极罕见但跟事故无关的 log (例如某种 admin command 偶尔出现) 反而会被推到高权重;</p>
+<h3 id="incident-aware-的权重设计">Incident-aware 的权重设计</h3>
+<p>Onion 的&quot;incident-aware&quot;体现在权重项里<strong>显式带入了 incident 上下文</strong>, 大致包含这些维度:</p>
+<ul>
+<li>在 anomalous server 上的频率;</li>
+<li>在 normal server 上的频率;</li>
+<li>在 baseline (历史正常时段) 的频率;</li>
+<li>这些频率的相对比值 / 差值;</li>
+<li>可能再加 token 级别的 TF-IDF 风格分量;</li>
+</ul>
+<p>把这些组合成每个 template 的向量分量, 这个向量自然就<strong>对 incident-relevant 信号敏感</strong>, 对全局噪声 (在 anomalous 和 normal 上都高频的) 不敏感;</p>
+<div class="obsidian-callout callout-关键直觉" style="border-left: 4px solid #448aff; background: #448aff11; border-radius: 4px; padding: 0; margin: 1em 0;">
+  <div style="padding: 8px 16px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+    <span>📝</span> <span>关键直觉</span>
+  </div>
+  <div style="padding: 4px 16px 12px 16px;"><p>这套表示的关键不在用了什么 fancy 模型, 而在<strong>特征工程层面就把 incident 上下文编码进去</strong>; 所以下游聚类不需要再&quot;学&quot; incident 是什么, 它直接在已经&quot;incident-aware&quot;的空间里做几何运算就够;</p></div>
+</div>
+<h3 id="跟-word2vec-sentence-bert-的对比">跟 word2vec / sentence-bert 的对比</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>word2vec / SBERT</th>
+<th>Onion incident-aware repr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>是否需要训练</td>
+<td>需要</td>
+<td><strong>不需要</strong></td>
+</tr>
+<tr>
+<td>表示语义</td>
+<td>通用语义</td>
+<td><strong>incident 相关性</strong></td>
+</tr>
+<tr>
+<td>维度</td>
+<td>100-768</td>
+<td>可以很低 (~10-30 个统计特征)</td>
+</tr>
+<tr>
+<td>跨服务迁移</td>
+<td>好 (语义通用)</td>
+<td>好 (统计准则通用)</td>
+</tr>
+<tr>
+<td>推理速度</td>
+<td>慢 (向量计算 + ANN)</td>
+<td>快 (统计特征)</td>
+</tr>
+</tbody>
+</table>
+<p>Onion 选这条路是工业生产的合理判断: 准确率不亚于 (在 RCA-relevant 任务上甚至更优), 但部署成本低一个数量级;</p>
+<h2 id="核心机制-3-progressive-log-clique-algorithm">核心机制 3: Progressive Log Clique Algorithm</h2>
+<p>最后一步是把&quot;打分了的 template&quot; 聚类成有意义的事件单元;</p>
+<h3 id="为什么不直接-top-k-template">为什么不直接 top-K template</h3>
+<p>直接对所有 template 按三准则打分排序取 top-K 也能产出结果, 但有几个问题:</p>
+<ul>
+<li>同一个故障会触发<strong>一组</strong>相关 log (例如 connection pool exhausted 会同时引发&quot;wait for connection&quot;, “request timeout”, “pool size N reached”), 把它们当独立 entry 报给下游会<strong>重复占 token</strong>;</li>
+<li>单个 template 看起来 prominent, 跟它共现的其它 template 才能给出<strong>完整的故障故事</strong>;</li>
+</ul>
+<p>所以 Onion 把&quot;相关 template&quot;打包成 <strong>log clique</strong> 再处理;</p>
+<h3 id="什么是-log-clique">什么是 log clique</h3>
+<p>clique 是图论术语, 意思是一组<strong>两两都相邻</strong>的节点 — 在 Onion 里它意味着一组<strong>互相高度相关 / 频繁共现</strong>的 log template; 直觉上一个 clique 对应一个<strong>故障的 log 表现模式</strong>;</p>
+<h3 id="渐进式聚类怎么做">渐进式聚类怎么做</h3>
+<p>Onion 的&quot;progressive log clustering&quot;大概是这样的算法 (基于 paper 的描述推断):</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">初始状态: 每个 log template 自成一个单点 clique</span><br><span class="line">   │</span><br><span class="line">   ▼</span><br><span class="line">迭代:</span><br><span class="line">   1. 计算所有 clique 两两之间的相似度</span><br><span class="line">      (基于 incident-aware repr 向量距离 + 共现关系)</span><br><span class="line">   2. 找最相似的两个 clique, 合并</span><br><span class="line">   3. 检查合并后的 clique 是否仍满足&quot;clique&quot; 性质</span><br><span class="line">      (内部所有 template 仍互相强相关)</span><br><span class="line">   4. 若满足且代价低于阈值, 则合并; 否则停止扩张</span><br><span class="line">   │</span><br><span class="line">   ▼</span><br><span class="line">输出: 若干个稳定的 log clique</span><br></pre></td></tr></table></figure>
+<p>这是经典的 <strong>agglomerative hierarchical clustering</strong>, 加了 clique 性质约束作为停止条件; 整个过程<strong>不需要预设 K (cluster 数)</strong>, 这是它叫 “progressive” 的来源 — 自适应增长, 直到自然收敛;</p>
+<h3 id="contrast-analysis-on-cliques">Contrast Analysis on Cliques</h3>
+<p>clique 形成后, 在 clique 这个粒度上<strong>重新计算三个准则</strong>, 而不是 template 粒度:</p>
+<ul>
+<li>一个 clique 的 Consistency = 这一组 template 在历史 incident 里整体一致的程度;</li>
+<li>Impact = clique 内 template 总量 + 集中度;</li>
+<li>Bilateral-Diff = clique 在 anomalous vs normal server 上的整体差异;</li>
+</ul>
+<p>最后取 top-K cliques (K 通常 5-10), 这些 clique 内部的所有 template 就是<strong>输出的 incident-indicating logs</strong>;</p>
+<blockquote>
+<p>[!为什么 clique 比 template 更稳]</p>
+<p>单个 template 的统计可能因为采样波动而不稳, 一个 clique 包含多个 template, <strong>统计 ensemble 更稳健</strong>, 假阳性率显著低; 这是为什么 Onion 选择&quot;在 clique 上做 contrast&quot; 而不是&quot;在 template 上做 contrast&quot;;</p>
+</blockquote>
+<h2 id="完整-pipeline-走一遍">完整 pipeline 走一遍</h2>
+<p>把三个核心机制串起来:</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">incident 时段所有 raw logs + anomalous/normal server 划分</span><br><span class="line">        │</span><br><span class="line">        ▼</span><br><span class="line">Step 1: Log Parsing (Drain 之类, paper 没特别强调这步)</span><br><span class="line">   → templates + 参数</span><br><span class="line">        │</span><br><span class="line">        ▼</span><br><span class="line">Step 2: Incident-aware Representation</span><br><span class="line">   → 每个 template 一个 incident-context-aware 向量</span><br><span class="line">        │</span><br><span class="line">        ▼</span><br><span class="line">Step 3: Progressive Log Clique Construction</span><br><span class="line">   → 渐进式聚类得到若干稳定 clique</span><br><span class="line">        │</span><br><span class="line">        ▼</span><br><span class="line">Step 4: Three-criteria Contrast Analysis on Cliques</span><br><span class="line">   → 算 Consistency / Impact / Bilateral-Diff</span><br><span class="line">        │</span><br><span class="line">        ▼</span><br><span class="line">Step 5: Top-K Cliques 输出</span><br><span class="line">   → clique 内部所有 template = incident-indicating logs</span><br><span class="line">        │</span><br><span class="line">        ▼</span><br><span class="line">   交给下游 RCA 系统 (LLM / OCE / classifier)</span><br></pre></td></tr></table></figure>
+<p>整条 pipeline <strong>没有任何 trained model, 没有 LLM, 没有 GPU 依赖</strong>;</p>
+<h2 id="跟下游-rca-的衔接">跟下游 RCA 的衔接</h2>
+<p>Onion 的输出怎么进下游, 三种典型用法:</p>
+<table>
+<thead>
+<tr>
+<th>下游</th>
+<th>衔接方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>人类 OCE</strong></td>
+<td>top-K clique 直接展示在 dashboard, OCE 看几条 log 就能起诊断假设</td>
+</tr>
+<tr>
+<td><strong>RCACopilot 类 LLM</strong></td>
+<td>clique 输出 + metric + trace 拼成 prompt, LLM 推根因类别</td>
+</tr>
+<tr>
+<td><strong>传统 ML classifier</strong></td>
+<td>clique 的统计向量当 feature 喂给 SVM / Random Forest, 直接做分类</td>
+</tr>
+</tbody>
+</table>
+<p>我们设计的 single-call RCA pipeline 就属于第二种 — Layer 2a 的 Onion-style 过滤直接对接 LLM 的 prompt;</p>
+<h2 id="一些值得讨论的局限">一些值得讨论的局限</h2>
+<p><strong>对 anomalous/normal split 的强依赖</strong></p>
+<p>bilateral-diff 准则成立的前提是有可信的实例划分; 几个边界情形:</p>
+<ul>
+<li><strong>全军覆没</strong>: 所有实例都坏了, 没有 normal 集做对比, bilateral 退化, 只能靠 Consistency + Impact;</li>
+<li><strong>单实例服务</strong>: 没有同伴可比, bilateral 完全失效;</li>
+<li><strong>划分错了</strong>: 把一个 normal 实例当 anomalous (或反之), bilateral 计算被污染;</li>
+</ul>
+<p>paper 没特别讨论这些边界情形怎么 fallback;</p>
+<p><strong>对 Consistency 的历史依赖</strong></p>
+<p>Consistency 需要历史相似 incident 的 corpus, <strong>冷启动时 (新部署系统 / 新故障类型) 用不了</strong>; 退化为只剩 Impact + Bilateral;</p>
+<p><strong>Log Parsing 的质量上限</strong></p>
+<p>整套依赖前置的 log template 提取; 如果 Drain 把本该不同的 log 合并成同一个 template (under-clustering), 或者反过来 (over-clustering), Onion 后面再聪明也救不回来;</p>
+<p><strong>纯静态特征的局限</strong></p>
+<p>Onion 的特征是手工统计指标, 一些<strong>需要语义理解的细微差别</strong>它抓不到; 例如两条 log “Failed to connect to db1” 和 “Failed to connect to db2”, token 级别看起来都是同一类, 但实际上分别指向两个不同后端 — 学到的 embedding 能区分, Onion 的 TF-IDF 类表示可能不能;</p>
+<p><strong>没有 trace 信号</strong></p>
+<p>Onion 只看 log, 不利用 metric 也不利用 trace; 在多模态 RCA 时代这是一个明显遗漏 — 它要求自己单一信号源就解决问题, 给后续工作留了空间 (LLMRCA, GALA 都补上了多模态);</p>
+<div class="obsidian-callout callout-论文主流观点总结" style="border-left: 4px solid #448aff; background: #448aff11; border-radius: 4px; padding: 0; margin: 1em 0;">
+  <div style="padding: 8px 16px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+    <span>📝</span> <span>论文主流观点总结</span>
+  </div>
+  <div style="padding: 4px 16px 12px 16px;"><p>把 Onion 浓缩成几句, 它的主流观点可以总结为:</p>
+<ol>
+<li>云事故 RCA 的瓶颈不是&quot;找根因模型&quot;, 而是&quot;在百万 log 里<strong>先把噪声滤掉</strong>&quot; — 这个步骤独立成方法论值得做;</li>
+<li>用<strong>三个互相正交的统计准则</strong> (Consistency / Impact / Bilateral-Difference) 联合判断 incident-indicating, 任何单一准则都有死角, 三者 AND 起来覆盖率才够;</li>
+<li><strong>Bilateral-Difference 是最大的工程创新</strong>: 用同时段不同实例的空间对比, 替代易被流量波动 / 周期任务 / 版本上线干扰的纯时间对比;</li>
+<li>表示层用<strong>incident-aware 加权统计</strong>, 不用 word2vec 等学到的 embedding, 牺牲一点语义换巨大的部署优势 (零训练成本 + 单机 CPU 跑百万 log 几分钟);</li>
+<li>聚类层用 <strong>progressive agglomerative + clique 约束</strong>, 把单 template 的不稳统计 ensemble 成 clique 粒度, 假阳性大幅下降;</li>
+<li>Onion 是 <strong>filter 不是 classifier</strong>, 输出 incident-indicating logs 而非 root cause label, 跟下游任何 RCA 系统都好衔接 — 这是它能成为流水线中<strong>可复用模块</strong>的关键;</li>
+</ol></div>
+</div>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">Yuchen You (Wesley)</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2026/04/26/agentsys/rca/onion/">http://example.com/2026/04/26/agentsys/rca/onion/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/agentsys/">agentsys</a><a class="post-meta__tags" href="/tags/rca/">rca</a><a class="post-meta__tags" href="/tags/cloud-incidents/">cloud_incidents</a><a class="post-meta__tags" href="/tags/log-analysis/">log_analysis</a></div><div class="post_share"><div class="social-share" data-image="/img/me_new.jpeg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2026/04/26/agentsys/rca/rcacopilot/" title="RCACopilot - Automatic Root Cause Analysis via Large Language Models for Cloud Incidents"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Next</div><div class="next_info">RCACopilot - Automatic Root Cause Analysis via Large Language Models for Cloud Incidents</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2026/04/26/agentsys/rca/rcacopilot/" title="RCACopilot - Automatic Root Cause Analysis via Large Language Models for Cloud Incidents"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-04-27</div><div class="title">RCACopilot - Automatic Root Cause Analysis via Large Language Models for Cloud Incidents</div></div></a></div><div><a href="/2026/04/23/agentsys/memory/MemGPT%20-%20Towards%20LLMs%20as%20Operating%20Systems/" title="MemGPT - Towards LLMs as Operating Systems"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-04-24</div><div class="title">MemGPT - Towards LLMs as Operating Systems</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/me_new.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Yuchen You (Wesley)</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">109</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">38</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">6</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/1WesleyYou"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/1Wesleyyou" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yuchenxr@umich.edu" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://www.linkedin.com/in/yuchen-you-a74940314/?locale=en_US" target="_blank" title="LinkedIn"><i class="fab fa-linkedin" style="color: #4a4dbe;"></i></a><a class="social-icon" href="/Yuchen_CV.pdf" target="_blank" title="CV"><i class="fas fa-address-card" style="color: #251456;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E7%BD%AE-%E4%B8%BA%E4%BB%80%E4%B9%88-raw-log-%E4%B8%8D%E8%83%BD%E7%9B%B4%E6%8E%A5%E5%96%82%E7%BB%99-rca-%E7%B3%BB%E7%BB%9F"><span class="toc-number">1.</span> <span class="toc-text">前置: 为什么 raw log 不能直接喂给 RCA 系统</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BA%E6%96%87%E5%AE%9A%E4%BD%8D"><span class="toc-number">2.</span> <span class="toc-text">论文定位</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BA%E6%96%87%E8%A7%A3%E5%86%B3%E7%9A%84%E6%A0%B8%E5%BF%83%E9%97%AE%E9%A2%98"><span class="toc-number">3.</span> <span class="toc-text">论文解决的核心问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E6%9C%BA%E5%88%B6-1-%E4%B8%89%E4%B8%AA-incident-indicating-%E5%87%86%E5%88%99-%E6%A0%B8%E5%BF%83-insight"><span class="toc-number">4.</span> <span class="toc-text">核心机制 1: 三个 incident-indicating 准则 (核心 insight)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#consistency-%E4%B8%80%E8%87%B4%E6%80%A7"><span class="toc-number">4.1.</span> <span class="toc-text">Consistency (一致性)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#impact-%E5%BD%B1%E5%93%8D%E5%8A%9B"><span class="toc-number">4.2.</span> <span class="toc-text">Impact (影响力)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#bilateral-difference-%E5%8F%8C%E8%BE%B9%E5%B7%AE%E5%BC%82"><span class="toc-number">4.3.</span> <span class="toc-text">Bilateral-Difference (双边差异) ⭐</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E4%B8%AA%E5%87%86%E5%88%99%E7%9A%84%E5%88%86%E5%B7%A5"><span class="toc-number">4.4.</span> <span class="toc-text">三个准则的分工</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E6%9C%BA%E5%88%B6-2-incident-aware-representation"><span class="toc-number">5.</span> <span class="toc-text">核心机制 2: Incident-aware Representation</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%B4%E7%B4%A0-tf-idf-%E4%B8%8D%E5%A4%9F%E7%94%A8"><span class="toc-number">5.1.</span> <span class="toc-text">朴素 TF-IDF 不够用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#incident-aware-%E7%9A%84%E6%9D%83%E9%87%8D%E8%AE%BE%E8%AE%A1"><span class="toc-number">5.2.</span> <span class="toc-text">Incident-aware 的权重设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B7%9F-word2vec-sentence-bert-%E7%9A%84%E5%AF%B9%E6%AF%94"><span class="toc-number">5.3.</span> <span class="toc-text">跟 word2vec &#x2F; sentence-bert 的对比</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E6%9C%BA%E5%88%B6-3-progressive-log-clique-algorithm"><span class="toc-number">6.</span> <span class="toc-text">核心机制 3: Progressive Log Clique Algorithm</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E7%9B%B4%E6%8E%A5-top-k-template"><span class="toc-number">6.1.</span> <span class="toc-text">为什么不直接 top-K template</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-log-clique"><span class="toc-number">6.2.</span> <span class="toc-text">什么是 log clique</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B8%90%E8%BF%9B%E5%BC%8F%E8%81%9A%E7%B1%BB%E6%80%8E%E4%B9%88%E5%81%9A"><span class="toc-number">6.3.</span> <span class="toc-text">渐进式聚类怎么做</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#contrast-analysis-on-cliques"><span class="toc-number">6.4.</span> <span class="toc-text">Contrast Analysis on Cliques</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%8C%E6%95%B4-pipeline-%E8%B5%B0%E4%B8%80%E9%81%8D"><span class="toc-number">7.</span> <span class="toc-text">完整 pipeline 走一遍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B7%9F%E4%B8%8B%E6%B8%B8-rca-%E7%9A%84%E8%A1%94%E6%8E%A5"><span class="toc-number">8.</span> <span class="toc-text">跟下游 RCA 的衔接</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E4%BA%9B%E5%80%BC%E5%BE%97%E8%AE%A8%E8%AE%BA%E7%9A%84%E5%B1%80%E9%99%90"><span class="toc-number">9.</span> <span class="toc-text">一些值得讨论的局限</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/04/26/agentsys/rca/onion/" title="Onion - Identifying Incident-indicating Logs for Cloud Systems">Onion - Identifying Incident-indicating Logs for Cloud Systems</a><time datetime="2026-04-26T22:29:11.871Z" title="Created 2026-04-27 06:29:11">2026-04-27</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/04/26/agentsys/rca/rcacopilot/" title="RCACopilot - Automatic Root Cause Analysis via Large Language Models for Cloud Incidents">RCACopilot - Automatic Root Cause Analysis via Large Language Models for Cloud Incidents</a><time datetime="2026-04-26T19:09:34.054Z" title="Created 2026-04-27 03:09:34">2026-04-27</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/04/25/pl/java/1.%20JVM%20GC%20%E5%B7%A5%E4%BD%9C%E6%80%9D%E8%B7%AF/" title="1. JVM GC 工作思路">1. JVM GC 工作思路</a><time datetime="2026-04-25T06:30:00.000Z" title="Created 2026-04-25 14:30:00">2026-04-25</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/04/25/network/6.%20Unix%20ping%20%E4%B8%8E%20ICMP%20%E5%8D%8F%E8%AE%AE/" title="6. Unix ping 与 ICMP 协议">6. Unix ping 与 ICMP 协议</a><time datetime="2026-04-25T05:50:00.000Z" title="Created 2026-04-25 13:50:00">2026-04-25</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/04/25/searchengine/Crawl-Me-Maybe%20Tech%20Report/" title="Crawl-Me-Maybe Search Engine Tech Report">Crawl-Me-Maybe Search Engine Tech Report</a><time datetime="2026-04-25T05:35:04.000Z" title="Created 2026-04-25 13:35:04">2026-04-25</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2026 By Yuchen You (Wesley)</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">welcome to my blog!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/fireworks.min.js"></script><script defer="defer" id="fluttering_ribbon" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/canvas-fluttering-ribbon.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading the Database</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="Search for Posts" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=4.13.0"></script></div></div></body></html>
