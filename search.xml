@@ -24,9 +24,9 @@
             
             <tag> rca </tag>
             
-            <tag> cloud_incidents </tag>
-            
             <tag> log_analysis </tag>
+            
+            <tag> cloud_incidents </tag>
             
         </tags>
       
@@ -55,9 +55,9 @@
             
             <tag> rca </tag>
             
-            <tag> llm </tag>
-            
             <tag> cloud_incidents </tag>
+            
+            <tag> llm </tag>
             
         </tags>
       
@@ -304,9 +304,9 @@
             
             <tag> mlsys </tag>
             
-            <tag> cuda </tag>
-            
             <tag> gpu </tag>
+            
+            <tag> cuda </tag>
             
         </tags>
       
@@ -333,9 +333,9 @@
             
             <tag> mlsys </tag>
             
-            <tag> cuda </tag>
-            
             <tag> gpu </tag>
+            
+            <tag> cuda </tag>
             
         </tags>
       
@@ -455,9 +455,9 @@
       
         <tags>
             
-            <tag> database </tag>
-            
             <tag> distributed_sys </tag>
+            
+            <tag> database </tag>
             
         </tags>
       
@@ -674,11 +674,11 @@
             
             <tag> operating_system </tag>
             
+            <tag> container </tag>
+            
             <tag> kernel </tag>
             
             <tag> virtual_machine </tag>
-            
-            <tag> container </tag>
             
         </tags>
       
@@ -1060,9 +1060,9 @@
             
             <tag> operating_system </tag>
             
-            <tag> system_failure </tag>
-            
             <tag> chaos_system </tag>
+            
+            <tag> system_failure </tag>
             
         </tags>
       
@@ -1085,9 +1085,9 @@
             
             <tag> operating_system </tag>
             
-            <tag> system_failure </tag>
-            
             <tag> chaos_system </tag>
+            
+            <tag> system_failure </tag>
             
         </tags>
       
