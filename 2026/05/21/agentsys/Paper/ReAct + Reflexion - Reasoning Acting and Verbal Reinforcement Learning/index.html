@@ -1,0 +1,963 @@
+<!DOCTYPE html><html lang="en-US" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>ReAct + Reflexion - Reasoning Acting and Verbal Reinforcement Learning | Yuchen You</title><meta name="author" content="Yuchen You (Wesley)"><meta name="copyright" content="Yuchen You (Wesley)"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="[!联读黑称 &#x2F; 术语速查] ReAct 协议:  thought: 模型自言自语写出的 reasoning trace, 不出现在环境里 action: 模型对外发出的工具调用 &#x2F; 环境指令, 会被执行 observation: 工具或环境返回给模型的下一段输入 trajectory: thought →\rightarrow→ action →\rightarrow→ observation">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ReAct + Reflexion - Reasoning Acting and Verbal Reinforcement Learning">
+<meta property="og:url" content="http://example.com/2026/05/21/agentsys/Paper/ReAct%20+%20Reflexion%20-%20Reasoning%20Acting%20and%20Verbal%20Reinforcement%20Learning/index.html">
+<meta property="og:site_name" content="Yuchen You">
+<meta property="og:description" content="[!联读黑称 &#x2F; 术语速查] ReAct 协议:  thought: 模型自言自语写出的 reasoning trace, 不出现在环境里 action: 模型对外发出的工具调用 &#x2F; 环境指令, 会被执行 observation: 工具或环境返回给模型的下一段输入 trajectory: thought →\rightarrow→ action →\rightarrow→ observation">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/img/me_new.jpeg">
+<meta property="article:published_time" content="2026-05-21T08:09:00.514Z">
+<meta property="article:modified_time" content="2026-05-21T08:09:00.514Z">
+<meta property="article:author" content="Yuchen You (Wesley)">
+<meta property="article:tag" content="agentsys">
+<meta property="article:tag" content="llm_agent">
+<meta property="article:tag" content="reasoning">
+<meta property="article:tag" content="tool_use">
+<meta property="article:tag" content="reflection">
+<meta property="article:tag" content="self_improvement">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/me_new.jpeg"><link rel="shortcut icon" href="/img/hackerrank.svg"><link rel="canonical" href="http://example.com/2026/05/21/agentsys/Paper/ReAct%20+%20Reflexion%20-%20Reasoning%20Acting%20and%20Verbal%20Reinforcement%20Learning/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'ReAct + Reflexion - Reasoning Acting and Verbal Reinforcement Learning',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-05-21 16:09:00'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 7.2.0"><link href="https://cdn.bootcss.com/KaTeX/0.11.1/katex.min.css" rel="stylesheet" />
+<style>
+.obsidian-callout { margin: 1em 0; }
+.obsidian-callout blockquote { border-left: none; margin: 0; padding: 0; background: transparent; }
+.obsidian-callout p { margin: 0.4em 0; }
+.obsidian-callout details > summary { list-style: none; }
+.obsidian-callout details > summary::-webkit-details-marker { display: none; }
+</style></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/me_new.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">114</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">52</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">8</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/math_master.jpeg')"><nav id="nav"><span id="blog-info"><a href="/" title="Yuchen You"><img class="site-icon" src="/img/avatar.png"/><span class="site-name">Yuchen You</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> Search</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">ReAct + Reflexion - Reasoning Acting and Verbal Reinforcement Learning</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2026-05-21T08:09:00.514Z" title="Created 2026-05-21 16:09:00">2026-05-21</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-05-21T08:09:00.514Z" title="Updated 2026-05-21 16:09:00">2026-05-21</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/agentsys/">agentsys</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="ReAct + Reflexion - Reasoning Acting and Verbal Reinforcement Learning"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><blockquote>
+<p>[!联读黑称 / 术语速查]</p>
+<p>ReAct 协议:</p>
+<ul>
+<li>thought: 模型自言自语写出的 reasoning trace, 不出现在环境里</li>
+<li>action: 模型对外发出的工具调用 / 环境指令, 会被执行</li>
+<li>observation: 工具或环境返回给模型的下一段输入</li>
+<li>trajectory: thought <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>→</mo></mrow><annotation encoding="application/x-tex">\rightarrow</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">→</span></span></span></span> action <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>→</mo></mrow><annotation encoding="application/x-tex">\rightarrow</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">→</span></span></span></span> observation <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>→</mo></mrow><annotation encoding="application/x-tex">\rightarrow</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">→</span></span></span></span> thought <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>→</mo></mrow><annotation encoding="application/x-tex">\rightarrow</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">→</span></span></span></span> … 的整条交替序列</li>
+<li>act-only: 没有 thought, 只对外发 action 的 baseline (WebGPT, SayCan 那一派)</li>
+<li>CoT-only: 全程在脑子里推, 不调外部工具的 baseline (Wei et al. 2022)</li>
+</ul>
+<p>Reflexion 协议:</p>
+<ul>
+<li>Actor: 真正生成 action 的 policy LM, 在 Reflexion 实验里基本就是套了一层 ReAct 协议的 GPT</li>
+<li>Evaluator: 产生 reward signal 的判官, 可以是 ground-truth, heuristic, 或者另一个 LM</li>
+<li>Self-Reflection: 把 trajectory + reward 翻译成自然语言 critique 的 LM</li>
+<li>short-term memory: 当前 episode 的 trajectory 本身 (thought / action / observation 序列)</li>
+<li>long-term memory: 跨 episode 累积的 reflection 文本, 拼到下一次 prompt 头部</li>
+<li>verbal RL: 用自然语言 critique 代替梯度更新, 把 reward 从标量空间搬进语言空间</li>
+<li>trial: 一个完整的 episode (尝试一次任务), 失败后做 reflection, 再开下一个 trial</li>
+</ul>
+</blockquote>
+<h2 id="为什么-react-reflexion-要放一起读">为什么 ReAct + Reflexion 要放一起读</h2>
+<p>这两篇是 LLM agent 这条研究线 2023 年的<strong>协议奠基 + 学习闭环</strong>;</p>
+<ul>
+<li><strong>ReAct</strong> 定义了 agent runtime 的 “骨架协议” — 一个 trajectory 里 thought / action / observation 怎么交替;</li>
+<li><strong>Reflexion</strong> 在这个骨架上<strong>外挂了一个跨 trial 的学习 loop</strong> — 失败 trajectory 写成自然语言反思, 拼回下一次 prompt;</li>
+</ul>
+<p>后续几乎所有 agent paper (Self-Refine, CRITIC, LATS, Voyager, AutoGen, SWE-agent, 甚至 OpenAI o1 / DeepSeek-R1 的训练范式) 都可以拆解成 <strong>“在 ReAct 骨架的哪个组件上加了什么”</strong> 或 <strong>“把 Reflexion 的 verbal RL 内化到了哪一层”</strong>; 所以这两篇必须作为一个<strong>配对的整体</strong>理解, 而不是孤立地读;</p>
+<h2 id="前置基础-a-chain-of-thought-的局限">前置基础 A: Chain-of-Thought 的局限</h2>
+<p>CoT 把 prompt 改成</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext>question</mtext><mo>→</mo><mtext>rationale</mtext><mo>→</mo><mtext>answer</mtext></mrow><annotation encoding="application/x-tex">\text{question} \rightarrow \text{rationale} \rightarrow \text{answer}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8623000000000001em;vertical-align:-0.19444em;"></span><span class="mord text"><span class="mord">question</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord text"><span class="mord">rationale</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord text"><span class="mord">answer</span></span></span></span></span></span></p>
+<p>形式上让模型先写一段推理再给答案, 在 GSM8K 这种纯算术 / 纯符号任务上有巨大提升; 但 CoT 有两个根本痛点:</p>
+<ul>
+<li><strong>hallucination</strong>: 模型没有外部知识源, 只能凭参数里记得的事实&quot;假装查到&quot;, 一旦记错就是错; 在 HotpotQA, FEVER 这种 knowledge-intensive QA 上经常会非常自信地编造一个看起来合理的实体或日期;</li>
+<li><strong>error propagation</strong>: CoT 是一次性 sampling, 中间任何一步出错都不可逆, 后续步骤会继续在错误前提上推理;</li>
+</ul>
+<p>CoT-SC (self-consistency) 用 sample 多条 rationale 再投票的方式部分缓解了第二个问题, 但<strong>仍然解决不了第一个问题</strong>, 因为所有 sample 共享同一份过时的内部知识;</p>
+<h2 id="前置基础-b-act-only-agent-的局限">前置基础 B: act-only agent 的局限</h2>
+<p>另一边, 一个纯 action-only 的 agent 拿到 observation 之后只能输出下一个 action, 比如:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Action 1: search[Apple Remote]</span><br><span class="line">Obs 1: The Apple Remote was originally designed to interact with the Front Row media center...</span><br><span class="line">Action 2: search[Front Row]</span><br><span class="line">Obs 2: ...</span><br></pre></td></tr></table></figure>
+<p>这种交互的问题在于:</p>
+<ul>
+<li>模型对<strong>为什么</strong>要发这个 action 没有显式表示, 调试者只能从 action 序列倒推意图;</li>
+<li>当 observation 很长或者跑题, 模型没有&quot;我要做的事是 X, 当前还差 Y&quot;这种 working memory 形式的痕迹, 很容易陷入循环 (反复 search 同一个词) 或者忘记原始问题;</li>
+<li>任务一旦需要多跳推理 (multi-hop QA, compositional question), act-only 完全没有办法在 observation 之间做组合;</li>
+</ul>
+<h2 id="前置基础-c-actor-critic-是-reflexion-的母架构">前置基础 C: Actor-Critic 是 Reflexion 的母架构</h2>
+<p>要理解 Reflexion 为什么自然地分出 Actor / Evaluator / Reflector 三组件, 必须回到 RL 的经典 Actor-Critic 框架 (Barto, Sutton, Anderson, 1983);</p>
+<p>经典 Actor-Critic 定义:</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext>Actor: </mtext><mi>π</mi><mo stretchy="false">(</mo><mi>a</mi><mo>∣</mo><mi>s</mi><mo stretchy="false">)</mo><mspace width="2em"/><mtext>Critic: </mtext><mi>V</mi><mo stretchy="false">(</mo><mi>s</mi><mo stretchy="false">)</mo><mtext> 或 </mtext><mi>Q</mi><mo stretchy="false">(</mo><mi>s</mi><mo separator="true">,</mo><mi>a</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\text{Actor: } \pi(a \mid s) \qquad \text{Critic: } V(s) \text{ 或 } Q(s, a)
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord text"><span class="mord">Actor: </span></span><span class="mord mathdefault" style="margin-right:0.03588em;">π</span><span class="mopen">(</span><span class="mord mathdefault">a</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">∣</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault">s</span><span class="mclose">)</span><span class="mspace" style="margin-right:2em;"></span><span class="mord text"><span class="mord">Critic: </span></span><span class="mord mathdefault" style="margin-right:0.22222em;">V</span><span class="mopen">(</span><span class="mord mathdefault">s</span><span class="mclose">)</span><span class="mord text"><span class="mord"> </span><span class="mord cjk_fallback">或</span><span class="mord"> </span></span><span class="mord mathdefault">Q</span><span class="mopen">(</span><span class="mord mathdefault">s</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault">a</span><span class="mclose">)</span></span></span></span></span></p>
+<ul>
+<li><strong>Actor</strong> 是 policy, 决定在状态 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi></mrow><annotation encoding="application/x-tex">s</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">s</span></span></span></span> 下选什么 action <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi></mrow><annotation encoding="application/x-tex">a</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">a</span></span></span></span>;</li>
+<li><strong>Critic</strong> 是 value function, 估计当前状态下未来累计 reward 的期望, 给 Actor 提供 gradient 反馈;</li>
+</ul>
+<p>现代所有 policy gradient 算法 (A2C, <strong>PPO</strong>, SAC, DDPG, 以及 DeepSeek-R1 的 GRPO) <strong>本质都是 Actor-Critic 的变种</strong>; LLM 时代的 RLHF, RLAIF, 以及现在的 reasoning model 训练流水线, 骨架仍然是这一套;</p>
+<p>Reflexion 把这套搬进 LLM agent, 改了三件事:</p>
+<ol>
+<li>Critic 不再是参数化的 value function, 改成<strong>外部信号</strong> (ground truth / heuristic / LM judge) , 拿到的是稀疏 outcome reward 而非密集 value;</li>
+<li>不做 gradient update on Actor weights, 改成<strong>改 prompt</strong>;</li>
+<li>在 Critic 和 Actor 之间多插一个 <strong>Self-Reflection</strong> 模块, 把 reward 翻译成自然语言反思;</li>
+</ol>
+<p>第三件事是 Reflexion 的灵魂, 也是它跟经典 Actor-Critic 真正分家的地方;</p>
+<h1 id="part-i-react-把-reasoning-和-acting-放进同一条-trajectory">Part I — ReAct: 把 reasoning 和 acting 放进同一条 trajectory</h1>
+<h2 id="react-论文定位">ReAct 论文定位</h2>
+<p>ReAct 不是一个新模型, 也不需要额外训练 (主要实验是 prompt-only, few-shot in-context), 它是一种<strong>输出协议</strong>: 让 LLM 在解决任务时生成一种交替结构的 trajectory, 把&quot;想&quot;和&quot;做&quot;显式地交叉起来; 通过这个协议, 同一个 frozen LLM 既能利用外部工具拿到 grounding, 又能保留 CoT 那种透明的 reasoning trace;</p>
+<h2 id="react-解决的核心问题">ReAct 解决的核心问题</h2>
+<p>现有方案的不足:</p>
+<ul>
+<li><strong>CoT-only</strong>: 没有外部 grounding, 容易 hallucinate, 错了不可逆;</li>
+<li><strong>act-only</strong>: 没有 working memory, 没有计划性, 调试不可读;</li>
+<li><strong>CoT + retrieval</strong> (一次性 RAG): retrieval 只发生在 forward 之前, 中途无法根据 reasoning 改变检索意图;</li>
+</ul>
+<p>ReAct 试图回答:</p>
+<ol>
+<li>能不能让 reasoning trace 和 tool action 共享同一个生成过程, 让 thought 来<strong>规划下一个 action</strong>, 让 observation 来<strong>修正后续 thought</strong>?</li>
+<li>在只改 prompt, 不改模型的前提下, 这种交替结构能不能在 knowledge-intensive QA 和 sequential decision-making 两类任务上同时拿到收益?</li>
+<li>写出来的 thought 本身能不能作为 interpretability 和 human-in-the-loop 修正的入口?</li>
+</ol>
+<h2 id="react-核心机制-thought-rightarrow-action-rightarrow-observation-的交替">ReAct 核心机制: thought <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>→</mo></mrow><annotation encoding="application/x-tex">\rightarrow</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">→</span></span></span></span> action <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>→</mo></mrow><annotation encoding="application/x-tex">\rightarrow</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">→</span></span></span></span> observation 的交替</h2>
+<p><img src="/images/react_method_comparison.png" alt="react_method_comparison.png"></p>
+<blockquote>
+<p>原论文 Figure 1: (1a) HotpotQA 上 Standard / CoT-only / Act-only / ReAct 四种 prompting 的对比, (1b) AlfWorld 上 Act-only vs ReAct 的 trajectory 对比; 红框是错误信息, 绿框是正确证据, 这张图把 ReAct 协议的 thought / action / observation 交替结构和它相对 baseline 的优势一次说清楚, 后文公式都是在解释这张图;</p>
+</blockquote>
+<p>ReAct 把 trajectory 定义为如下序列:</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>τ</mi><mo>:</mo><mo>=</mo><mo stretchy="false">(</mo><msub><mi>t</mi><mn>1</mn></msub><mo separator="true">,</mo><msub><mi>a</mi><mn>1</mn></msub><mo separator="true">,</mo><msub><mi>o</mi><mn>1</mn></msub><mo separator="true">,</mo><msub><mi>t</mi><mn>2</mn></msub><mo separator="true">,</mo><msub><mi>a</mi><mn>2</mn></msub><mo separator="true">,</mo><msub><mi>o</mi><mn>2</mn></msub><mo separator="true">,</mo><mo>…</mo><mo separator="true">,</mo><msub><mi>t</mi><mi>n</mi></msub><mo separator="true">,</mo><msub><mi>a</mi><mi>n</mi></msub><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\tau := (t_1, a_1, o_1, t_2, a_2, o_2, \dots, t_n, a_n)
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.1132em;">τ</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">:</span></span><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord"><span class="mord mathdefault">t</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault">a</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault">o</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault">t</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault">a</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault">o</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="minner">…</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault">t</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">n</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault">a</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">n</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span></span></p>
+<ul>
+<li><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>t</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">t_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76508em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault">t</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> : 第 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi></mrow><annotation encoding="application/x-tex">i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.65952em;vertical-align:0em;"></span><span class="mord mathdefault">i</span></span></span></span> 步的 thought, 是模型自己生成的自然语言, <strong>不发给环境</strong>, 只是写进 context 给后续 token 看;</li>
+<li><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>a</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">a_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.58056em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault">a</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> : 第 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi></mrow><annotation encoding="application/x-tex">i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.65952em;vertical-align:0em;"></span><span class="mord mathdefault">i</span></span></span></span> 步的 action, 在固定的 action space <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="script">A</mi></mrow><annotation encoding="application/x-tex">\mathcal{A}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord"><span class="mord mathcal">A</span></span></span></span></span> 里取值, 会被 parser 抽出来发给环境;</li>
+<li><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>o</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">o_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.58056em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault">o</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> : 环境对 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>a</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">a_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.58056em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault">a</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> 的返回, append 回 context;</li>
+</ul>
+<p>形式上, ReAct 等价于把&quot;reasoning trace&quot;也写进了 action 历史, 但<strong>只标记一类不可观测的 action</strong>, 这类 action 不改变环境状态, 只改变 LLM 自己的 context; 这是它和经典 RL agent 最大的差异: action space 被人为扩张到了 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="script">A</mi><mo>∪</mo><mi mathvariant="script">L</mi></mrow><annotation encoding="application/x-tex">\mathcal{A} \cup \mathcal{L}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord"><span class="mord mathcal">A</span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∪</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord"><span class="mord mathcal">L</span></span></span></span></span> , 其中 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="script">L</mi></mrow><annotation encoding="application/x-tex">\mathcal{L}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord"><span class="mord mathcal">L</span></span></span></span></span> 是自然语言&quot;内心独白&quot;空间;</p>
+<p>一个 HotpotQA 上的具体 trajectory 大概长这样:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Question: Aside from the Apple Remote, what other device can control the program Apple Remote was originally designed to interact with?</span><br><span class="line">Thought 1: I need to search Apple Remote and find what program it was originally designed to interact with.</span><br><span class="line">Action 1: Search[Apple Remote]</span><br><span class="line">Observation 1: The Apple Remote is a remote control... originally designed to control the Front Row media center program...</span><br><span class="line">Thought 2: Apple Remote was originally designed to control Front Row. I need to search Front Row and find what other devices can control it.</span><br><span class="line">Action 2: Search[Front Row]</span><br><span class="line">Observation 2: Could not find [Front Row]. Similar: [&#x27;Front Row Seat to Earth&#x27;, ...]</span><br><span class="line">Thought 3: Front Row is not found. I need to search Front Row (software).</span><br><span class="line">Action 3: Search[Front Row (software)]</span><br><span class="line">Observation 3: Front Row is a discontinued media center software... controlled by Apple Remote or the keyboard function keys.</span><br><span class="line">Thought 4: So besides Apple Remote, keyboard function keys can also control Front Row. Answer is keyboard function keys.</span><br><span class="line">Action 4: Finish[keyboard function keys]</span><br></pre></td></tr></table></figure>
+<p><strong>这个例子里至少有两件事是 CoT 和 act-only 各自做不到的</strong>: thought 2 把 observation 1 的关键事实抽取出来并形成下一步 query (这是 act-only 缺的); thought 3 在 observation 2 失败时主动改写 query (这是 CoT-only 缺的, 因为它根本不会发请求);</p>
+<h2 id="action-space-的两种设计">Action Space 的两种设计</h2>
+<p>ReAct 在两类任务上跑实验, 对应两套 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="script">A</mi></mrow><annotation encoding="application/x-tex">\mathcal{A}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord"><span class="mord mathcal">A</span></span></span></span></span> 设计:</p>
+<table>
+<thead>
+<tr>
+<th>任务类</th>
+<th>action space</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Knowledge QA (HotpotQA, FEVER)</td>
+<td><code>Search[entity]</code>, <code>Lookup[string]</code>, <code>Finish[answer]</code> — 三个动作, 后端是 Wikipedia API</td>
+<td>action 空间极小, 关键是让 thought 决定 search 什么</td>
+</tr>
+<tr>
+<td>Decision-making (ALFWorld, WebShop)</td>
+<td>沿用环境本身的 action set (goto, take, open, put, click[button] 等)</td>
+<td>action 空间是环境给的, ReAct 的贡献是注入 thought</td>
+</tr>
+</tbody>
+</table>
+<p>注意 Knowledge QA 这一组的 action 设计是有讲究的:</p>
+<ul>
+<li><code>Search[entity]</code> 返回的是 Wikipedia 上<strong>实体页的前几句</strong>, 不是 search engine ranking 的 snippet — 这避免了 reasoning 被 search engine 的 ad 或者 SEO 干扰;</li>
+<li><code>Lookup[string]</code> 是在当前已经 search 过的页面内做 ctrl-F, 模拟人类&quot;先看页面顶部, 再针对性查关键词&quot;的两段式访问;</li>
+<li><code>Finish[answer]</code> 是一个 terminal action, 触发后 trajectory 终止并把 answer 提交给打分器;</li>
+</ul>
+<p>这个 action 设计本身就是 ReAct 工作的一部分: <strong>它把&quot;信息获取&quot;拆成 search (定位) + lookup (定点) 两步, 给 thought 留出干预的空间</strong>;</p>
+<h2 id="react-的-prompt-是怎么搭的">ReAct 的 Prompt 是怎么搭的</h2>
+<p>ReAct 全程 prompt-only, 不微调; few-shot 示例由人工写好, 每个示例就是一条完整的 thought / action / observation 交替轨迹; LLM 在 inference 时被给到:</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext>prompt</mtext><mo>=</mo><munder><munder><mtext>task instruction</mtext><mo stretchy="true">⏟</mo></munder><mtext>1-2 句</mtext></munder><mtext>  </mtext><mi mathvariant="normal">∥</mi><mtext>  </mtext><munder><munder><mrow><mi>k</mi><mtext> 条完整 trajectory 示例</mtext></mrow><mo stretchy="true">⏟</mo></munder><mrow><mtext>通常 </mtext><mi>k</mi><mo>=</mo><mn>6</mn></mrow></munder><mtext>  </mtext><mi mathvariant="normal">∥</mi><mtext>  </mtext><munder><munder><mtext>当前 question</mtext><mo stretchy="true">⏟</mo></munder><mtext>需要解答</mtext></munder></mrow><annotation encoding="application/x-tex">\text{prompt} = \underbrace{\text{task instruction}}_{\text{1-2 句}} \; \| \; \underbrace{k \text{ 条完整 trajectory 示例}}_{\text{通常 } k=6} \; \| \; \underbrace{\text{当前 question}}_{\text{需要解答}}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.80952em;vertical-align:-0.19444em;"></span><span class="mord text"><span class="mord">prompt</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:2.278548em;vertical-align:-1.528548em;"></span><span class="mord munder"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.6944399999999997em;"><span style="top:-1.6736689999999999em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord text mtight"><span class="mord mtight">1-2 </span><span class="mord cjk_fallback mtight">句</span></span></span></span></span><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord munder"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.69444em;"><span class="svg-align" style="top:-2.352em;"><span class="pstrut" style="height:3em;"></span><span class="stretchy" style="height:0.548em;min-width:1.6em;"><span class="brace-left" style="height:0.548em;"><svg width='400em' height='0.548em' viewBox='0 0 400000 548' preserveAspectRatio='xMinYMin slice'><path d='M0 6l6-6h17c12.688 0 19.313.3 20 1 4 4 7.313 8.3 10 13
+ 35.313 51.3 80.813 93.8 136.5 127.5 55.688 33.7 117.188 55.8 184.5 66.5.688
+ 0 2 .3 4 1 18.688 2.7 76 4.3 172 5h399450v120H429l-6-1c-124.688-8-235-61.7
+-331-161C60.687 138.7 32.312 99.3 7 54L0 41V6z'/></svg></span><span class="brace-center" style="height:0.548em;"><svg width='400em' height='0.548em' viewBox='0 0 400000 548' preserveAspectRatio='xMidYMin slice'><path d='M199572 214
+c100.7 8.3 195.3 44 280 108 55.3 42 101.7 93 139 153l9 14c2.7-4 5.7-8.7 9-14
+ 53.3-86.7 123.7-153 211-199 66.7-36 137.3-56.3 212-62h199568v120H200432c-178.3
+ 11.7-311.7 78.3-403 201-6 8-9.7 12-11 12-.7.7-6.7 1-18 1s-17.3-.3-18-1c-1.3 0
+-5-4-11-12-44.7-59.3-101.3-106.3-170-141s-145.3-54.3-229-60H0V214z'/></svg></span><span class="brace-right" style="height:0.548em;"><svg width='400em' height='0.548em' viewBox='0 0 400000 548' preserveAspectRatio='xMaxYMin slice'><path d='M399994 0l6 6v35l-6 11c-56 104-135.3 181.3-238 232-57.3
+ 28.7-117 45-179 50H-300V214h399897c43.3-7 81-15 113-26 100.7-33 179.7-91 237
+-174 2.7-5 6-9 10-13 .7-1 7.3-1 20-1h17z'/></svg></span></span></span><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord text"><span class="mord">task instruction</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.648em;"><span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.3263310000000001em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mord">∥</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mord munder"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.69444em;"><span style="top:-1.471452em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord text mtight"><span class="mord cjk_fallback mtight">通常</span><span class="mord mtight"> </span></span><span class="mord mathdefault mtight" style="margin-right:0.03148em;">k</span><span class="mrel mtight">=</span><span class="mord mtight">6</span></span></span></span><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord munder"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.6944399999999998em;"><span class="svg-align" style="top:-2.15756em;"><span class="pstrut" style="height:3em;"></span><span class="stretchy" style="height:0.548em;min-width:1.6em;"><span class="brace-left" style="height:0.548em;"><svg width='400em' height='0.548em' viewBox='0 0 400000 548' preserveAspectRatio='xMinYMin slice'><path d='M0 6l6-6h17c12.688 0 19.313.3 20 1 4 4 7.313 8.3 10 13
+ 35.313 51.3 80.813 93.8 136.5 127.5 55.688 33.7 117.188 55.8 184.5 66.5.688
+ 0 2 .3 4 1 18.688 2.7 76 4.3 172 5h399450v120H429l-6-1c-124.688-8-235-61.7
+-331-161C60.687 138.7 32.312 99.3 7 54L0 41V6z'/></svg></span><span class="brace-center" style="height:0.548em;"><svg width='400em' height='0.548em' viewBox='0 0 400000 548' preserveAspectRatio='xMidYMin slice'><path d='M199572 214
+c100.7 8.3 195.3 44 280 108 55.3 42 101.7 93 139 153l9 14c2.7-4 5.7-8.7 9-14
+ 53.3-86.7 123.7-153 211-199 66.7-36 137.3-56.3 212-62h199568v120H200432c-178.3
+ 11.7-311.7 78.3-403 201-6 8-9.7 12-11 12-.7.7-6.7 1-18 1s-17.3-.3-18-1c-1.3 0
+-5-4-11-12-44.7-59.3-101.3-106.3-170-141s-145.3-54.3-229-60H0V214z'/></svg></span><span class="brace-right" style="height:0.548em;"><svg width='400em' height='0.548em' viewBox='0 0 400000 548' preserveAspectRatio='xMaxYMin slice'><path d='M399994 0l6 6v35l-6 11c-56 104-135.3 181.3-238 232-57.3
+ 28.7-117 45-179 50H-300V214h399897c43.3-7 81-15 113-26 100.7-33 179.7-91 237
+-174 2.7-5 6-9 10-13 .7-1 7.3-1 20-1h17z'/></svg></span></span></span><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.03148em;">k</span><span class="mord text"><span class="mord"> </span><span class="mord cjk_fallback">条完整</span><span class="mord"> trajectory </span><span class="mord cjk_fallback">示例</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.8424400000000001em;"><span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.528548em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mord">∥</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mord munder"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.68333em;"><span style="top:-1.4792290000000001em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord text mtight"><span class="mord cjk_fallback mtight">需要解答</span></span></span></span></span><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord munder"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.6833299999999999em;"><span class="svg-align" style="top:-2.15756em;"><span class="pstrut" style="height:3em;"></span><span class="stretchy" style="height:0.548em;min-width:1.6em;"><span class="brace-left" style="height:0.548em;"><svg width='400em' height='0.548em' viewBox='0 0 400000 548' preserveAspectRatio='xMinYMin slice'><path d='M0 6l6-6h17c12.688 0 19.313.3 20 1 4 4 7.313 8.3 10 13
+ 35.313 51.3 80.813 93.8 136.5 127.5 55.688 33.7 117.188 55.8 184.5 66.5.688
+ 0 2 .3 4 1 18.688 2.7 76 4.3 172 5h399450v120H429l-6-1c-124.688-8-235-61.7
+-331-161C60.687 138.7 32.312 99.3 7 54L0 41V6z'/></svg></span><span class="brace-center" style="height:0.548em;"><svg width='400em' height='0.548em' viewBox='0 0 400000 548' preserveAspectRatio='xMidYMin slice'><path d='M199572 214
+c100.7 8.3 195.3 44 280 108 55.3 42 101.7 93 139 153l9 14c2.7-4 5.7-8.7 9-14
+ 53.3-86.7 123.7-153 211-199 66.7-36 137.3-56.3 212-62h199568v120H200432c-178.3
+ 11.7-311.7 78.3-403 201-6 8-9.7 12-11 12-.7.7-6.7 1-18 1s-17.3-.3-18-1c-1.3 0
+-5-4-11-12-44.7-59.3-101.3-106.3-170-141s-145.3-54.3-229-60H0V214z'/></svg></span><span class="brace-right" style="height:0.548em;"><svg width='400em' height='0.548em' viewBox='0 0 400000 548' preserveAspectRatio='xMaxYMin slice'><path d='M399994 0l6 6v35l-6 11c-56 104-135.3 181.3-238 232-57.3
+ 28.7-117 45-179 50H-300V214h399897c43.3-7 81-15 113-26 100.7-33 179.7-91 237
+-174 2.7-5 6-9 10-13 .7-1 7.3-1 20-1h17z'/></svg></span></span></span><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord text"><span class="mord cjk_fallback">当前</span><span class="mord"> question</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.8424400000000001em;"><span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.5207709999999999em;"><span></span></span></span></span></span></span></span></span></span></p>
+<p>模型逐 token 解码, 解码到 <code>Action N:</code> 这一行时, 外部 parser 停止解码, 把方括号里的 action 抽出来送给环境, 环境返回 observation 后 append 到 context 后面继续解码; 这是一个非常工程化的 loop, 整体跟现在所有 ReAct-style agent runtime (LangChain, LlamaIndex agent, 我们自己手撕 60 行 ReAct loop) 的实现是一致的;</p>
+<p><strong>关键点是: 停止解码的 trigger 不是模型的特殊 token, 而是 parser 检测到 “Observation N:” 这一行尚未填入</strong>, 这样旧 LLM (没有 function calling 训练) 也能跑;</p>
+<h2 id="react-实验对比-4-种策略">ReAct 实验对比: 4 种策略</h2>
+<p>论文在 HotpotQA / FEVER 上比较了:</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>reasoning trace</th>
+<th>tool call</th>
+<th>何时 stop</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Standard</td>
+<td>否</td>
+<td>否</td>
+<td>直接给答案</td>
+<td>纯 in-context 回答</td>
+</tr>
+<tr>
+<td>CoT</td>
+<td>是</td>
+<td>否</td>
+<td>一次性输出 rationale + answer</td>
+<td>没有 grounding</td>
+</tr>
+<tr>
+<td>CoT-SC</td>
+<td>是 × N</td>
+<td>否</td>
+<td>sample N 条后投票</td>
+<td>缓解 error propagation, 没解决 hallucination</td>
+</tr>
+<tr>
+<td>Act-only</td>
+<td>否</td>
+<td>是</td>
+<td>输出 Finish</td>
+<td>没有 thought, 容易循环</td>
+</tr>
+<tr>
+<td><strong>ReAct</strong></td>
+<td>是 (交替)</td>
+<td>是</td>
+<td>输出 Finish</td>
+<td>同时拿到 grounding 和规划性</td>
+</tr>
+<tr>
+<td><strong>ReAct→CoT-SC</strong></td>
+<td>是 (优先 ReAct)</td>
+<td>是</td>
+<td>ReAct 失败时 fallback CoT-SC</td>
+<td>拿不到 evidence 时退回内部知识</td>
+</tr>
+<tr>
+<td><strong>CoT-SC→ReAct</strong></td>
+<td>是 (优先 CoT-SC)</td>
+<td>是</td>
+<td>CoT 自信度低时切 ReAct</td>
+<td>信号不够强时再去查证</td>
+</tr>
+</tbody>
+</table>
+<p>主要结论:</p>
+<ul>
+<li>在 HotpotQA 上, ReAct 单独跑略低于 CoT-SC (因为 search engine 偶尔检索失败会拖累整个 trajectory), 但 <strong>ReAct + CoT-SC 的组合显著超过任一单一方法</strong>;</li>
+<li>在 FEVER (事实核查) 上, ReAct 单独就明显赢, 因为这类任务严重依赖外部证据;</li>
+<li>在 ALFWorld (text-based household) 上, ReAct vs 模仿学习训练的 BUTLER, 在 prompt-only 设定下绝对成功率从 act-only 的 25% 飙升到 ReAct 的 71%; 关键是 thought 让模型能记住&quot;我目前 sub-goal 是把刀放到 sink 里&quot;;</li>
+<li>在 WebShop 上, ReAct 也明显赢 act-only, 帮模型在多个商品候选间做对比和取舍;</li>
+</ul>
+<p><strong>一句话总结: thought 在 sequential decision-making 上的收益比在 QA 上还要大, 因为 sub-goal 跟踪比 grounding 还更难离开自然语言;</strong></p>
+<h2 id="react-留下的三个失败模式-这一节直接-bridge-到-reflexion">ReAct 留下的三个失败模式 (← 这一节直接 bridge 到 Reflexion)</h2>
+<p>ReAct 协议本身解决了&quot;思考 + 行动&quot;的交替结构, 但 <strong>trajectory 一旦跑挂就跑挂了, 没有任何修复机制</strong>; 论文里坦诚列出了三种典型挂法:</p>
+<ul>
+<li><strong>search failure</strong>: Wikipedia 拿不到精确实体, 模型陷入 <code>Search[X] $\rightarrow$ not found $\rightarrow$ Search[X 改写] $\rightarrow$ not found</code> 的循环;</li>
+<li><strong>hallucinated thought after empty obs</strong>: observation 为空或没有有效信息时, 模型有概率在下一个 thought 里直接编造事实, 然后基于这个假事实输出 Finish;</li>
+<li><strong>reasoning error propagation</strong>: thought <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi></mrow><annotation encoding="application/x-tex">k</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.03148em;">k</span></span></span></span> 把 observation <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">k-1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.77777em;vertical-align:-0.08333em;"></span><span class="mord mathdefault" style="margin-right:0.03148em;">k</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span> 关键事实抽错了, 之后所有 action 都建立在错误前提上;</li>
+</ul>
+<p>ReAct 没有跨 trajectory 的记忆, 跑挂之后下一次 attempt 还是从零开始, 同样的错误大概率再犯一次; <strong>这三个失败模式直接催生了 Reflexion 的存在动机</strong>;</p>
+<h1 id="part-ii-reflexion-在-react-之上加-verbal-rl-loop">Part II — Reflexion: 在 ReAct 之上加 verbal RL loop</h1>
+<p><img src="/images/reflexion_trajectories.png" alt="reflexion_trajectories.png"></p>
+<blockquote>
+<p>原论文 Figure 1: Reflexion 在三类任务上的运行样例 — (1) decision-making (AlfWorld 家务场景), (2) programming (HumanEval 代码合成), (3) reasoning (HotpotQA 事实问答); 每列从上到下展示 (a) Task → (b) Trajectory (Actor 跑出来的 thought/action/obs 序列) → © Evaluation (heuristic 或单元测试给出的 reward) → (d) Reflection (Self-reflection LM 写出来的自然语言反思) → (e) Next Trajectory (下一轮带着 reflection 的新尝试); 红框是错误信息, 绿框是正确证据 — 这张图把 Reflexion 跨 trial 的 verbal RL loop 在三种不同 reward 信号 (rule, unit test, binary) 下的统一形态一图说清, 后文 Evaluator 三种实现 / Self-Reflection 翻译 reward 等小节都是在解释这张图的具体环节;</p>
+</blockquote>
+<h2 id="reflexion-论文定位">Reflexion 论文定位</h2>
+<p>Reflexion 不是新模型, 也不需要 fine-tune; 它是一个<strong>框架</strong>: 在任何已有的 LLM agent (ReAct 是默认 Actor) 外面套一层 reflection loop, 让 agent 在每次 episode 失败后写一段自然语言反思, 把反思塞进下一次的 prompt 当 episodic memory;</p>
+<p>它把这套机制起名叫 <strong>verbal reinforcement learning</strong>, 主张<strong>自然语言可以充当 reward signal 在不更新权重的前提下让 LLM 学习</strong>;</p>
+<h2 id="reflexion-解决的核心问题">Reflexion 解决的核心问题</h2>
+<p>现有方案的不足:</p>
+<ul>
+<li><strong>ReAct 单 trial</strong>: 失败后无累积, 下次 attempt 同样错;</li>
+<li><strong>RL fine-tune (RLHF)</strong>: 改权重才能&quot;记住&quot;经验, 训练贵且不可解释;</li>
+<li><strong>Self-Refine (Madaan et al. 2023)</strong>: 同一轮 output 内部的&quot;生成 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>→</mo></mrow><annotation encoding="application/x-tex">\rightarrow</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">→</span></span></span></span> 自检 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>→</mo></mrow><annotation encoding="application/x-tex">\rightarrow</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">→</span></span></span></span> 重写&quot;, 只解决 within-output 修正, 没法跨 episode 累积;</li>
+</ul>
+<p>Reflexion 试图回答:</p>
+<ol>
+<li>能不能让 LLM agent 在 <strong>prompt-level</strong> 而非 weight-level 完成&quot;从失败中学习&quot;?</li>
+<li>能不能用<strong>自然语言 critique</strong> 作为唯一的学习信号, 不依赖参数化 reward model?</li>
+<li>同一个机制能不能在 decision-making, knowledge QA, code 三类截然不同的任务上都拿到一致提升?</li>
+</ol>
+<h2 id="reflexion-核心机制-actor-evaluator-self-reflection-三组件分离">Reflexion 核心机制: Actor / Evaluator / Self-Reflection 三组件分离</h2>
+<p>Reflexion 把一次完整的&quot;学习闭环&quot;拆成三个独立 LM-callable 组件:</p>
+<p><img src="/images/reflexion_architecture.png" alt="reflexion_architecture.png"></p>
+<blockquote>
+<p>原论文 Figure 2: (a) Reflexion 整体架构 — Agent 内部有三个 LM-callable 组件 Actor / Evaluator / Self-reflection, Actor 输出 trajectory 进 short-term memory, Evaluator 根据 trajectory 产生 internal / external feedback (reward), Self-reflection LM 把 reward + trajectory 翻译成 reflective text 写入 long-term memory (experience), 下一轮 Actor 在 prompt 头部读到这段 text; (b) Algorithm 1 是同一个流程的伪代码版本, 用来对照看 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>M</mi><mi>a</mi></msub><mo separator="true">,</mo><msub><mi>M</mi><mi>e</mi></msub><mo separator="true">,</mo><msub><mi>M</mi><mrow><mi>s</mi><mi>r</mi></mrow></msub></mrow><annotation encoding="application/x-tex">M_a, M_e, M_{sr}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8777699999999999em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.10903em;">M</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:-0.10903em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">a</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.10903em;">M</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:-0.10903em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">e</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.10903em;">M</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:-0.10903em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">s</span><span class="mord mathdefault mtight" style="margin-right:0.02778em;">r</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> 三个 LM 调用的顺序和 mem buffer 的更新时机; 注意环境只跟 Actor 交互, Evaluator 和 Self-reflection 是 agent <strong>内部</strong>的反思回路, 这也是 “verbal RL” 跟经典 RL 的关键差异;</p>
+</blockquote>
+<p>形式化一点, 第 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi></mrow><annotation encoding="application/x-tex">i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.65952em;vertical-align:0em;"></span><span class="mord mathdefault">i</span></span></span></span> 个 trial 的 prompt 是:</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mtext>prompt</mtext><mi>i</mi></msub><mo>:</mo><mo>=</mo><munder><munder><mrow><mtext>task instruction</mtext><mo>+</mo><mtext>few-shot</mtext></mrow><mo stretchy="true">⏟</mo></munder><mtext>固定</mtext></munder><mtext>  </mtext><mi mathvariant="normal">∥</mi><mtext>  </mtext><munder><munder><mrow><munder><mo>∑</mo><mrow><mi>j</mi><mo>&lt;</mo><mi>i</mi></mrow></munder><msub><mtext>reflection</mtext><mi>j</mi></msub></mrow><mo stretchy="true">⏟</mo></munder><mtext>long-term memory</mtext></munder><mtext>  </mtext><mi mathvariant="normal">∥</mi><mtext>  </mtext><munder><munder><msubsup><mi>τ</mi><mi>i</mi><mtext>partial</mtext></msubsup><mo stretchy="true">⏟</mo></munder><mtext>short-term memory: 当前 trial 的 trajectory</mtext></munder></mrow><annotation encoding="application/x-tex">\text{prompt}_i := \underbrace{\text{task instruction} + \text{few-shot}}_{\text{固定}} \; \| \; \underbrace{\sum_{j &lt; i} \text{reflection}_j}_{\text{long-term memory}} \; \| \; \underbrace{\tau_i^{\text{partial}}}_{\text{short-term memory: 当前 trial 的 trajectory}}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.85922em;vertical-align:-0.24414em;"></span><span class="mord"><span class="mord text"><span class="mord">prompt</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.21752399999999997em;"><span style="top:-2.4558600000000004em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.24414em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">:</span></span><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:3.9339980000000003em;vertical-align:-2.8839930000000003em;"></span><span class="mord munder"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.6944400000000002em;"><span style="top:-1.5903390000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord text mtight"><span class="mord cjk_fallback mtight">固定</span></span></span></span></span><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord munder"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.69444em;"><span class="svg-align" style="top:-2.26867em;"><span class="pstrut" style="height:3em;"></span><span class="stretchy" style="height:0.548em;min-width:1.6em;"><span class="brace-left" style="height:0.548em;"><svg width='400em' height='0.548em' viewBox='0 0 400000 548' preserveAspectRatio='xMinYMin slice'><path d='M0 6l6-6h17c12.688 0 19.313.3 20 1 4 4 7.313 8.3 10 13
+ 35.313 51.3 80.813 93.8 136.5 127.5 55.688 33.7 117.188 55.8 184.5 66.5.688
+ 0 2 .3 4 1 18.688 2.7 76 4.3 172 5h399450v120H429l-6-1c-124.688-8-235-61.7
+-331-161C60.687 138.7 32.312 99.3 7 54L0 41V6z'/></svg></span><span class="brace-center" style="height:0.548em;"><svg width='400em' height='0.548em' viewBox='0 0 400000 548' preserveAspectRatio='xMidYMin slice'><path d='M199572 214
+c100.7 8.3 195.3 44 280 108 55.3 42 101.7 93 139 153l9 14c2.7-4 5.7-8.7 9-14
+ 53.3-86.7 123.7-153 211-199 66.7-36 137.3-56.3 212-62h199568v120H200432c-178.3
+ 11.7-311.7 78.3-403 201-6 8-9.7 12-11 12-.7.7-6.7 1-18 1s-17.3-.3-18-1c-1.3 0
+-5-4-11-12-44.7-59.3-101.3-106.3-170-141s-145.3-54.3-229-60H0V214z'/></svg></span><span class="brace-right" style="height:0.548em;"><svg width='400em' height='0.548em' viewBox='0 0 400000 548' preserveAspectRatio='xMaxYMin slice'><path d='M399994 0l6 6v35l-6 11c-56 104-135.3 181.3-238 232-57.3
+ 28.7-117 45-179 50H-300V214h399897c43.3-7 81-15 113-26 100.7-33 179.7-91 237
+-174 2.7-5 6-9 10-13 .7-1 7.3-1 20-1h17z'/></svg></span></span></span><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord text"><span class="mord">task instruction</span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord text"><span class="mord">few-shot</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.73133em;"><span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.4096609999999998em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mord">∥</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mord munder"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.050005em;"><span style="top:-0.30211999999999983em;"><span class="pstrut" style="height:3.050005em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord text mtight"><span class="mord mtight">long-term memory</span></span></span></span></span><span style="top:-3.050005em;"><span class="pstrut" style="height:3.050005em;"></span><span class="mord munder"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.050005em;"><span class="svg-align" style="top:-0.9882279999999999em;"><span class="pstrut" style="height:3.050005em;"></span><span class="stretchy" style="height:0.548em;min-width:1.6em;"><span class="brace-left" style="height:0.548em;"><svg width='400em' height='0.548em' viewBox='0 0 400000 548' preserveAspectRatio='xMinYMin slice'><path d='M0 6l6-6h17c12.688 0 19.313.3 20 1 4 4 7.313 8.3 10 13
+ 35.313 51.3 80.813 93.8 136.5 127.5 55.688 33.7 117.188 55.8 184.5 66.5.688
+ 0 2 .3 4 1 18.688 2.7 76 4.3 172 5h399450v120H429l-6-1c-124.688-8-235-61.7
+-331-161C60.687 138.7 32.312 99.3 7 54L0 41V6z'/></svg></span><span class="brace-center" style="height:0.548em;"><svg width='400em' height='0.548em' viewBox='0 0 400000 548' preserveAspectRatio='xMidYMin slice'><path d='M199572 214
+c100.7 8.3 195.3 44 280 108 55.3 42 101.7 93 139 153l9 14c2.7-4 5.7-8.7 9-14
+ 53.3-86.7 123.7-153 211-199 66.7-36 137.3-56.3 212-62h199568v120H200432c-178.3
+ 11.7-311.7 78.3-403 201-6 8-9.7 12-11 12-.7.7-6.7 1-18 1s-17.3-.3-18-1c-1.3 0
+-5-4-11-12-44.7-59.3-101.3-106.3-170-141s-145.3-54.3-229-60H0V214z'/></svg></span><span class="brace-right" style="height:0.548em;"><svg width='400em' height='0.548em' viewBox='0 0 400000 548' preserveAspectRatio='xMaxYMin slice'><path d='M399994 0l6 6v35l-6 11c-56 104-135.3 181.3-238 232-57.3
+ 28.7-117 45-179 50H-300V214h399897c43.3-7 81-15 113-26 100.7-33 179.7-91 237
+-174 2.7-5 6-9 10-13 .7-1 7.3-1 20-1h17z'/></svg></span></span></span><span style="top:-3.050005em;"><span class="pstrut" style="height:3.050005em;"></span><span class="mord"><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.050005em;"><span style="top:-1.8723309999999997em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.05724em;">j</span><span class="mrel mtight">&lt;</span><span class="mord mathdefault mtight">i</span></span></span></span><span style="top:-3.0500049999999996em;"><span class="pstrut" style="height:3.05em;"></span><span><span class="mop op-symbol large-op">∑</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.413777em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord text"><span class="mord">reflection</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.311664em;"><span style="top:-2.5500000000000003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight" style="margin-right:0.05724em;">j</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:2.061777em;"><span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:2.8839930000000003em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mord">∥</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mord munder"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9670159999999999em;"><span style="top:-1.389028em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord text mtight"><span class="mord mtight">short-term memory: </span><span class="mord cjk_fallback mtight">当前</span><span class="mord mtight"> trial </span><span class="mord cjk_fallback mtight">的</span><span class="mord mtight"> trajectory</span></span></span></span></span><span style="top:-2.9999999999999996em;"><span class="pstrut" style="height:3em;"></span><span class="mord munder"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9670159999999999em;"><span class="svg-align" style="top:-2.075136em;"><span class="pstrut" style="height:3em;"></span><span class="stretchy" style="height:0.548em;min-width:1.6em;"><span class="brace-left" style="height:0.548em;"><svg width='400em' height='0.548em' viewBox='0 0 400000 548' preserveAspectRatio='xMinYMin slice'><path d='M0 6l6-6h17c12.688 0 19.313.3 20 1 4 4 7.313 8.3 10 13
+ 35.313 51.3 80.813 93.8 136.5 127.5 55.688 33.7 117.188 55.8 184.5 66.5.688
+ 0 2 .3 4 1 18.688 2.7 76 4.3 172 5h399450v120H429l-6-1c-124.688-8-235-61.7
+-331-161C60.687 138.7 32.312 99.3 7 54L0 41V6z'/></svg></span><span class="brace-center" style="height:0.548em;"><svg width='400em' height='0.548em' viewBox='0 0 400000 548' preserveAspectRatio='xMidYMin slice'><path d='M199572 214
+c100.7 8.3 195.3 44 280 108 55.3 42 101.7 93 139 153l9 14c2.7-4 5.7-8.7 9-14
+ 53.3-86.7 123.7-153 211-199 66.7-36 137.3-56.3 212-62h199568v120H200432c-178.3
+ 11.7-311.7 78.3-403 201-6 8-9.7 12-11 12-.7.7-6.7 1-18 1s-17.3-.3-18-1c-1.3 0
+-5-4-11-12-44.7-59.3-101.3-106.3-170-141s-145.3-54.3-229-60H0V214z'/></svg></span><span class="brace-right" style="height:0.548em;"><svg width='400em' height='0.548em' viewBox='0 0 400000 548' preserveAspectRatio='xMaxYMin slice'><path d='M399994 0l6 6v35l-6 11c-56 104-135.3 181.3-238 232-57.3
+ 28.7-117 45-179 50H-300V214h399897c43.3-7 81-15 113-26 100.7-33 179.7-91 237
+-174 2.7-5 6-9 10-13 .7-1 7.3-1 20-1h17z'/></svg></span></span></span><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathdefault" style="margin-right:0.1132em;">τ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9670159999999998em;"><span style="top:-2.4231360000000004em;margin-left:-0.1132em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span><span style="top:-3.180908em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord text mtight"><span class="mord mtight">partial</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.276864em;"><span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.924864em;"><span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.74708em;"><span></span></span></span></span></span></span></span></span></span></p>
+<p>注意这里两种 memory 的角色截然不同:</p>
+<table>
+<thead>
+<tr>
+<th>记忆类型</th>
+<th>实际内容</th>
+<th>跨 trial 累积</th>
+<th>类比</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>short-term memory</strong></td>
+<td>当前 trial 的 thought / action / observation 序列</td>
+<td>❌ trial 结束就清</td>
+<td>工作内存</td>
+</tr>
+<tr>
+<td><strong>long-term memory</strong></td>
+<td>历次 trial 失败后的 reflection 文本</td>
+<td>✅ 跨 trial 累积</td>
+<td>教训本</td>
+</tr>
+</tbody>
+</table>
+<p><strong>很多人误以为 short-term memory 是用来&quot;中途修正&quot;trajectory 的, 不是</strong>; Reflexion 的 reflection 只在 trial 结束后才发生, <strong>不存在 within-trial 修正</strong>; 那是 Self-Refine 的活;</p>
+<h2 id="evaluator-的三种实现-启发式可以打过-lm-as-judge">Evaluator 的三种实现, 启发式可以打过 LM-as-judge</h2>
+<p>Reflexion 把 Evaluator 这一层<strong>故意做得通用</strong>, 论文里给了三种实现:</p>
+<table>
+<thead>
+<tr>
+<th>Evaluator 类型</th>
+<th>实现</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ground truth (binary)</strong></td>
+<td>任务有标准答案, 直接比对</td>
+<td>HotpotQA (答案对/错), HumanEval (单测过/不过)</td>
+</tr>
+<tr>
+<td><strong>Heuristic</strong></td>
+<td>程序化检查 (步数超限, 重复 action, 物体不存在)</td>
+<td>ALFWorld (有限状态文字世界)</td>
+</tr>
+<tr>
+<td><strong>LM self-evaluation</strong></td>
+<td>拿 GPT 当裁判, 读 trajectory 后输出二分类</td>
+<td>没有 GT 的开放任务</td>
+</tr>
+</tbody>
+</table>
+<p>这一节最反直觉的实验发现是 <strong>ALFWorld 上 Heuristic Evaluator 略胜 LM-as-judge (Figure 3a)</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Evaluator</th>
+<th>trial 10 success rate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ReAct only (无 Reflexion)</td>
+<td>~0.75 (饱和)</td>
+</tr>
+<tr>
+<td><strong>ReAct + Reflexion (Heuristic)</strong></td>
+<td><strong>~0.97</strong></td>
+</tr>
+<tr>
+<td>ReAct + Reflexion (GPT)</td>
+<td>~0.94</td>
+</tr>
+</tbody>
+</table>
+<p>为什么启发式赢了 LM? 三层原因:</p>
+<ol>
+<li><strong>任务结构友好</strong>: ALFWorld 的失败模式 (循环 action, 物体不存在, 卡同一房间) 程序化检测准确率近 100%, GPT 读 100+ 步 trajectory 反而抓不住信号;</li>
+<li><strong>self-preference bias</strong>: Actor 和 Evaluator 是同一家模型时, 模型倾向给自己输出打高分, <strong>会系统性低估失败信号</strong>; 这是后来 Zheng et al. 2023 “Judging LLM-as-a-Judge” 系统量化的偏差;</li>
+<li><strong>Reward 噪声会被 reflection loop 放大</strong>: Evaluator 错一次 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>→</mo></mrow><annotation encoding="application/x-tex">\rightarrow</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">→</span></span></span></span> reflection 学错 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>→</mo></mrow><annotation encoding="application/x-tex">\rightarrow</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">→</span></span></span></span> 下次 prompt 注入错误经验 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>→</mo></mrow><annotation encoding="application/x-tex">\rightarrow</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">→</span></span></span></span> 更可能继续错; 启发式的 deterministic 错误率 vs LM 的随机错误率, 在这个 loop 里被指数放大;</li>
+</ol>
+<p><strong>这条 ablation 直接催生了后续 process reward model (PRM) 这一支研究</strong>: Lightman et al. 2023 “Let’s Verify Step by Step” 训练专用 verifier; OpenAI o1 / DeepSeek-R1 用 rule-based reward (启发式) + verifier 模型混合, <strong>故意避开 GPT-as-judge</strong>; AlphaProof 用 Lean formal verifier; 整条 reasoning model frontier 都在贯彻同一个原则: <strong>奖励信号要尽量来自不可被 actor 操纵的源</strong>;</p>
+<p><strong>Evaluator design is the bottleneck, not policy design — 这条规则是这张图能教给你的最重要 takeaway;</strong></p>
+<h2 id="self-reflection-把-reward-翻译成自然语言">Self-Reflection: 把 reward 翻译成自然语言</h2>
+<p>Reflector 这个组件的 prompt 大致长这样:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">You are an assistant tasked with reviewing the trajectory below.</span><br><span class="line"></span><br><span class="line">Trajectory:</span><br><span class="line">&#123;thought_1, action_1, observation_1, ...&#125;</span><br><span class="line"></span><br><span class="line">Outcome: FAIL (reward = 0)</span><br><span class="line"></span><br><span class="line">Please reflect in 2-3 sentences:</span><br><span class="line">1. What went wrong?</span><br><span class="line">2. What concrete strategy would you try differently next time?</span><br></pre></td></tr></table></figure>
+<p>输出会被原样<strong>拼接到 long-term memory</strong>, 不做 embedding 也不做 summarization; 一个典型的 reflection 例子 (来自 ALFWorld):</p>
+<blockquote>
+<p>“I failed to find the knife because I kept searching the bedroom; next time I should check the kitchen first since cooking utensils are usually stored there. I also wasted several steps opening cabinets I had already checked, so I should track which cabinets I’ve opened.”</p>
+</blockquote>
+<p><strong>这段文本就是 Reflexion 全部的&quot;学习&quot;</strong>; 没有 gradient, 没有 fine-tune, 只是一段会出现在下一次 prompt 里的 text;</p>
+<p>这种设计有两个非显然的好处:</p>
+<ul>
+<li><strong>可解释</strong>: 你能直接读 reflection 知道 agent 学到了什么, 比看一组 LoRA 权重 diff 直观一万倍;</li>
+<li><strong>可干预</strong>: human-in-the-loop 时人可以手动改 reflection, 把先验知识塞进去, 这是 RL fine-tune 做不到的;</li>
+</ul>
+<p><strong>Reflection 的本质是把数值 reward 信号压缩并增维, 从标量空间搬进自然语言空间;</strong></p>
+<h2 id="verbal-rl-这个-framing-才是-reflexion-真正的贡献">Verbal RL 这个 framing 才是 Reflexion 真正的贡献</h2>
+<p>看到这里你应该意识到, 从算法层面 Reflexion 真的就是一个 trick — end-of-episode reflection 拼回 prompt, 一图能讲完, 200 行代码能写完;</p>
+<p>但<strong>让这篇论文被疯狂引用的不是算法</strong>, 而是它给整个领域命名了一件事:</p>
+<blockquote>
+<p><strong>自然语言 critique 可以充当 reward signal, 不需要 gradient, 不需要 reward model 参数化</strong></p>
+</blockquote>
+<p>这个 framing 直接喂出了 RLAIF (Bai et al. 2022 Constitutional AI), 喂出了 LLM-as-judge 整条评估管线, 喂出了 DeepSeek-R1 的 verbal self-correction (long CoT 里那些 “Wait, let me reconsider…”), 喂出了 process reward model 的概念准备;</p>
+<p><strong>类比 Transformer: 算法上&quot;只有一个新东西&quot; (self-attention 取代 RNN), 但它的真正贡献是 “sequence modeling 不需要 recurrence” 这个 conceptual liberation; Reflexion 处在同一个 pattern — mechanic 简单, framing 深远;</strong></p>
+<p>这件事对 PhD 阅读是关键 lesson: <strong>distill paper 到最小 pseudo-code 之后, 别立刻下&quot;创新点太少&quot;的判断, 还要问 “这篇给领域命名了什么 conceptual primitive”;</strong> 算法薄但 framing 厚的论文不止 Reflexion, SWE-agent, Voyager, o1, R1 都属于这一类;</p>
+<h2 id="alfworld-实验细节-figure-3">ALFWorld 实验细节 (Figure 3)</h2>
+<p>ALFWorld 是文字版 ALFRED, 部分可观测的家庭机器人任务 (“把刀放到 sink 里”); 这是 ReAct 的主场 — long horizon, partial observability, sparse reward, irreversible action 全凑齐;</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>trial 0</th>
+<th>trial 10</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ReAct only (饱和)</td>
+<td>0.63</td>
+<td>0.75</td>
+</tr>
+<tr>
+<td>ReAct + Reflexion (Heuristic)</td>
+<td>0.63</td>
+<td><strong>0.97</strong></td>
+</tr>
+<tr>
+<td>ReAct + Reflexion (GPT)</td>
+<td>0.63</td>
+<td>0.94</td>
+</tr>
+</tbody>
+</table>
+<p>关键观察:</p>
+<ul>
+<li><strong>trial 0 三者重合</strong>: 因为还没失败过, long-term memory 是空的, Reflexion 和 ReAct 没区别;</li>
+<li><strong>trial 5-10 是 Reflexion 真正发力的区间</strong>: 累积的 reflection 让模型把过去十次失败的教训都写进了 prompt;</li>
+<li>Figure 3b 把失败原因拆成 “hallucination” 和 “inefficient planning”, 两者都随 trial 数下降, 说明 <strong>reflection 真的在学习这两类失败的修复策略</strong>, 不是噪声;</li>
+</ul>
+<h2 id="hotpotqa-实验细节-figure-4-和-react-直接对照">HotpotQA 实验细节 (Figure 4) — 和 ReAct 直接对照</h2>
+<p>HotpotQA 是 multi-hop QA, 但只有 2-3 跳, <strong>是个推理多但 action horizon 短的任务</strong>; 这导致一个反直觉的现象: trial 0 时 <strong>ReAct-only ≈ CoT-only ≈ 0.34</strong>;</p>
+<p>为什么 ReAct 没赢 CoT? 四个原因:</p>
+<ol>
+<li>HotpotQA 的事实大部分在 GPT 预训练时见过的 Wikipedia 里, parametric knowledge 已经覆盖;</li>
+<li>2-hop horizon 太短, thought 作 working memory 没有用武之地;</li>
+<li>ReAct 引入了 search 失败模式 (找不到实体, 拿到错段落), 是 CoT 没有的新风险;</li>
+<li>ReAct 用的 Wikipedia API 只返回主页前几句, 答案藏在文章深处时根本拿不到;</li>
+</ol>
+<p>Reflexion 的贡献在这张图里体现得很巧妙 — 加 Reflexion 后两条曲线<strong>显著拉开</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>trial 0</th>
+<th>trial 6</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CoT only</td>
+<td>0.34</td>
+<td>0.34 (无变化)</td>
+</tr>
+<tr>
+<td>ReAct only</td>
+<td>0.34</td>
+<td>0.34 (无变化)</td>
+</tr>
+<tr>
+<td>CoT + Reflexion</td>
+<td>0.34</td>
+<td>0.40 (小幅)</td>
+</tr>
+<tr>
+<td><strong>ReAct + Reflexion</strong></td>
+<td>0.34</td>
+<td><strong>0.55</strong> (大幅)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Reflection 给 ReAct 的提升远大于给 CoT 的提升</strong>; 这是一条跨论文的通用判断:</p>
+<blockquote>
+<p><strong>Self-improvement 的天花板由 action space 决定; action space 越大, reflection 的回报越高;</strong></p>
+</blockquote>
+<p>CoT 能 reflect 的只有 reasoning 的措辞和顺序, <strong>底层 prompt 没法显著换</strong>; ReAct 能改 search query, 改 lookup 策略, 改 search 顺序, <strong>可塑性大得多</strong>; 这条规律后续在 Voyager (把 action 扩展到任意 Python skill) 上被进一步放大, 在那里 Reflexion 风格的累积学习收益比 HotpotQA 大一个数量级;</p>
+<h3 id="cot-gt-这个-oracle-上限测试">CoT (GT) 这个 oracle 上限测试</h3>
+<p>Figure 4(b) 引入了一个特殊变种 <strong>CoT (GT)</strong> — 把 HotpotQA dataset 标注好的 supporting paragraphs 直接塞进 prompt, 跳过 retrieval, <strong>只测纯 reasoning 能力</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>设定</th>
+<th>trial 0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CoT only (纯 parametric)</td>
+<td>0.34</td>
+</tr>
+<tr>
+<td>ReAct only (自己 search)</td>
+<td>0.34</td>
+</tr>
+<tr>
+<td><strong>CoT (GT)</strong> (gold passages 直接给)</td>
+<td><strong>0.61</strong></td>
+</tr>
+</tbody>
+</table>
+<p>这个 0.27 个百分点的 gap 告诉你: <strong>HotpotQA 上 retrieval quality 才是真正的瓶颈</strong>, 不是 reasoning quality; ReAct 协议是对的, 它的 search API 不行;</p>
+<p><strong>这个观察直接催生了 agentic RAG 这条研究线</strong> — Self-RAG, FLARE, Adaptive-RAG 这些后续工作的 motivation 都是 “ReAct 协议保留, retriever 大幅升级”;</p>
+<h2 id="humaneval-实验细节">HumanEval 实验细节</h2>
+<p>HumanEval 是函数级 code generation, Evaluator 用单测;</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>pass@1</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GPT-4 baseline</td>
+<td>80.1%</td>
+</tr>
+<tr>
+<td>GPT-4 + Reflexion</td>
+<td><strong>91.0%</strong></td>
+</tr>
+</tbody>
+</table>
+<p>这是 Reflexion 数字最漂亮的一组, 也是它在工业界最被广泛复制的 setting — 因为 <strong>单测就是天然的 ground truth Evaluator, 不需要任何额外设计</strong>;</p>
+<p>Self-Debug (Chen et al., ICLR 2024), AlphaCodium, Aider 的 “test-driven repair” loop 全是 Reflexion-in-code 的变种;</p>
+<h2 id="reflexion-vs-self-refine-极易混淆的两篇">Reflexion vs Self-Refine — 极易混淆的两篇</h2>
+<p>两篇同期 (2023 春) 出来的工作经常被一起讲, 但 scope 完全不一样:</p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>Reflexion</th>
+<th>Self-Refine (Madaan et al. 2023)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>修正的尺度</td>
+<td><strong>between-episode</strong> (跨 trial)</td>
+<td><strong>within-output</strong> (同一轮内)</td>
+</tr>
+<tr>
+<td>状态间隔</td>
+<td>trial 失败后才反思</td>
+<td>生成后立刻自检</td>
+</tr>
+<tr>
+<td>适用任务</td>
+<td>sequential decision-making, multi-step QA</td>
+<td>single-turn generation (写作, 数学, 代码 polish)</td>
+</tr>
+<tr>
+<td>长期记忆</td>
+<td>✅ 跨 trial 累积</td>
+<td>❌ 没有</td>
+</tr>
+<tr>
+<td>Action space</td>
+<td>真实环境 action</td>
+<td>文字生成本身</td>
+</tr>
+</tbody>
+</table>
+<p><strong>两者解决的是不同尺度的 self-correction</strong>, 不互斥, 现实部署常常组合用 — Self-Refine 处理同一轮的措辞 / 逻辑修正, Reflexion 处理跨任务的策略级学习;</p>
+<h2 id="reflexion-的失败模式与限制">Reflexion 的失败模式与限制</h2>
+<p>Reflexion 在实验中已经暴露的限制:</p>
+<ul>
+<li><strong>reflection 长度爆炸</strong>: 每个 trial 累积一段, 跑十几轮后 long-term memory 占掉一大半 context window; <strong>生产系统必须加 summarization 或 retrieval 选 top-k reflection</strong>, 但论文里没解决;</li>
+<li><strong>reflection 质量不可控</strong>: Reflector 偶尔写出空话 (“I should try harder next time”), 这种 reflection 注回 prompt 等于浪费 token;</li>
+<li><strong>依赖 Evaluator 准确性</strong>: 如前所述, Evaluator 错一次会通过 reflection loop 放大;</li>
+<li><strong>只学失败, 不学成功</strong>: 论文设计里 Reflector 只在失败时触发, 成功的 trajectory 不写反思, 这意味着模型不会主动归纳&quot;什么策略是 work 的&quot;, 后续 Voyager 通过把成功 trajectory 编译成 skill 解决了这件事;</li>
+</ul>
+<h1 id="part-iii-两篇合起来看">Part III — 两篇合起来看</h1>
+<h2 id="协议层-rightarrow-学习层的演化">协议层 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>→</mo></mrow><annotation encoding="application/x-tex">\rightarrow</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">→</span></span></span></span> 学习层的演化</h2>
+<p>把两篇拼起来看, LLM agent 的一次完整 iteration 长这样:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">                  ┌──────────── outer Reflexion loop ────────────┐</span><br><span class="line">                  │                                                │</span><br><span class="line">                  │  ┌────────── inner ReAct trajectory ─────────┐ │</span><br><span class="line">                  │  │                                            │ │</span><br><span class="line">task input ──────►│  │  thought → action → obs → thought → ...   │ │── trajectory τ ──►  Evaluator ──► reward r</span><br><span class="line">                  │  │                                            │ │                          │</span><br><span class="line">                  │  └────────────────────────────────────────────┘ │                          ▼</span><br><span class="line">                  │                                                  │                  Self-Reflection</span><br><span class="line">                  │                                                  │                          │</span><br><span class="line">                  │  reflection_i  ◄─────────────────────────────────┼──────────────────────────┘</span><br><span class="line">                  │       │                                          │</span><br><span class="line">                  │       └─► long-term memory ────► next trial 的 prompt</span><br><span class="line">                  │                                                  │</span><br><span class="line">                  └──────────────────────────────────────────────────┘</span><br></pre></td></tr></table></figure>
+<p><strong>ReAct 定义了内层循环 (一次 trajectory 内的 thought / action / obs 交替), Reflexion 定义了外层循环 (跨 trajectory 的反思累积);</strong> 这两层结构成了 2023 年后 LLM agent 的事实标准, 后续工作几乎都是在这两层上各自加东西;</p>
+<h2 id="react-vs-reflexion-一表对照">ReAct vs Reflexion 一表对照</h2>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>ReAct</th>
+<th>Reflexion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>解决的尺度</td>
+<td>单次 trajectory 内推理 + 行动的统一</td>
+<td>跨 trajectory 的失败累积学习</td>
+</tr>
+<tr>
+<td>是否改模型权重</td>
+<td>❌ prompt-only</td>
+<td>❌ prompt-only</td>
+</tr>
+<tr>
+<td>核心数据结构</td>
+<td>trajectory (thought / action / obs 序列)</td>
+<td>long-term memory (reflection 文本累积)</td>
+</tr>
+<tr>
+<td>组件数</td>
+<td>1 个 (单一 LM)</td>
+<td>3 个 (Actor / Evaluator / Reflector)</td>
+</tr>
+<tr>
+<td>算法层面新意</td>
+<td>中等 (协议设计)</td>
+<td>低 (一个 reflection trick)</td>
+</tr>
+<tr>
+<td>Framing 层面新意</td>
+<td>高 (推理 + 行动统一)</td>
+<td><strong>极高</strong> (verbal RL 作为新 reward 范式)</td>
+</tr>
+<tr>
+<td>主要失败模式</td>
+<td>search failure, hallucinated thought, error propagation</td>
+<td>reflection 长度爆炸, evaluator 噪声, 只学失败</td>
+</tr>
+<tr>
+<td>后续工作的协议来源</td>
+<td>LangChain / LlamaIndex / AutoGen 的 agent loop</td>
+<td>RLAIF / PRM / R1 long CoT 的训练范式</td>
+</tr>
+</tbody>
+</table>
+<h2 id="后续工作系谱表-合并">后续工作系谱表 (合并)</h2>
+<p>后续 agent / reasoning model 工作都可以拆解成&quot;在 ReAct 骨架的哪个组件上加, 或者把 Reflexion 的 verbal RL 内化到哪一层&quot;:</p>
+<table>
+<thead>
+<tr>
+<th>后续工作</th>
+<th>加在哪</th>
+<th>加了什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Self-Refine</strong> (Madaan 2023)</td>
+<td>Reflexion 同期</td>
+<td>把 reflection 缩到 within-output 尺度</td>
+</tr>
+<tr>
+<td><strong>CRITIC</strong> (Gou 2023, ICLR 2024)</td>
+<td>Reflexion 的 Reflector</td>
+<td>强制调外部工具校验事实, 不只 verbal</td>
+</tr>
+<tr>
+<td><strong>Self-Debug</strong> (Chen 2023, ICLR 2024)</td>
+<td>Reflexion 的 Evaluator</td>
+<td>专门用 code execution, 在 HumanEval / MBPP 落地</td>
+</tr>
+<tr>
+<td><strong>Tree of Thoughts (ToT)</strong></td>
+<td>ReAct 的 thought</td>
+<td>把 thought 从单链改成树, 在节点做 BFS / DFS</td>
+</tr>
+<tr>
+<td><strong>LATS</strong> (Zhou 2024)</td>
+<td>ToT + Reflexion</td>
+<td>thought 树 + MCTS + verbal value model</td>
+</tr>
+<tr>
+<td><strong>Voyager</strong> (Wang 2023)</td>
+<td>Reflexion 的 long-term memory</td>
+<td>把成功 trajectory 编译成 reusable skill code, 解决&quot;只学失败&quot;的局限</td>
+</tr>
+<tr>
+<td><strong>Toolformer</strong> (Schick 2023)</td>
+<td>ReAct 的 action 协议</td>
+<td>把 action 协议<strong>编进模型权重</strong>, 不再需要 few-shot</td>
+</tr>
+<tr>
+<td><strong>MemGPT</strong> (Packer 2023)</td>
+<td>ReAct 的 context 管理</td>
+<td>给 trajectory 加 OS-style memory hierarchy</td>
+</tr>
+<tr>
+<td><strong>SWE-agent</strong> (Yang 2024)</td>
+<td>ReAct 的 action space</td>
+<td>换成 file edit / shell, 在 SWE-bench 上跑</td>
+</tr>
+<tr>
+<td><strong>AgentTuning / FireAct</strong></td>
+<td>Reflexion 的 long-term memory</td>
+<td>把 trajectory 蒸馏成 SFT 数据, <strong>从 prompt-level 搬到 weight-level</strong></td>
+</tr>
+<tr>
+<td><strong>STaR / ReST</strong> (Zelikman 2022, Singh 2024)</td>
+<td>Reflexion 的精神</td>
+<td>filter 过的成功 trajectory <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>→</mo></mrow><annotation encoding="application/x-tex">\rightarrow</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">→</span></span></span></span> SFT, bootstrapped self-improvement</td>
+</tr>
+<tr>
+<td><strong>DeepSeek-R1 / o1</strong> (2024-2025)</td>
+<td>Reflexion + ReAct 都内化</td>
+<td>long CoT 里 “Wait, let me reconsider…” 就是 in-trajectory 版本的 verbal RL</td>
+</tr>
+<tr>
+<td><strong>AlphaEvolve / Absolute Zero</strong> (2024-2025)</td>
+<td>Reflexion 的 self-play 推广</td>
+<td>自己出题自己解, 反思进一步去人化</td>
+</tr>
+</tbody>
+</table>
+<p><strong>整条 reasoning model frontier 的训练范式, 本质上是 Reflexion 的 conceptual primitive (verbal critique as reward) 的工业化和 scale-up;</strong> 同时, runtime 层面的 agent framework (LangChain / AutoGen / OpenAI Assistants API / Claude Code) 全部是 ReAct 协议的工程封装;</p>
+<h2 id="复杂度-成本侧">复杂度 / 成本侧</h2>
+<p>ReAct trajectory 的 token 数远高于 CoT, 因为每步都要写一段 thought + 一段 action + 把 observation append 回去; 单次 trajectory 期望长度大致是</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>L</mi><mtext>ReAct</mtext></msub><mo>≈</mo><mi>n</mi><mo>⋅</mo><mo stretchy="false">(</mo><msub><mi>l</mi><mi>t</mi></msub><mo>+</mo><msub><mi>l</mi><mi>a</mi></msub><mo>+</mo><msub><mi>l</mi><mi>o</mi></msub><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">L_{\text{ReAct}} \approx n \cdot (l_t + l_a + l_o)
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault">L</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord text mtight"><span class="mord mtight">ReAct</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">≈</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.44445em;vertical-align:0em;"></span><span class="mord mathdefault">n</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord"><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2805559999999999em;"><span style="top:-2.5500000000000003em;margin-left:-0.01968em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">t</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.84444em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:-0.01968em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">a</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:-0.01968em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">o</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span></span></p>
+<p>其中 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi></mrow><annotation encoding="application/x-tex">n</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">n</span></span></span></span> 是 step 数, <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>l</mi><mi>t</mi></msub><mo separator="true">,</mo><msub><mi>l</mi><mi>a</mi></msub><mo separator="true">,</mo><msub><mi>l</mi><mi>o</mi></msub></mrow><annotation encoding="application/x-tex">l_t, l_a, l_o</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2805559999999999em;"><span style="top:-2.5500000000000003em;margin-left:-0.01968em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">t</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:-0.01968em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">a</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:-0.01968em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">o</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> 分别是 thought / action / observation 的平均 token 数, 而 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>l</mi><mi>o</mi></msub></mrow><annotation encoding="application/x-tex">l_o</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.84444em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:-0.01968em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">o</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> 通常远大于 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>l</mi><mi>t</mi></msub><mo separator="true">,</mo><msub><mi>l</mi><mi>a</mi></msub></mrow><annotation encoding="application/x-tex">l_t, l_a</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2805559999999999em;"><span style="top:-2.5500000000000003em;margin-left:-0.01968em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">t</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:-0.01968em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">a</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> (Wikipedia 一段就上百 token); Reflexion 在 ReAct 之上再叠一个 long-term memory, 总成本是</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>L</mi><mtext>Reflexion</mtext><mrow><mo stretchy="false">(</mo><mi>i</mi><mo stretchy="false">)</mo></mrow></msubsup><mo>≈</mo><msub><mi>L</mi><mtext>ReAct</mtext></msub><mo>+</mo><munder><mo>∑</mo><mrow><mi>j</mi><mo>&lt;</mo><mi>i</mi></mrow></munder><msub><mi>l</mi><msub><mtext>reflection</mtext><mi>j</mi></msub></msub></mrow><annotation encoding="application/x-tex">L_{\text{Reflexion}}^{(i)} \approx L_{\text{ReAct}} + \sum_{j &lt; i} l_{\text{reflection}_j}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.3461079999999999em;vertical-align:-0.3013079999999999em;"></span><span class="mord"><span class="mord mathdefault">L</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.0448em;"><span style="top:-2.3986920000000005em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord text mtight"><span class="mord mtight">Reflexion</span></span></span></span></span><span style="top:-3.2198em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mathdefault mtight">i</span><span class="mclose mtight">)</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.3013079999999999em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">≈</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault">L</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord text mtight"><span class="mord mtight">ReAct</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:2.463782em;vertical-align:-1.413777em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.050005em;"><span style="top:-1.8723309999999997em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.05724em;">j</span><span class="mrel mtight">&lt;</span><span class="mord mathdefault mtight">i</span></span></span></span><span style="top:-3.0500049999999996em;"><span class="pstrut" style="height:3.05em;"></span><span><span class="mop op-symbol large-op">∑</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.413777em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:-0.01968em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord text mtight"><span class="mord mtight">reflection</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3280857142857143em;"><span style="top:-2.357em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mathdefault mtight" style="margin-right:0.05724em;">j</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2818857142857143em;"><span></span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.34731999999999996em;"><span></span></span></span></span></span></span></span></span></span></span></p>
+<p>也就是 trial <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi></mrow><annotation encoding="application/x-tex">i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.65952em;vertical-align:0em;"></span><span class="mord mathdefault">i</span></span></span></span> 的 prompt 长度随 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi></mrow><annotation encoding="application/x-tex">i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.65952em;vertical-align:0em;"></span><span class="mord mathdefault">i</span></span></span></span> <strong>线性增长</strong>, 这是 Reflexion 在生产环境部署最大的痛点; 实践中要么 truncate observation, 要么再加一层 summarizer (这就过渡到 MemGPT 那一套了);</p>
+<h2 id="我对这两篇的几个判断">我对这两篇的几个判断</h2>
+<ul>
+<li>ReAct 真正的贡献<strong>不在性能数字</strong>, 而在<strong>协议</strong>: thought / action / observation 这套交替结构是后续所有 agent runtime 的事实标准;</li>
+<li>“prompt-only, 不训练” 这件事是 ReAct 能扩散得这么快的关键, 任何团队拿一个 frozen LLM 就能跑;</li>
+<li>ReAct 协议的<strong>根本短板</strong>是 trajectory 不可分支 — 单链推理, 一旦 thought <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi></mrow><annotation encoding="application/x-tex">k</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.03148em;">k</span></span></span></span> 错了, 后续步骤继承错误前提; 这是 ToT, LATS 这些后续工作的存在动机;</li>
+<li>Reflexion 算法层面薄, framing 层面厚: 这是 PhD 阅读时最容易踩的坑 — 看完算法觉得&quot;就这?&quot;, 错过了它的 conceptual contribution; 真正的护城河在 “verbal RL” 这个命名;</li>
+<li>三组件分离 (Actor / Evaluator / Reflector) 是 Reflexion 最被低估的贡献: 后续所有 agent framework 都沿用这个 abstraction, 看 SWE-agent, Voyager, AutoGen 时都能用这把尺子拆;</li>
+<li><strong>Evaluator 设计是 agent 研究的真正瓶颈</strong>: 不是 policy, 不是 reasoning; 谁能定义出可信且不可作弊的 reward signal, 谁就握住了 self-improvement 的方向盘; ALFWorld 上 Heuristic &gt; GPT 这条 ablation 是这条规律最早的实证;</li>
+<li>Reflexion 不可能 scale 到生产: long-term memory 增长无界, 必然要被 summarization / retrieval 替代; <strong>真正 production-level 的 self-improving 路线最终会回到 weight-level (R1 那条线), Reflexion 是过渡形态</strong>, 但作为概念证据它永远是基石;</li>
+</ul>
+<blockquote>
+<p>[!ReAct + Reflexion 联读主流观点总结]</p>
+<p>如果把这两篇当一个整体浓缩, 它们的主流观点是:</p>
+<ol>
+<li>CoT 提供 reasoning, 但没 grounding, 容易 hallucinate; act-only agent 有 grounding, 但没 working memory, 容易循环; ReAct 把 thought / action / observation 三类 token 放进同一个生成序列, 让 LLM 自己决定每一步是想还是做, 是最朴素的统一办法;</li>
+<li>ReAct 是 prompt-only 协议, 任何 frozen LLM 都能跑; 它的真正贡献是定义了 agent runtime 的事实标准 trajectory 结构, 后续所有 agent framework 都是它的工程封装;</li>
+<li>ReAct 协议在单 trial 内是对的, 但跨 trial 不会学习; Reflexion 在外面套一层 reflection loop, 让 agent 在 trial 失败后写自然语言反思并拼回下一次 prompt;</li>
+<li>Reflexion 把 RL 经典 Actor-Critic 拆成三件套 — Actor (ReAct policy), Evaluator (GT / heuristic / LM-as-judge), Reflector (LM, 把 reward 翻译成自然语言); 这套三组件是后续 agent / RLAIF 研究的事实抽象;</li>
+<li>Reflexion 的真正 conceptual contribution 是 <strong>verbal reinforcement learning</strong> 这个 framing — 自然语言 critique 可以充当 reward signal 在不更新权重下让模型学习, 这个想法后来被吸收进了 RLAIF / Constitutional AI / PRM / o1 / R1 的训练范式;</li>
+<li>两篇都暴露了同一个深层问题: agent 研究的真正瓶颈在 Evaluator 设计 (奖励信号是否可信, 是否可作弊), 而不是 policy 或 reasoning; ALFWorld 上 Heuristic &gt; GPT 这条 ablation 是这条规律的最早实证, 后续整条 process reward model 路线都在贯彻这件事;</li>
+<li>ReAct 定义了 agent runtime 的内层循环 (trajectory), Reflexion 定义了外层循环 (反思累积); 后续工作几乎都可以拆解成&quot;在 ReAct 协议的哪个组件上加 / 把 Reflexion 的 verbal RL 内化到哪一层&quot;; 把这两篇当作&quot;双坐标系&quot;, 整个 LLM agent 文献都能装进去;</li>
+</ol>
+</blockquote>
+<h1 id="part-iv-planning-周边阅读-day-4-配套">Part IV — Planning 周边阅读 (Day 4 配套)</h1>
+<p>ReAct / Reflexion 之外, 2023 年另一条主线是 <strong>plan-then-execute</strong> 派 — 让 LLM 先把任务拆成步骤再执行, 跟 ReAct 的 “走一步看一步” 是两个极端; 这一节简单收录这条线上读过的几篇, 内容控制在 cite-level, 细节查原 paper;</p>
+<h2 id="plan-and-solve-wang-et-al-acl-2023">Plan-and-Solve (Wang et al., ACL 2023)</h2>
+<p><strong>定位</strong>: plan-then-execute prompting 的 cite-able 出处, algorithmic substance 极薄;</p>
+<p><strong>核心 idea</strong>:</p>
+<ul>
+<li><strong>PS prompt</strong>: 把 “Let’s think step by step” 升级成 “Let’s first understand the problem and devise a plan to solve it. Then, let’s carry out the plan and solve the problem step by step.”;</li>
+<li><strong>PS+ prompt</strong>: 在 PS 基础上加 detailed instructions (extract relevant variables, calculate intermediate results, pay attention to calculation);</li>
+<li>zero-shot, 不需要 manual exemplars;</li>
+</ul>
+<p><strong>实验</strong>: GSM8K / AQuA / SVAMP 等数学 benchmark 上小幅胜 CoT (~5pp), 不是数量级提升;</p>
+<p><strong>判断</strong>: 典型 prompt-engineering paper, algorithm = 一段 prompt template; cite 价值远高于阅读价值, 5-10 min 扫完即可;</p>
+<p><strong>和 Part I 的 ReAct 关系</strong>: PS 是 plan-then-execute 极端版本 (一次性把 plan 写完再执行), ReAct 是 interleaved 极端版本 (thought / action / observation 交替走一步看一步); 后续 agent 工作都在这两个极端之间找平衡;</p>
+<h2 id="hugginggpt-shen-et-al-neurips-2023">HuggingGPT (Shen et al., NeurIPS 2023)</h2>
+<p><strong>别名</strong>: JARVIS (微软命名)</p>
+<p><strong>定位</strong>: “LLM as orchestrator” framing 的源头之一, <strong>system paper + prompt-engineering paper 混合</strong>, 不是算法 paper;</p>
+<p><strong>核心 idea</strong>: LLM 当中央调度员, orchestrate HuggingFace 上几万个专门模型完成多模态任务; 4 阶段架构:</p>
+<ol>
+<li><strong>Task Planning</strong> — LLM 把用户请求解析成带依赖的任务 DAG (JSON 格式输出)</li>
+<li><strong>Model Selection</strong> — 从 HF Hub 100K+ 模型池里, <strong>task type 过滤 + popularity (download/like count) 排序 + LLM 在 top-K 中挑选</strong></li>
+<li><strong>Task Execution</strong> — 用 <code>&lt;resource-X&gt;</code> 占位符串接异构模型的输出 (image path, text, bbox, …)</li>
+<li><strong>Response Generation</strong> — LLM 把所有 task 输出拼成自然语言回答, 引用中间结果</li>
+</ol>
+<p><strong>四个真正难点</strong> (你读时盯死的):</p>
+<ul>
+<li><strong>DAG 生成</strong>: LLM 同时做 NLU + 任务分解 + JSON 结构化 + 依赖图构造, 任何一处出错全 pipeline 崩, 没有 recovery</li>
+<li><strong>大池子模型选择</strong>: 100K+ HF model 选对一个全靠 description 措辞 + download count 这两个噪声信号, <strong>Gorilla 命名的 “API hallucination” 在这里复发</strong></li>
+<li><strong>异构输出串联</strong>: 没有 type system, 不同 task 输出格式天差地别, 只能 hardcoded schema 匹配</li>
+<li><strong>prompt 长度爆炸</strong>: 4 阶段累积下来, 中间结果 (尤其 transcription / image caption) 会把 context 撑爆</li>
+</ul>
+<p><strong>判断</strong>: 具体实现 (prompt 让 LLM 选 HF model) <strong>已被 MCP 协议化超越</strong>, 现在已经不是 production 选项, 是 historical 节点; 但 “LLM 作为多模态多工具调度员” 这个 framing 还活着, 在 Claude Code / OpenAI Assistants / MCP 生态里以更工程化的方式延续;</p>
+<p><strong>和 Part I / II 的关系</strong>: HuggingGPT 是 plan-then-execute 极端版本 (一次性上前生成完整 DAG, 中途无修正); ReAct 在另一端 (adaptive step-by-step, 每步根据 observation 调整); Reflexion 在 HuggingGPT 里根本不存在 — DAG 失败就失败, 没有跨 trial 累积学习的机制;</p>
+<h2 id="day-4-这条线的横向判断">Day 4 这条线的横向判断</h2>
+<p>读完几篇 planning 论文 (PS / HuggingGPT / 准备扫的 ToT / LATS / RAP) 后, 应该 internalize 的一条跨论文 takeaway:</p>
+<blockquote>
+<p><strong>&quot;LLM-only planning&quot; 在 inference-time 这一支 (PS / HuggingGPT / AutoGPT / BabyAGI / ToT / LATS / RAP) 的 algorithmic substance 普遍偏薄</strong>:</p>
+<ul>
+<li>PS / HuggingGPT / AutoGPT / BabyAGI 是 prompt template + pipeline 工程, LLM 完全 black-box</li>
+<li>ToT / LATS / RAP 多套一层 classical search (BFS / DFS / MCTS), 但 LLM 内部仍是 black-box, 只是外层 search 框架变重</li>
+</ul>
+<p><strong>真正的 planning 突破不在这条线</strong>:</p>
+<ul>
+<li><strong>Training-time 路线</strong> (o1 / R1) 把 search / reflection 烧进 long CoT 训练, 单次 forward 就完成 ToT 风格 search; 比 inference-time tree search 便宜得多</li>
+<li><strong>Neuro-symbolic 路线</strong> (LLM+P / LLM-Modulo / AlphaProof) 把 LLM 输出送给经典 planner / verifier, 由形式化系统保证 plan 正确性</li>
+</ul>
+<p><strong>对非训练方向的 agent 研究者</strong>, planning 这条 inference-time 线的未来回报有限, 读到 cite-level 即可, 不必深陷; <strong>真正值得投入的是 retrieval (Day 5) 和 memory (Day 6) 这两条对非训练研究者 ROI 更高的支线</strong>;</p>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">Yuchen You (Wesley)</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2026/05/21/agentsys/Paper/ReAct%20+%20Reflexion%20-%20Reasoning%20Acting%20and%20Verbal%20Reinforcement%20Learning/">http://example.com/2026/05/21/agentsys/Paper/ReAct%20+%20Reflexion%20-%20Reasoning%20Acting%20and%20Verbal%20Reinforcement%20Learning/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/agentsys/">agentsys</a><a class="post-meta__tags" href="/tags/llm-agent/">llm_agent</a><a class="post-meta__tags" href="/tags/reasoning/">reasoning</a><a class="post-meta__tags" href="/tags/tool-use/">tool_use</a><a class="post-meta__tags" href="/tags/reflection/">reflection</a><a class="post-meta__tags" href="/tags/self-improvement/">self_improvement</a></div><div class="post_share"><div class="social-share" data-image="/img/me_new.jpeg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2026/05/25/computer_system_basics/os/7.%20Unix%20%E7%94%B5%E6%BA%90%E7%AE%A1%E7%90%86/" title="Unix 电源管理"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Previous</div><div class="prev_info">Unix 电源管理</div></div></a></div><div class="next-post pull-right"><a href="/2026/05/20/computer_system_basics/network/security/Vpn%20from%20WireGuard%20Impl/" title="Vpn from WireGuard Impl"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Next</div><div class="next_info">Vpn from WireGuard Impl</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2026/05/26/agentsys/planning/0.tree-of-thought/" title="Tree of Thought: 不再是 left-to-right 单向思维架构"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-26</div><div class="title">Tree of Thought: 不再是 left-to-right 单向思维架构</div></div></a></div><div><a href="/2026/05/20/agentsys/memory/MemGPT%20-%20Towards%20LLMs%20as%20Operating%20Systems/" title="MemGPT - Towards LLMs as Operating Systems"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-20</div><div class="title">MemGPT - Towards LLMs as Operating Systems</div></div></a></div><div><a href="/2026/05/26/agentsys/orchestration/0.mcts/" title="0. 从 Minimax 到 MCTS - 经典博弈树搜索基础"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-26</div><div class="title">0. 从 Minimax 到 MCTS - 经典博弈树搜索基础</div></div></a></div><div><a href="/2026/05/20/agentsys/rca/onion/" title="Onion - Identifying Incident-indicating Logs for Cloud Systems"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-20</div><div class="title">Onion - Identifying Incident-indicating Logs for Cloud Systems</div></div></a></div><div><a href="/2026/05/20/agentsys/rca/rcacopilot/" title="RCACopilot - Automatic Root Cause Analysis via Large Language Models for Cloud Incidents"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-20</div><div class="title">RCACopilot - Automatic Root Cause Analysis via Large Language Models for Cloud Incidents</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/me_new.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Yuchen You (Wesley)</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">114</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">52</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">8</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/1WesleyYou"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/1Wesleyyou" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yuchenxr@umich.edu" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://www.linkedin.com/in/yuchen-you-a74940314/?locale=en_US" target="_blank" title="LinkedIn"><i class="fab fa-linkedin" style="color: #4a4dbe;"></i></a><a class="social-icon" href="/Yuchen_CV.pdf" target="_blank" title="CV"><i class="fas fa-address-card" style="color: #251456;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88-react-reflexion-%E8%A6%81%E6%94%BE%E4%B8%80%E8%B5%B7%E8%AF%BB"><span class="toc-number">1.</span> <span class="toc-text">为什么 ReAct + Reflexion 要放一起读</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E7%BD%AE%E5%9F%BA%E7%A1%80-a-chain-of-thought-%E7%9A%84%E5%B1%80%E9%99%90"><span class="toc-number">2.</span> <span class="toc-text">前置基础 A: Chain-of-Thought 的局限</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E7%BD%AE%E5%9F%BA%E7%A1%80-b-act-only-agent-%E7%9A%84%E5%B1%80%E9%99%90"><span class="toc-number">3.</span> <span class="toc-text">前置基础 B: act-only agent 的局限</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E7%BD%AE%E5%9F%BA%E7%A1%80-c-actor-critic-%E6%98%AF-reflexion-%E7%9A%84%E6%AF%8D%E6%9E%B6%E6%9E%84"><span class="toc-number">4.</span> <span class="toc-text">前置基础 C: Actor-Critic 是 Reflexion 的母架构</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#part-i-react-%E6%8A%8A-reasoning-%E5%92%8C-acting-%E6%94%BE%E8%BF%9B%E5%90%8C%E4%B8%80%E6%9D%A1-trajectory"><span class="toc-number"></span> <span class="toc-text">Part I — ReAct: 把 reasoning 和 acting 放进同一条 trajectory</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#react-%E8%AE%BA%E6%96%87%E5%AE%9A%E4%BD%8D"><span class="toc-number">1.</span> <span class="toc-text">ReAct 论文定位</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#react-%E8%A7%A3%E5%86%B3%E7%9A%84%E6%A0%B8%E5%BF%83%E9%97%AE%E9%A2%98"><span class="toc-number">2.</span> <span class="toc-text">ReAct 解决的核心问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#react-%E6%A0%B8%E5%BF%83%E6%9C%BA%E5%88%B6-thought-rightarrow-action-rightarrow-observation-%E7%9A%84%E4%BA%A4%E6%9B%BF"><span class="toc-number">3.</span> <span class="toc-text">ReAct 核心机制: thought →\rightarrow→ action →\rightarrow→ observation 的交替</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#action-space-%E7%9A%84%E4%B8%A4%E7%A7%8D%E8%AE%BE%E8%AE%A1"><span class="toc-number">4.</span> <span class="toc-text">Action Space 的两种设计</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#react-%E7%9A%84-prompt-%E6%98%AF%E6%80%8E%E4%B9%88%E6%90%AD%E7%9A%84"><span class="toc-number">5.</span> <span class="toc-text">ReAct 的 Prompt 是怎么搭的</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#react-%E5%AE%9E%E9%AA%8C%E5%AF%B9%E6%AF%94-4-%E7%A7%8D%E7%AD%96%E7%95%A5"><span class="toc-number">6.</span> <span class="toc-text">ReAct 实验对比: 4 种策略</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#react-%E7%95%99%E4%B8%8B%E7%9A%84%E4%B8%89%E4%B8%AA%E5%A4%B1%E8%B4%A5%E6%A8%A1%E5%BC%8F-%E8%BF%99%E4%B8%80%E8%8A%82%E7%9B%B4%E6%8E%A5-bridge-%E5%88%B0-reflexion"><span class="toc-number">7.</span> <span class="toc-text">ReAct 留下的三个失败模式 (← 这一节直接 bridge 到 Reflexion)</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#part-ii-reflexion-%E5%9C%A8-react-%E4%B9%8B%E4%B8%8A%E5%8A%A0-verbal-rl-loop"><span class="toc-number"></span> <span class="toc-text">Part II — Reflexion: 在 ReAct 之上加 verbal RL loop</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#reflexion-%E8%AE%BA%E6%96%87%E5%AE%9A%E4%BD%8D"><span class="toc-number">1.</span> <span class="toc-text">Reflexion 论文定位</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#reflexion-%E8%A7%A3%E5%86%B3%E7%9A%84%E6%A0%B8%E5%BF%83%E9%97%AE%E9%A2%98"><span class="toc-number">2.</span> <span class="toc-text">Reflexion 解决的核心问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#reflexion-%E6%A0%B8%E5%BF%83%E6%9C%BA%E5%88%B6-actor-evaluator-self-reflection-%E4%B8%89%E7%BB%84%E4%BB%B6%E5%88%86%E7%A6%BB"><span class="toc-number">3.</span> <span class="toc-text">Reflexion 核心机制: Actor &#x2F; Evaluator &#x2F; Self-Reflection 三组件分离</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#evaluator-%E7%9A%84%E4%B8%89%E7%A7%8D%E5%AE%9E%E7%8E%B0-%E5%90%AF%E5%8F%91%E5%BC%8F%E5%8F%AF%E4%BB%A5%E6%89%93%E8%BF%87-lm-as-judge"><span class="toc-number">4.</span> <span class="toc-text">Evaluator 的三种实现, 启发式可以打过 LM-as-judge</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#self-reflection-%E6%8A%8A-reward-%E7%BF%BB%E8%AF%91%E6%88%90%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80"><span class="toc-number">5.</span> <span class="toc-text">Self-Reflection: 把 reward 翻译成自然语言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#verbal-rl-%E8%BF%99%E4%B8%AA-framing-%E6%89%8D%E6%98%AF-reflexion-%E7%9C%9F%E6%AD%A3%E7%9A%84%E8%B4%A1%E7%8C%AE"><span class="toc-number">6.</span> <span class="toc-text">Verbal RL 这个 framing 才是 Reflexion 真正的贡献</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#alfworld-%E5%AE%9E%E9%AA%8C%E7%BB%86%E8%8A%82-figure-3"><span class="toc-number">7.</span> <span class="toc-text">ALFWorld 实验细节 (Figure 3)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#hotpotqa-%E5%AE%9E%E9%AA%8C%E7%BB%86%E8%8A%82-figure-4-%E5%92%8C-react-%E7%9B%B4%E6%8E%A5%E5%AF%B9%E7%85%A7"><span class="toc-number">8.</span> <span class="toc-text">HotpotQA 实验细节 (Figure 4) — 和 ReAct 直接对照</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#cot-gt-%E8%BF%99%E4%B8%AA-oracle-%E4%B8%8A%E9%99%90%E6%B5%8B%E8%AF%95"><span class="toc-number">8.1.</span> <span class="toc-text">CoT (GT) 这个 oracle 上限测试</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#humaneval-%E5%AE%9E%E9%AA%8C%E7%BB%86%E8%8A%82"><span class="toc-number">9.</span> <span class="toc-text">HumanEval 实验细节</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#reflexion-vs-self-refine-%E6%9E%81%E6%98%93%E6%B7%B7%E6%B7%86%E7%9A%84%E4%B8%A4%E7%AF%87"><span class="toc-number">10.</span> <span class="toc-text">Reflexion vs Self-Refine — 极易混淆的两篇</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#reflexion-%E7%9A%84%E5%A4%B1%E8%B4%A5%E6%A8%A1%E5%BC%8F%E4%B8%8E%E9%99%90%E5%88%B6"><span class="toc-number">11.</span> <span class="toc-text">Reflexion 的失败模式与限制</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#part-iii-%E4%B8%A4%E7%AF%87%E5%90%88%E8%B5%B7%E6%9D%A5%E7%9C%8B"><span class="toc-number"></span> <span class="toc-text">Part III — 两篇合起来看</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%8F%E8%AE%AE%E5%B1%82-rightarrow-%E5%AD%A6%E4%B9%A0%E5%B1%82%E7%9A%84%E6%BC%94%E5%8C%96"><span class="toc-number">1.</span> <span class="toc-text">协议层 →\rightarrow→ 学习层的演化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#react-vs-reflexion-%E4%B8%80%E8%A1%A8%E5%AF%B9%E7%85%A7"><span class="toc-number">2.</span> <span class="toc-text">ReAct vs Reflexion 一表对照</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%8E%E7%BB%AD%E5%B7%A5%E4%BD%9C%E7%B3%BB%E8%B0%B1%E8%A1%A8-%E5%90%88%E5%B9%B6"><span class="toc-number">3.</span> <span class="toc-text">后续工作系谱表 (合并)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%8D%E6%9D%82%E5%BA%A6-%E6%88%90%E6%9C%AC%E4%BE%A7"><span class="toc-number">4.</span> <span class="toc-text">复杂度 &#x2F; 成本侧</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%88%91%E5%AF%B9%E8%BF%99%E4%B8%A4%E7%AF%87%E7%9A%84%E5%87%A0%E4%B8%AA%E5%88%A4%E6%96%AD"><span class="toc-number">5.</span> <span class="toc-text">我对这两篇的几个判断</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#part-iv-planning-%E5%91%A8%E8%BE%B9%E9%98%85%E8%AF%BB-day-4-%E9%85%8D%E5%A5%97"><span class="toc-number"></span> <span class="toc-text">Part IV — Planning 周边阅读 (Day 4 配套)</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#plan-and-solve-wang-et-al-acl-2023"><span class="toc-number">1.</span> <span class="toc-text">Plan-and-Solve (Wang et al., ACL 2023)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#hugginggpt-shen-et-al-neurips-2023"><span class="toc-number">2.</span> <span class="toc-text">HuggingGPT (Shen et al., NeurIPS 2023)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#day-4-%E8%BF%99%E6%9D%A1%E7%BA%BF%E7%9A%84%E6%A8%AA%E5%90%91%E5%88%A4%E6%96%AD"><span class="toc-number">3.</span> <span class="toc-text">Day 4 这条线的横向判断</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/31/computer_system_basics/network/7.%20mini-vpn-go%20Phase2%20%E6%98%8E%E6%96%87%20IP-in-UDP%20%E9%9A%A7%E9%81%93/" title="7. mini-vpn-go Phase2 明文 IP-in-UDP 隧道">7. mini-vpn-go Phase2 明文 IP-in-UDP 隧道</a><time datetime="2026-05-31T10:10:00.000Z" title="Created 2026-05-31 18:10:00">2026-05-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/26/agentsys/planning/0.tree-of-thought/" title="Tree of Thought: 不再是 left-to-right 单向思维架构">Tree of Thought: 不再是 left-to-right 单向思维架构</a><time datetime="2026-05-26T12:57:56.279Z" title="Created 2026-05-26 20:57:56">2026-05-26</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/26/agentsys/orchestration/0.mcts/" title="0. 从 Minimax 到 MCTS - 经典博弈树搜索基础">0. 从 Minimax 到 MCTS - 经典博弈树搜索基础</a><time datetime="2026-05-26T08:02:36.715Z" title="Created 2026-05-26 16:02:36">2026-05-26</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/25/computer_system_basics/os/7.%20Unix%20%E7%94%B5%E6%BA%90%E7%AE%A1%E7%90%86/" title="Unix 电源管理">Unix 电源管理</a><time datetime="2026-05-24T16:00:00.000Z" title="Created 2026-05-25 00:00:00">2026-05-25</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/21/agentsys/Paper/ReAct%20+%20Reflexion%20-%20Reasoning%20Acting%20and%20Verbal%20Reinforcement%20Learning/" title="ReAct + Reflexion - Reasoning Acting and Verbal Reinforcement Learning">ReAct + Reflexion - Reasoning Acting and Verbal Reinforcement Learning</a><time datetime="2026-05-21T08:09:00.514Z" title="Created 2026-05-21 16:09:00">2026-05-21</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2026 By Yuchen You (Wesley)</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">welcome to my blog!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/fireworks.min.js"></script><script defer="defer" id="fluttering_ribbon" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/canvas-fluttering-ribbon.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading the Database</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="Search for Posts" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=4.13.0"></script></div></div></body></html>

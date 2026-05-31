@@ -1,0 +1,486 @@
+<!DOCTYPE html><html lang="en-US" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Unix 电源管理 | Yuchen You</title><meta name="author" content="Yuchen You (Wesley)"><meta name="copyright" content="Yuchen You (Wesley)"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="状态机心智模型 任何 sleep &#x2F; lock &#x2F; logout &#x2F; hibernate 操作, 本质都是在调 4 个开关的不同组合; 判断&quot;这个操作干了什么&quot;只要看这 4 件事:  用户进程还在不在? (Chrome, IDE, SSH 连接是否还活着); CPU 还在不在执行指令?; RAM 还通不通电?; 磁盘上有没有内存镜像? (用来还原的);  对照表 (从轻到重)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Unix 电源管理">
+<meta property="og:url" content="http://example.com/2026/05/25/computer_system_basics/os/7.%20Unix%20%E7%94%B5%E6%BA%90%E7%AE%A1%E7%90%86/index.html">
+<meta property="og:site_name" content="Yuchen You">
+<meta property="og:description" content="状态机心智模型 任何 sleep &#x2F; lock &#x2F; logout &#x2F; hibernate 操作, 本质都是在调 4 个开关的不同组合; 判断&quot;这个操作干了什么&quot;只要看这 4 件事:  用户进程还在不在? (Chrome, IDE, SSH 连接是否还活着); CPU 还在不在执行指令?; RAM 还通不通电?; 磁盘上有没有内存镜像? (用来还原的);  对照表 (从轻到重)">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/img/me_new.jpeg">
+<meta property="article:published_time" content="2026-05-24T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-05-26T09:51:38.793Z">
+<meta property="article:author" content="Yuchen You (Wesley)">
+<meta property="article:tag" content="os">
+<meta property="article:tag" content="unix">
+<meta property="article:tag" content="power-management">
+<meta property="article:tag" content="acpi">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/me_new.jpeg"><link rel="shortcut icon" href="/img/hackerrank.svg"><link rel="canonical" href="http://example.com/2026/05/25/computer_system_basics/os/7.%20Unix%20%E7%94%B5%E6%BA%90%E7%AE%A1%E7%90%86/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Unix 电源管理',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-05-26 17:51:38'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 7.2.0"><link href="https://cdn.bootcss.com/KaTeX/0.11.1/katex.min.css" rel="stylesheet" />
+<style>
+.obsidian-callout { margin: 1em 0; }
+.obsidian-callout blockquote { border-left: none; margin: 0; padding: 0; background: transparent; }
+.obsidian-callout p { margin: 0.4em 0; }
+.obsidian-callout details > summary { list-style: none; }
+.obsidian-callout details > summary::-webkit-details-marker { display: none; }
+</style></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/me_new.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">114</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">52</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">8</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/math_master.jpeg')"><nav id="nav"><span id="blog-info"><a href="/" title="Yuchen You"><img class="site-icon" src="/img/avatar.png"/><span class="site-name">Yuchen You</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> Search</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Unix 电源管理</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2026-05-24T16:00:00.000Z" title="Created 2026-05-25 00:00:00">2026-05-25</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-05-26T09:51:38.793Z" title="Updated 2026-05-26 17:51:38">2026-05-26</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/os/">os</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Unix 电源管理"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="状态机心智模型">状态机心智模型</h2>
+<p>任何 sleep / lock / logout / hibernate 操作, 本质都是在调 4 个开关的不同组合; 判断&quot;这个操作干了什么&quot;只要看这 4 件事:</p>
+<ol>
+<li><strong>用户进程还在不在?</strong> (Chrome, IDE, SSH 连接是否还活着);</li>
+<li><strong>CPU 还在不在执行指令?</strong>;</li>
+<li><strong>RAM 还通不通电?</strong>;</li>
+<li><strong>磁盘上有没有内存镜像?</strong> (用来还原的);</li>
+</ol>
+<h3 id="对照表-从轻到重">对照表 (从轻到重)</h3>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>用户进程</th>
+<th>CPU</th>
+<th>RAM</th>
+<th>磁盘镜像</th>
+<th>唤醒/恢复</th>
+<th>功耗</th>
+<th>典型场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>熄屏 (DPMS)</td>
+<td>跑</td>
+<td>跑</td>
+<td>通电</td>
+<td>—</td>
+<td>瞬间 (动鼠标)</td>
+<td>省 ~10W (只关显示器)</td>
+<td>短暂离开几分钟</td>
+</tr>
+<tr>
+<td>锁屏 (lock)</td>
+<td>跑</td>
+<td>跑</td>
+<td>通电</td>
+<td>—</td>
+<td>输密码</td>
+<td>同平时</td>
+<td>离开座位防别人乱碰</td>
+</tr>
+<tr>
+<td>Suspend (S3 / s2idle)</td>
+<td>冻结</td>
+<td>停</td>
+<td>自刷新通电</td>
+<td>—</td>
+<td>1-3s</td>
+<td>电池 1-3%/小时</td>
+<td>合盖, 临时离开</td>
+</tr>
+<tr>
+<td>Hibernate (S4)</td>
+<td>冻结</td>
+<td>停</td>
+<td><strong>断电</strong></td>
+<td><strong>整块写到 swap</strong></td>
+<td>10-30s</td>
+<td><strong>0</strong></td>
+<td>过夜, 长时间不用</td>
+</tr>
+<tr>
+<td>Hybrid sleep</td>
+<td>冻结</td>
+<td>停</td>
+<td>通电</td>
+<td>同时写盘</td>
+<td>RAM 没掉就秒开, 掉了从盘恢复</td>
+<td>1-3%/小时 + 一次写入</td>
+<td>台式机怕断电</td>
+</tr>
+<tr>
+<td>Logout</td>
+<td><strong>全部杀掉</strong></td>
+<td>跑</td>
+<td>通电</td>
+<td>—</td>
+<td>重新登录, 所有 app 从头开</td>
+<td>同平时</td>
+<td>换用户用机器</td>
+</tr>
+<tr>
+<td>Shutdown (S5)</td>
+<td>全杀</td>
+<td>停</td>
+<td>断电</td>
+<td>—</td>
+<td>完整冷启动 30s+</td>
+<td>0</td>
+<td>不用了 / 要搬动</td>
+</tr>
+</tbody>
+</table>
+<h3 id="容易混的几对">容易混的几对</h3>
+<p><strong>Suspend vs Hibernate</strong> — 同是&quot;睡眠&quot;, 但<strong>断电后果完全不同</strong>:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Suspend  := &quot;暂停按钮&quot;, RAM 保持通电, 状态在内存里;</span><br><span class="line">            断电就完蛋, 但秒级唤醒;</span><br><span class="line">Hibernate := &quot;存档退出&quot;, RAM 写到磁盘, 真的关机;</span><br><span class="line">            断电不丢, 但唤醒要重新装回内存, 慢;</span><br></pre></td></tr></table></figure>
+<p><strong>锁屏 vs Suspend</strong> — 完全是两层东西:</p>
+<ul>
+<li><strong>锁屏</strong>: 纯 UI, 进程没停, 只是盖一层&quot;输密码才能交互&quot;的窗; 编译, 下载, 视频会议照常跑;</li>
+<li><strong>Suspend</strong>: 物理层面让 CPU 停了; 所有进程冻结, 编译暂停, SSH 断线, 视频会议掉;</li>
+</ul>
+<p>所以远程开会时锁屏没事 (会议还在跑); 合盖让它 suspend — 会议直接掉;</p>
+<p><strong>Logout vs Shutdown</strong>:</p>
+<ul>
+<li><strong>Logout</strong>: 杀掉<strong>你这个用户的所有进程</strong>, 但系统服务, 内核, 其他用户的 session 全在; Linux 服务器你 SSH 退出就是 logout — 服务器还在跑别的;</li>
+<li><strong>Shutdown</strong>: 杀光所有进程, 内核关, 硬件断电;</li>
+</ul>
+<h3 id="合上盖子-做了什么">合上盖子 = 做了什么?</h3>
+<p><strong>取决于配置</strong>, 不是固定动作; Linux 看 <code>/etc/systemd/logind.conf</code> 的 <code>HandleLidSwitch</code>; 绝大多数发行版的<strong>默认</strong>是:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">合盖 → suspend (S3 或 s2idle)</span><br></pre></td></tr></table></figure>
+<p>也就是上表第三行: 进程冻结, CPU 停, RAM 通电, 1-3 秒能唤醒;</p>
+<p>Linux 上可改成:</p>
+<ul>
+<li><code>ignore</code> — 啥也不做 (合盖照跑, 配 dock 当桌面机);</li>
+<li><code>lock</code> — 只锁屏, 进程继续跑;</li>
+<li><code>suspend-then-hibernate</code> — 先 suspend, N 分钟没开转 hibernate (推荐, 兼顾速度和过夜安全);</li>
+<li><code>poweroff</code> — 真关机 (没人这么用);</li>
+</ul>
+<blockquote>
+<p>[!macOS 合盖逻辑的区别]</p>
+<p>macOS 没有 Linux 那么多 lid action 选项可调, 但有一个<strong>自动行为</strong>: 接外接显示器 + 电源 + 鼠标/键盘 三件套齐全时, 合盖会自动进入 <strong>clamshell mode</strong> (等同 Linux 的 <code>ignore</code>), 笔记本继续跑, 屏幕只走外接; 三个条件少一个就 suspend; 想&quot;没外接键鼠也合盖继续跑&quot;得装第三方 (NoSleep, Amphetamine), 或用 <code>caffeinate -i</code> 阻止 idle sleep — 但合盖动作本身没法直接关掉;</p>
+<p>macOS 的 <code>hibernatemode</code> 数值跟 Linux 的 “suspend / hibernate / hybrid” 概念<strong>不是一一对应</strong>, 是混合策略的预设:</p>
+<ul>
+<li><code>0</code> = 纯 suspend (老 Mac 默认, 类似 Linux suspend);</li>
+<li><code>3</code> = safe sleep (类似 hybrid: RAM 通电 + 写盘备份, 现在笔记本默认);</li>
+<li><code>25</code> = pure hibernate (RAM 断电, 类似 Linux S4, 移动设备防丢数据用);</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pmset -g | grep hibernatemode        <span class="comment"># 看当前</span></span><br><span class="line">sudo pmset -a hibernatemode 3        <span class="comment"># 改全场景</span></span><br></pre></td></tr></table></figure>
+</blockquote>
+<h2 id="电源栈分层">电源栈分层</h2>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">用户态 GUI/CLI: systemctl, loginctl, swayidle, pmset, caffeinate</span><br><span class="line">   ↓</span><br><span class="line">系统服务: systemd-logind (lid/key), systemd-sleep (hooks)</span><br><span class="line">   ↓</span><br><span class="line">内核 sysfs: /sys/power/state, /sys/power/disk, /proc/acpi/wakeup</span><br><span class="line">   ↓</span><br><span class="line">固件 ACPI: DSDT/FADT, _S3/_S4 method, UEFI 配置</span><br><span class="line">   ↓</span><br><span class="line">硬件: CPU C-states, 网卡 WoL, RTC, LID GPIO</span><br></pre></td></tr></table></figure>
+<p>debug 顺序: 从下往上排除;</p>
+<h2 id="acpi-sleep-states">ACPI Sleep States</h2>
+<table>
+<thead>
+<tr>
+<th>状态</th>
+<th>名称</th>
+<th>行为</th>
+<th>唤醒延迟</th>
+<th>功耗</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S0</td>
+<td>Working</td>
+<td>正常运行</td>
+<td>0</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>S0ix</td>
+<td>Modern Standby (s2idle)</td>
+<td>软件 deep idle, 部分组件保电</td>
+<td>&lt; 100ms</td>
+<td>~5%</td>
+</tr>
+<tr>
+<td>S3</td>
+<td>Suspend-to-RAM</td>
+<td>仅 RAM self-refresh</td>
+<td>1-3s</td>
+<td>1-3%</td>
+</tr>
+<tr>
+<td>S4</td>
+<td>Suspend-to-Disk (Hibernate)</td>
+<td>内存 dump 到 swap, 全断电</td>
+<td>10-30s</td>
+<td>0%</td>
+</tr>
+<tr>
+<td>S5</td>
+<td>Soft Off</td>
+<td>关机, 但可 WoL</td>
+<td>启动时间</td>
+<td>~0%</td>
+</tr>
+</tbody>
+</table>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> /sys/power/state           <span class="comment"># freeze mem disk  ← 本机支持的</span></span><br><span class="line"><span class="built_in">cat</span> /sys/power/mem_sleep       <span class="comment"># [s2idle] deep    ← 当前选择</span></span><br><span class="line"><span class="built_in">echo</span> deep | sudo <span class="built_in">tee</span> /sys/power/mem_sleep   <span class="comment"># 切到真正的 S3</span></span><br></pre></td></tr></table></figure>
+<p>现代笔记本 (Surface, 部分 Dell/Lenovo) 已不支持 S3, 只能 s2idle; <strong>Linux 续航差的最大锅</strong>, 因为 s2idle 严重依赖驱动+固件配合; 排查用 <code>turbostat</code>, 关注 <code>Pkg%pc10</code> (要 &gt; 90%) 和 <code>PkgWatt</code> (要 &lt; 2W);</p>
+<h2 id="sysfs-接口">sysfs 接口</h2>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">/sys/power/state            <span class="comment"># echo mem|disk|freeze 触发</span></span><br><span class="line">/sys/power/disk             <span class="comment"># platform|shutdown|reboot, hibernate 模式</span></span><br><span class="line">/sys/power/mem_sleep        <span class="comment"># s2idle vs deep</span></span><br><span class="line">/sys/power/wakeup_count     <span class="comment"># race-free 触发用</span></span><br><span class="line">/sys/power/pm_test          <span class="comment"># 调试: 模拟不真睡</span></span><br><span class="line">/proc/acpi/wakeup           <span class="comment"># 可唤醒设备列表, echo 设备名 toggle</span></span><br><span class="line">/sys/class/power_supply/BAT0/&#123;capacity,status&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>[!race-free suspend 协议]</p>
+<p>直接 <code>echo mem &gt; state</code> 有竞态 — 瞬间来个 wakeup 就立刻醒; 正确做法:</p>
+<ol>
+<li>读 <code>wakeup_count</code> 拿值 N;</li>
+<li>写 N 回 <code>wakeup_count</code> (失败说明有新事件, 放弃);</li>
+<li>成功才写 <code>mem</code> 到 <code>state</code>;</li>
+</ol>
+<p>systemd-logind 内部就这么做; 手写脚本务必照搬;</p>
+</blockquote>
+<h2 id="触发睡眠的三种姿势">触发睡眠的三种姿势</h2>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 推荐: 走完整 systemd hook</span></span><br><span class="line">systemctl <span class="built_in">suspend</span></span><br><span class="line">systemctl hibernate</span><br><span class="line">systemctl hybrid-sleep              <span class="comment"># 写盘 + S3 (RAM 没掉就秒开, 掉了从盘恢复)</span></span><br><span class="line">systemctl suspend-then-hibernate    <span class="comment"># 先 suspend, N 分钟后转 hibernate</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># session 层语义</span></span><br><span class="line">loginctl lock-session</span><br><span class="line">loginctl <span class="built_in">suspend</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 调试用 (不走任何 hook)</span></span><br><span class="line">sudo sh -c <span class="string">&#x27;echo mem &gt; /sys/power/state&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>策略文件 <code>/etc/systemd/sleep.conf</code>:</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[Sleep]</span></span><br><span class="line"><span class="attr">HibernateDelaySec</span>=<span class="number">120</span>min    <span class="comment"># suspend-then-hibernate 转 hibernate 时间</span></span><br><span class="line"><span class="attr">SuspendState</span>=mem</span><br><span class="line"><span class="attr">HibernateMode</span>=platform shutdown</span><br></pre></td></tr></table></figure>
+<h2 id="hibernate-配置三要件">Hibernate 配置三要件</h2>
+<ol>
+<li>
+<p><strong>Swap 够大</strong> — <code>swap &gt;= 物理内存</code> (用 zswap 可放宽到 0.5x);</p>
+</li>
+<li>
+<p><strong>内核命令行有 resume=</strong> — <code>/etc/default/grub</code> 加:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GRUB_CMDLINE_LINUX=&quot;... resume=UUID=&lt;swap-uuid&gt; [resume_offset=&lt;offset&gt;]&quot;</span><br></pre></td></tr></table></figure>
+<p>分区用 <code>blkid</code> 取 UUID; swapfile 还要 <code>filefrag -v /swapfile</code> 拿 offset;</p>
+</li>
+<li>
+<p><strong>initramfs 有 resume hook</strong>:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo update-initramfs -u            <span class="comment"># Debian/Ubuntu</span></span><br><span class="line">sudo mkinitcpio -P                  <span class="comment"># Arch (HOOKS 加 resume)</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>zswap (压缩 swap, 推荐配合 hibernate): 内核参数 <code>zswap.enabled=1 zswap.compressor=lz4 zswap.max_pool_percent=20</code>;<br>
+zram (内存当 swap, 不能 hibernate): 缓解内存压力用;</p>
+<h2 id="合盖-锁屏-熄屏">合盖 / 锁屏 / 熄屏</h2>
+<h3 id="linux-systemd-logind-配-etc-systemd-logind-conf">Linux: systemd-logind 配 <code>/etc/systemd/logind.conf</code></h3>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[Login]</span></span><br><span class="line"><span class="attr">HandleLidSwitch</span>=suspend-then-hibernate         <span class="comment"># 拔电</span></span><br><span class="line"><span class="attr">HandleLidSwitchExternalPower</span>=suspend           <span class="comment"># 插电</span></span><br><span class="line"><span class="attr">HandleLidSwitchDocked</span>=ignore                   <span class="comment"># 外接显示器/dock</span></span><br><span class="line"><span class="attr">HandlePowerKey</span>=suspend</span><br><span class="line"><span class="attr">HandleLockKey</span>=lock</span><br><span class="line"><span class="attr">IdleAction</span>=lock</span><br><span class="line"><span class="attr">IdleActionSec</span>=<span class="number">10</span>min</span><br></pre></td></tr></table></figure>
+<p>改完: <code>sudo systemctl restart systemd-logind</code> (会断 GUI session, 在 TTY 做);</p>
+<h3 id="熄屏-display">熄屏 (Display)</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># X11: DPMS</span></span><br><span class="line">xset dpms force off                 <span class="comment"># 立即熄屏</span></span><br><span class="line">xset dpms 600 900 1200              <span class="comment"># standby/suspend/off 超时秒数</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Wayland: 各家合成器</span></span><br><span class="line">swaymsg <span class="string">&quot;output * power off&quot;</span>        <span class="comment"># wlroots</span></span><br><span class="line">hyprctl dispatch dpms off           <span class="comment"># Hyprland</span></span><br><span class="line"><span class="comment"># GNOME/KDE 用各自 settings</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Darwin</span></span><br><span class="line">pmset displaysleepnow</span><br><span class="line">sudo pmset -a displaysleep 10       <span class="comment"># 10 分钟</span></span><br></pre></td></tr></table></figure>
+<h3 id="锁屏-lock-session">锁屏 (Lock Session)</h3>
+<p>锁屏是 user session 层概念, 跟硬件无关:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Linux: DBus → screen locker (i3lock/swaylock/...)</span></span><br><span class="line">loginctl lock-session</span><br><span class="line"></span><br><span class="line"><span class="comment"># 自动跟随 sleep: xss-lock (X11) 或 swayidle (Wayland)</span></span><br><span class="line">swayidle -w \</span><br><span class="line">  <span class="built_in">timeout</span> 300 <span class="string">&#x27;swaylock -f&#x27;</span> \</span><br><span class="line">  <span class="built_in">timeout</span> 600 <span class="string">&#x27;swaymsg &quot;output * power off&quot;&#x27;</span> \</span><br><span class="line">  before-sleep <span class="string">&#x27;swaylock -f&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Darwin</span></span><br><span class="line">defaults write com.apple.screensaver askForPassword -int 1</span><br><span class="line">defaults write com.apple.screensaver askForPasswordDelay -int 0</span><br></pre></td></tr></table></figure>
+<h3 id="inhibitor-防睡眠">Inhibitor (防睡眠)</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Linux: 看谁阻止睡眠</span></span><br><span class="line">systemd-inhibit --list</span><br><span class="line"></span><br><span class="line"><span class="comment"># 自己声明: rsync 跑完自动释放</span></span><br><span class="line">systemd-inhibit --what=<span class="built_in">sleep</span>:idle --why=<span class="string">&quot;backup&quot;</span> rsync -a /src /dst</span><br><span class="line"></span><br><span class="line"><span class="comment"># Darwin</span></span><br><span class="line">caffeinate -dis -t 3600             <span class="comment"># 1 小时防 display+idle+system sleep</span></span><br><span class="line">caffeinate -i make all              <span class="comment"># 跟随子进程</span></span><br></pre></td></tr></table></figure>
+<h3 id="防-合盖立刻又醒">防&quot;合盖立刻又醒&quot;</h3>
+<p>LID GPIO 抖动会让合盖瞬间又收到 open 事件:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> LID0 | sudo <span class="built_in">tee</span> /proc/acpi/wakeup   <span class="comment"># toggle 禁用</span></span><br></pre></td></tr></table></figure>
+<h2 id="远程唤醒">远程唤醒</h2>
+<h3 id="wake-on-lan-原理">Wake-on-LAN 原理</h3>
+<p>Magic Packet = <code>[FF×6][目标 MAC × 16]</code>, 共 102 字节, 通常 UDP/9 广播; 网卡 PHY 在低功耗下监听, pattern match 后拉 PME# 唤醒主板;</p>
+<p><strong>约束</strong>:</p>
+<ul>
+<li>必须知道目标 MAC (IP 在睡眠时已下线);</li>
+<li>默认只能同 broadcast domain (二层);</li>
+<li>网卡 + 主板 + BIOS 三处都要开 (“Wake on LAN” / “Power on by PCIe”, 关 “Deep Sleep”/“ErP”);</li>
+</ul>
+<h3 id="linux-配置">Linux 配置</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 检查支持</span></span><br><span class="line">sudo ethtool eth0 | grep -i wake</span><br><span class="line"><span class="comment">#   Supports Wake-on: pumbg     ← g = MagicPacket</span></span><br><span class="line"><span class="comment">#   Wake-on: g                  ← 已启用</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 临时启用</span></span><br><span class="line">sudo ethtool -s eth0 wol g</span><br><span class="line"></span><br><span class="line"><span class="comment"># 持久化 (任选一种)</span></span><br><span class="line"><span class="comment"># 1. NetworkManager</span></span><br><span class="line">nmcli con modify <span class="string">&quot;Wired connection 1&quot;</span> 802-3-ethernet.wake-on-lan magic</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. systemd service</span></span><br><span class="line"><span class="built_in">cat</span> &gt; /etc/systemd/system/wol@.service &lt;&lt;<span class="string">&#x27;EOF&#x27;</span></span><br><span class="line">[Unit]</span><br><span class="line">After=network.target</span><br><span class="line">[Service]</span><br><span class="line">Type=oneshot</span><br><span class="line">ExecStart=/usr/sbin/ethtool -s %i wol g</span><br><span class="line">[Install]</span><br><span class="line">WantedBy=multi-user.target</span><br><span class="line">EOF</span><br><span class="line">sudo systemctl <span class="built_in">enable</span> wol@eth0.service</span><br></pre></td></tr></table></figure>
+<h3 id="发送-magic-packet">发送 magic packet</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">wakeonlan aa:bb:cc:<span class="built_in">dd</span>:ee:ff                      <span class="comment"># 默认 255.255.255.255</span></span><br><span class="line">wakeonlan -i 192.168.1.255 aa:bb:cc:<span class="built_in">dd</span>:ee:ff     <span class="comment"># 指定子网广播</span></span><br><span class="line">sudo etherwake aa:bb:cc:<span class="built_in">dd</span>:ee:ff                 <span class="comment"># raw L2</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># macOS 发送: brew install wakeonlan</span></span><br><span class="line"><span class="comment"># macOS 接收: sudo pmset -a womp 1</span></span><br></pre></td></tr></table></figure>
+<h3 id="wol-over-wan">WoL over WAN</h3>
+<p>广播默认不跨路由器, 三种突破:</p>
+<ol>
+<li><strong>Directed broadcast</strong> — 路由器 DNAT WAN 进来的包到 <code>192.168.1.255</code> (Smurf 攻击面, 务必限源 IP);</li>
+<li><strong>跳板机</strong> — 树莓派/NAS 常开, <code>ssh pi@home 'wakeonlan MAC'</code>, 最干净;</li>
+<li><strong>VPN (WireGuard/Tailscale)</strong> — 接入 LAN 当本地子网; Tailscale 有原生 “Wake-on-LAN over Tailnet” 文档;</li>
+</ol>
+<h3 id="ipmi-bmc-服务器带外管理">IPMI / BMC — 服务器带外管理</h3>
+<div class="obsidian-callout callout-机房标配" style="border-left: 4px solid #448aff; background: #448aff11; border-radius: 4px; padding: 0; margin: 1em 0;">
+  <div style="padding: 8px 16px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+    <span>📝</span> <span>机房标配</span>
+  </div>
+  <div style="padding: 4px 16px 12px 16px;"><p>WoL 只能在主板有电时听网卡; IPMI 用独立 BMC 微控制器, 跟主电源完全独立 — 主机断电/内核 panic/BIOS 卡死都能控制; Dell 叫 iDRAC, HP 叫 iLO, Supermicro 叫 IPMI;</p></div>
+</div>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> IPMI=<span class="string">&quot;-H 10.0.0.100 -U admin -P pw -I lanplus&quot;</span></span><br><span class="line"></span><br><span class="line">ipmitool <span class="variable">$IPMI</span> power status         <span class="comment"># / on / off / soft / cycle</span></span><br><span class="line">ipmitool <span class="variable">$IPMI</span> sol activate         <span class="comment"># Serial Over LAN, Ctrl+. 退出</span></span><br><span class="line">ipmitool <span class="variable">$IPMI</span> sdr                  <span class="comment"># 传感器 (温度/风扇)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Redfish (现代 REST API 替代)</span></span><br><span class="line">curl -k -u admin:pw https://10.0.0.100/redfish/v1/Systems/1 | jq <span class="string">&#x27;.PowerState&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>安全: BMC 必须放管理网, 改默认密码 (<code>ADMIN/ADMIN</code>), 关 cipher 0; 永远别暴露公网, 用 VPN/跳板;</p>
+<h3 id="rtc-wake-定时自醒">RTC Wake (定时自醒)</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">rtcwake -m mem -s 600                            <span class="comment"># suspend 600 秒</span></span><br><span class="line">rtcwake -m disk -t $(<span class="built_in">date</span> -d <span class="string">&#x27;tomorrow 06:00&#x27;</span> +%s)</span><br><span class="line">rtcwake -m no -t $(<span class="built_in">date</span> -d <span class="string">&#x27;tomorrow 03:00&#x27;</span> +%s) <span class="comment"># 只设 alarm 不睡</span></span><br></pre></td></tr></table></figure>
+<h2 id="debug-cheat-sheet">Debug Cheat Sheet</h2>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 上次睡眠为何醒</span></span><br><span class="line">journalctl -b 0 | grep -iE <span class="string">&#x27;PM:|suspend|resume|wakeup&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 谁在阻止睡眠</span></span><br><span class="line">systemd-inhibit --list</span><br><span class="line"></span><br><span class="line"><span class="comment"># 哪个驱动卡住 suspend (test 模式)</span></span><br><span class="line"><span class="built_in">echo</span> devices | sudo <span class="built_in">tee</span> /sys/power/pm_test</span><br><span class="line"><span class="built_in">echo</span> mem     | sudo <span class="built_in">tee</span> /sys/power/state</span><br><span class="line">dmesg | grep -i <span class="string">&#x27;PM: late suspend&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 哪个设备乱唤醒</span></span><br><span class="line"><span class="built_in">cat</span> /sys/class/wakeup/*/event_count</span><br><span class="line"></span><br><span class="line"><span class="comment"># Idle 多久 (X11)</span></span><br><span class="line">xprintidle</span><br></pre></td></tr></table></figure>
+<h3 id="常见症状对应">常见症状对应</h3>
+<table>
+<thead>
+<tr>
+<th>症状</th>
+<th>怀疑方向</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>合盖立刻醒</td>
+<td>LID GPIO 抖动 — 关 LID wakeup</td>
+</tr>
+<tr>
+<td>s2idle 续航差</td>
+<td>检查 <code>turbostat</code> Pkg%pc10 / PkgWatt, 多半 USB/Wi-Fi/Nvidia 没正确 runtime-suspend</td>
+</tr>
+<tr>
+<td>Hibernate 卡在 “Saving image”</td>
+<td>swap 太慢 (HDD) 或损坏</td>
+</tr>
+<tr>
+<td>Resume 后时钟跳几小时</td>
+<td>RTC 时区 — <code>timedatectl set-local-rtc 0</code></td>
+</tr>
+<tr>
+<td>Resume 后 GPU 黑屏 (Nvidia)</td>
+<td><code>nvidia.NVreg_PreserveVideoMemoryAllocations=1</code></td>
+</tr>
+<tr>
+<td><code>wol g</code> 重启失效</td>
+<td>没持久化, 改用 systemd/NetworkManager/udev</td>
+</tr>
+<tr>
+<td>S3 能唤 S5 不能</td>
+<td>BIOS “Wake from S5” / 关 ErP/Deep Sleep</td>
+</tr>
+<tr>
+<td>Wi-Fi 不响应 WoL</td>
+<td>大多数 Wi-Fi 不支持 (WoWLAN 另一回事), <code>iw phy phy0 wowlan</code></td>
+</tr>
+<tr>
+<td>IPMI 连不上</td>
+<td>BMC 网络隔离, 默认密码, cipher 0</td>
+</tr>
+<tr>
+<td>WoL over WAN 不通</td>
+<td>路由器没开 directed broadcast / ARP 老化 (路由器加静态 ARP)</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">Yuchen You (Wesley)</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2026/05/25/computer_system_basics/os/7.%20Unix%20%E7%94%B5%E6%BA%90%E7%AE%A1%E7%90%86/">http://example.com/2026/05/25/computer_system_basics/os/7.%20Unix%20%E7%94%B5%E6%BA%90%E7%AE%A1%E7%90%86/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/os/">os</a><a class="post-meta__tags" href="/tags/unix/">unix</a><a class="post-meta__tags" href="/tags/power-management/">power-management</a><a class="post-meta__tags" href="/tags/acpi/">acpi</a></div><div class="post_share"><div class="social-share" data-image="/img/me_new.jpeg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2026/05/26/agentsys/orchestration/0.mcts/" title="0. 从 Minimax 到 MCTS - 经典博弈树搜索基础"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Previous</div><div class="prev_info">0. 从 Minimax 到 MCTS - 经典博弈树搜索基础</div></div></a></div><div class="next-post pull-right"><a href="/2026/05/21/agentsys/Paper/ReAct%20+%20Reflexion%20-%20Reasoning%20Acting%20and%20Verbal%20Reinforcement%20Learning/" title="ReAct + Reflexion - Reasoning Acting and Verbal Reinforcement Learning"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Next</div><div class="next_info">ReAct + Reflexion - Reasoning Acting and Verbal Reinforcement Learning</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2025/10/06/computer_system_basics/os/historical/21.lfs/" title="21. The Design and Implementation of a Log-Structured File System"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-10-06</div><div class="title">21. The Design and Implementation of a Log-Structured File System</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/me_new.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Yuchen You (Wesley)</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">114</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">52</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">8</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/1WesleyYou"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/1Wesleyyou" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yuchenxr@umich.edu" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://www.linkedin.com/in/yuchen-you-a74940314/?locale=en_US" target="_blank" title="LinkedIn"><i class="fab fa-linkedin" style="color: #4a4dbe;"></i></a><a class="social-icon" href="/Yuchen_CV.pdf" target="_blank" title="CV"><i class="fas fa-address-card" style="color: #251456;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8A%B6%E6%80%81%E6%9C%BA%E5%BF%83%E6%99%BA%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.</span> <span class="toc-text">状态机心智模型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%B9%E7%85%A7%E8%A1%A8-%E4%BB%8E%E8%BD%BB%E5%88%B0%E9%87%8D"><span class="toc-number">1.1.</span> <span class="toc-text">对照表 (从轻到重)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%B9%E6%98%93%E6%B7%B7%E7%9A%84%E5%87%A0%E5%AF%B9"><span class="toc-number">1.2.</span> <span class="toc-text">容易混的几对</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%88%E4%B8%8A%E7%9B%96%E5%AD%90-%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88"><span class="toc-number">1.3.</span> <span class="toc-text">合上盖子 &#x3D; 做了什么?</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%B5%E6%BA%90%E6%A0%88%E5%88%86%E5%B1%82"><span class="toc-number">2.</span> <span class="toc-text">电源栈分层</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#acpi-sleep-states"><span class="toc-number">3.</span> <span class="toc-text">ACPI Sleep States</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#sysfs-%E6%8E%A5%E5%8F%A3"><span class="toc-number">4.</span> <span class="toc-text">sysfs 接口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A6%E5%8F%91%E7%9D%A1%E7%9C%A0%E7%9A%84%E4%B8%89%E7%A7%8D%E5%A7%BF%E5%8A%BF"><span class="toc-number">5.</span> <span class="toc-text">触发睡眠的三种姿势</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#hibernate-%E9%85%8D%E7%BD%AE%E4%B8%89%E8%A6%81%E4%BB%B6"><span class="toc-number">6.</span> <span class="toc-text">Hibernate 配置三要件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%88%E7%9B%96-%E9%94%81%E5%B1%8F-%E7%86%84%E5%B1%8F"><span class="toc-number">7.</span> <span class="toc-text">合盖 &#x2F; 锁屏 &#x2F; 熄屏</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#linux-systemd-logind-%E9%85%8D-etc-systemd-logind-conf"><span class="toc-number">7.1.</span> <span class="toc-text">Linux: systemd-logind 配 &#x2F;etc&#x2F;systemd&#x2F;logind.conf</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%86%84%E5%B1%8F-display"><span class="toc-number">7.2.</span> <span class="toc-text">熄屏 (Display)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%94%81%E5%B1%8F-lock-session"><span class="toc-number">7.3.</span> <span class="toc-text">锁屏 (Lock Session)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#inhibitor-%E9%98%B2%E7%9D%A1%E7%9C%A0"><span class="toc-number">7.4.</span> <span class="toc-text">Inhibitor (防睡眠)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%98%B2-%E5%90%88%E7%9B%96%E7%AB%8B%E5%88%BB%E5%8F%88%E9%86%92"><span class="toc-number">7.5.</span> <span class="toc-text">防&quot;合盖立刻又醒&quot;</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%9C%E7%A8%8B%E5%94%A4%E9%86%92"><span class="toc-number">8.</span> <span class="toc-text">远程唤醒</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#wake-on-lan-%E5%8E%9F%E7%90%86"><span class="toc-number">8.1.</span> <span class="toc-text">Wake-on-LAN 原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#linux-%E9%85%8D%E7%BD%AE"><span class="toc-number">8.2.</span> <span class="toc-text">Linux 配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%91%E9%80%81-magic-packet"><span class="toc-number">8.3.</span> <span class="toc-text">发送 magic packet</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#wol-over-wan"><span class="toc-number">8.4.</span> <span class="toc-text">WoL over WAN</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ipmi-bmc-%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%B8%A6%E5%A4%96%E7%AE%A1%E7%90%86"><span class="toc-number">8.5.</span> <span class="toc-text">IPMI &#x2F; BMC — 服务器带外管理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#rtc-wake-%E5%AE%9A%E6%97%B6%E8%87%AA%E9%86%92"><span class="toc-number">8.6.</span> <span class="toc-text">RTC Wake (定时自醒)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#debug-cheat-sheet"><span class="toc-number">9.</span> <span class="toc-text">Debug Cheat Sheet</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E7%97%87%E7%8A%B6%E5%AF%B9%E5%BA%94"><span class="toc-number">9.1.</span> <span class="toc-text">常见症状对应</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/31/computer_system_basics/network/7.%20mini-vpn-go%20Phase2%20%E6%98%8E%E6%96%87%20IP-in-UDP%20%E9%9A%A7%E9%81%93/" title="7. mini-vpn-go Phase2 明文 IP-in-UDP 隧道">7. mini-vpn-go Phase2 明文 IP-in-UDP 隧道</a><time datetime="2026-05-31T10:10:00.000Z" title="Created 2026-05-31 18:10:00">2026-05-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/26/agentsys/planning/0.tree-of-thought/" title="Tree of Thought: 不再是 left-to-right 单向思维架构">Tree of Thought: 不再是 left-to-right 单向思维架构</a><time datetime="2026-05-26T12:57:56.279Z" title="Created 2026-05-26 20:57:56">2026-05-26</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/26/agentsys/orchestration/0.mcts/" title="0. 从 Minimax 到 MCTS - 经典博弈树搜索基础">0. 从 Minimax 到 MCTS - 经典博弈树搜索基础</a><time datetime="2026-05-26T08:02:36.715Z" title="Created 2026-05-26 16:02:36">2026-05-26</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/25/computer_system_basics/os/7.%20Unix%20%E7%94%B5%E6%BA%90%E7%AE%A1%E7%90%86/" title="Unix 电源管理">Unix 电源管理</a><time datetime="2026-05-24T16:00:00.000Z" title="Created 2026-05-25 00:00:00">2026-05-25</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/21/agentsys/Paper/ReAct%20+%20Reflexion%20-%20Reasoning%20Acting%20and%20Verbal%20Reinforcement%20Learning/" title="ReAct + Reflexion - Reasoning Acting and Verbal Reinforcement Learning">ReAct + Reflexion - Reasoning Acting and Verbal Reinforcement Learning</a><time datetime="2026-05-21T08:09:00.514Z" title="Created 2026-05-21 16:09:00">2026-05-21</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2026 By Yuchen You (Wesley)</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">welcome to my blog!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/fireworks.min.js"></script><script defer="defer" id="fluttering_ribbon" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/canvas-fluttering-ribbon.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading the Database</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="Search for Posts" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=4.13.0"></script></div></div></body></html>
