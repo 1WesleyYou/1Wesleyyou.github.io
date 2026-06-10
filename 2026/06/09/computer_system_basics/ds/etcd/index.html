@@ -7,7 +7,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://example.com/img/me_new.jpeg">
 <meta property="article:published_time" content="2026-06-09T14:57:07.000Z">
-<meta property="article:modified_time" content="2026-06-09T14:58:51.875Z">
+<meta property="article:modified_time" content="2026-06-10T08:50:05.462Z">
 <meta property="article:author" content="Yuchen You (Wesley)">
 <meta property="article:tag" content="distributed_sys">
 <meta property="article:tag" content="Consensus">
@@ -59,7 +59,7 @@
   isHome: false,
   isHighlightShrink: false,
   isToc: true,
-  postUpdate: '2026-06-09 22:58:51'
+  postUpdate: '2026-06-10 16:50:05'
 }</script><script>(win=>{
       win.saveToLocal = {
         set: (key, value, ttl) => {
@@ -163,7 +163,7 @@
 .obsidian-callout p { margin: 0.4em 0; }
 .obsidian-callout details > summary { list-style: none; }
 .obsidian-callout details > summary::-webkit-details-marker { display: none; }
-</style></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/me_new.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">115</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">55</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">8</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/math_master.jpeg')"><nav id="nav"><span id="blog-info"><a href="/" title="Yuchen You"><img class="site-icon" src="/img/avatar.png"/><span class="site-name">Yuchen You</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> Search</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">etcd: 把 Raft 包装成 k8s 的事实数据源</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2026-06-09T14:57:07.000Z" title="Created 2026-06-09 22:57:07">2026-06-09</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-06-09T14:58:51.875Z" title="Updated 2026-06-09 22:58:51">2026-06-09</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="etcd: 把 Raft 包装成 k8s 的事实数据源"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><div class="obsidian-callout callout-术语别名" style="border-left: 4px solid #448aff; background: #448aff11; border-radius: 4px; padding: 0; margin: 1em 0;">
+</style></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/me_new.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">115</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">55</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">8</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/math_master.jpeg')"><nav id="nav"><span id="blog-info"><a href="/" title="Yuchen You"><img class="site-icon" src="/img/avatar.png"/><span class="site-name">Yuchen You</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> Search</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">etcd: 把 Raft 包装成 k8s 的事实数据源</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2026-06-09T14:57:07.000Z" title="Created 2026-06-09 22:57:07">2026-06-09</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-06-10T08:50:05.462Z" title="Updated 2026-06-10 16:50:05">2026-06-10</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="etcd: 把 Raft 包装成 k8s 的事实数据源"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><div class="obsidian-callout callout-术语别名" style="border-left: 4px solid #448aff; background: #448aff11; border-radius: 4px; padding: 0; margin: 1em 0;">
   <div style="padding: 8px 16px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
     <span>📝</span> <span>术语别名</span>
   </div>
@@ -171,22 +171,22 @@
 <li>etcd: 一个分布式、强一致、高可用的 KV 存储, 底层用 Raft 做共识, Go 写的, 现属 CNCF, 是 k8s 唯一的事实数据源 (source of truth);</li>
 <li>revision: etcd 集群级、全局单调递增的版本号, 每次成功的写/事务 +1, 是整个 keyspace 的&quot;全局时钟&quot;;</li>
 <li>MVCC: Multi-Version Concurrency Control, 多版本并发控制, 写不覆盖旧值而是生成新版本, 让读写互不阻塞;</li>
-<li>Watch: 订阅某个 key/区间从指定 revision 起的变更, 按序、不丢地推送给客户端;</li>
-<li>Lease: 带 TTL 的 key, 客户端要不断续约 (keepalive), 断了自动删, 用来做心跳/选主;</li>
+<li>Watch: 订阅某个 key/区间从指定 revision 起的变更, 按序、不丢地推给客户端;</li>
+<li>Lease: 带 TTL 的 key, 客户端要不断续约 (keepalive), 断了自动删, 拿来做心跳/选主;</li>
 <li>Txn: etcd 的迷你事务, If/Then/Else, 本质是基于 revision 的 CAS (compare-and-swap);</li>
-<li>compaction: 压缩, 丢弃某 revision 之前的历史版本以回收空间, 压缩点同时是 Watch 能回放的最早边界;</li>
-<li>reconcile: 调谐, 比较&quot;期望状态&quot;与&quot;实际状态&quot;并采取动作消除差距的幂等操作;</li>
+<li>compaction: 压缩, 丢弃某 revision 之前的历史版本来回收空间, 压缩点同时也是 Watch 能回放的最早边界;</li>
+<li>reconcile: 调谐, 比较&quot;期望状态&quot;和&quot;实际状态&quot;、采取动作把差距抹平的幂等操作;</li>
 <li>List-Watch: 先全量拉一次基线 (List) 再持续追增量 (Watch) 的模式, k8s informer 的核心范式;</li>
 </ul></div>
 </div>
 <h2 id="从-raft-到-etcd-中间多了什么">从 Raft 到 etcd: 中间多了什么</h2>
-<p>上回书我们学完了 Raft, 知道 Raft 解决的是 <strong>「一组节点如何就一条有序日志达成一致」</strong> —— 它是个 replicated state machine 的框架, 但它<strong>不规定状态机到底是什么</strong>, 只保证所有副本以相同顺序看到相同的 log entry;</p>
+<p>上回书我们学完了 Raft, 知道 Raft 解决的是「一组节点如何就一条有序日志达成一致」; 它是个 replicated state machine 的框架, 但它不规定状态机到底是什么, 只保证所有副本以相同顺序看到相同的 log entry;</p>
 <p>etcd 的回答是:</p>
 <blockquote>
 <p>那条 Raft 日志里的每一条 entry, 就是一次 KV 写操作; 状态机就是一个 MVCC 的键值存储 (底层 bbolt);</p>
 </blockquote>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">client 写 → Leader 把这次写当成一条 log entry → Raft 复制到多数派 →</span><br><span class="line">commit → 各节点按相同顺序 apply 到本地 KV → 返回 client</span><br></pre></td></tr></table></figure>
-<p>所以分工很清楚: <strong>Raft 负责&quot;所有副本以相同顺序看到相同的写&quot;, etcd 负责&quot;写的是什么、能查到什么、上层暴露什么 API&quot;</strong>; etcd 真正值钱的不是它内嵌了 Raft (那是基础), 而是它在 Raft 之上加了一组让分布式协调变得好写的能力 —— 这也是 k8s 选它而不是自己撸一套 Paxos 的根本原因;</p>
+<p>所以分工很清楚: Raft 管&quot;所有副本以相同顺序看到相同的写&quot;, etcd 管&quot;写的是什么、能查到什么、上层暴露什么 API&quot;; etcd 真正值钱的地方不是它内嵌了 Raft (那是地基), 而是它在 Raft 之上搭了一组让分布式协调变得好写的能力, 这也是 k8s 选它、而不是自己撸一套 Paxos 的根本原因:</p>
 <table>
 <thead>
 <tr>
@@ -197,64 +197,62 @@
 </thead>
 <tbody>
 <tr>
-<td><strong>MVCC + revision</strong></td>
-<td>全局单调递增版本号, 旧版本保留直到 compaction</td>
-<td>是 Watch / 一致读 / CAS 的共同地基</td>
+<td>MVCC + revision</td>
+<td>全局单调递增版本号, 旧版本保留到 compaction 才删</td>
+<td>Watch / 一致读 / CAS 的共同地基</td>
 </tr>
 <tr>
-<td><strong>Watch</strong></td>
+<td>Watch</td>
 <td>从指定 revision 起订阅变更, 不丢不乱序</td>
 <td>informer 的命根子, 驱动 reconcile</td>
 </tr>
 <tr>
-<td><strong>Lease</strong></td>
+<td>Lease</td>
 <td>带 TTL 的 key, 断约自动删</td>
 <td>节点心跳、组件 leader election</td>
 </tr>
 <tr>
-<td><strong>Txn</strong></td>
+<td>Txn</td>
 <td>基于 revision 的 CAS 迷你事务</td>
 <td>乐观并发控制</td>
 </tr>
 </tbody>
 </table>
 <blockquote>
-<p>版本提醒: 现在都是 <strong>v3 API</strong> (gRPC + protobuf + 扁平 MVCC keyspace); v2 是老的 REST + 层级结构, 已弃用, 看资料别看串了;</p>
+<p>版本提醒: 现在都是 v3 API (gRPC + protobuf + 扁平 MVCC keyspace); v2 是老的 REST + 层级结构, 已经弃用了, 看资料别看串了;</p>
 </blockquote>
 <h2 id="mvcc-给存储装上一条时间轴">MVCC: 给存储装上一条时间轴</h2>
-<h3 id="它要解决的矛盾-读写并发不互相阻塞">它要解决的矛盾: 读写并发不互相阻塞</h3>
-<p>没有 MVCC 的老办法, 数据只有&quot;一个当前值&quot;, 一个事务在写另一个想读同一份数据就冲突, 只能上锁 —— 读者等写者、写者等读者, 并发上不去;</p>
-<p>MVCC 的办法: <strong>每次写不是&quot;改掉旧值&quot;, 而是&quot;生成一个新版本&quot;, 旧版本保留</strong>; 每个读看到的是某个时间点的一致快照, 各读各的版本, 于是<strong>读者不阻塞写者、写者不阻塞读者</strong> —— 因为它们碰的根本是不同版本; PostgreSQL / MySQL InnoDB / Oracle 全这么干;</p>
+<h3 id="它要解决的矛盾-读写并发别互相堵">它要解决的矛盾: 读写并发别互相堵</h3>
+<p>没有 MVCC 的老办法, 数据就一个&quot;当前值&quot;, 一个事务在写、另一个想读同一份数据就撞上了, 只能上锁: 读者等写者、写者等读者, 并发死活上不去;</p>
+<p>MVCC 换了个思路: 每次写不是&quot;把旧值改掉&quot;, 而是&quot;生成一个新版本&quot;, 旧版本留着; 每个读看到的是某个时间点的一致快照, 各读各的版本, 于是读者不挡写者、写者也不挡读者, 因为它俩碰的根本就不是同一份东西; PostgreSQL、MySQL InnoDB、Oracle 全是这么干的;</p>
 <h3 id="etcd-里的-mvcc-长什么样">etcd 里的 MVCC 长什么样</h3>
 <ol>
-<li>一个集群级、全局单调递增的 <strong>revision</strong>, 每次写/事务成功 +1;</li>
-<li>底层 bbolt 存的不是 <code>key → value</code>, 而是 <strong><code>(key, revision) → value</code></strong>, 所以历史版本天然共存;</li>
-<li>每个 key 还带三个数:
+<li>一个集群级、全局单调递增的 revision, 每次写/事务成功就 +1;</li>
+<li>底层 bbolt 存的不是 <code>key → value</code>, 而是 <code>(key, revision) → value</code>, 所以历史版本天然就共存了;</li>
+<li>每个 key 还挂三个数:
 <ul>
-<li><code>create_revision</code>: 被创建时的 revision;</li>
-<li><code>mod_revision</code>: 最后一次修改的 revision ← <strong>CAS/Txn 就靠比它</strong>;</li>
-<li><code>version</code>: 被改过几次;</li>
+<li><code>create_revision</code>: 这 key 被创建时的 revision;</li>
+<li><code>mod_revision</code>: 最后一次改它的 revision, CAS/Txn 就靠比这个;</li>
+<li><code>version</code>: 它被改过几次;</li>
 </ul>
 </li>
 <li>读可以 <code>etcdctl get x --rev=6</code> 直接读历史快照;</li>
 </ol>
-<p>一个例子, 对 key <code>x</code> 的操作序列:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">rev 1:  x = &quot;a&quot;          ← 版本1</span><br><span class="line">rev 5:  x = &quot;b&quot;          ← 写新版本, &quot;a&quot; 仍保留</span><br><span class="line">rev 8:  delete x         ← 写一个 tombstone(墓碑), 不是物理删</span><br></pre></td></tr></table></figure>
-<p>不同读者: “读最新” 看到已删除; “读 as of rev 6” 看到 <code>x=&quot;b&quot;</code>; “读 as of rev 3” 看到 <code>x=&quot;a&quot;</code>; 同一份数据同一时刻, 带着各自版本视角, 看到不同结果且都自洽;</p>
-<p>代价是旧版本越堆越多, 所以要定期 <strong>compaction</strong> 丢弃老版本回收空间 —— 但压缩之后那些老快照就读不到了, Watch 也没法从更早的点续传 (后面会再撞上这一点);</p>
-<blockquote>
-<p>一句话: <strong>MVCC 让 etcd 从&quot;一个会用 Raft 同步的当前值存储&quot;, 升级成&quot;一个带时间轴的存储&quot;</strong> —— 而 k8s 需要的恰恰是这条时间轴: 谁在哪个 revision 改了什么;</p>
-</blockquote>
+<p>拿 key <code>x</code> 走一遍:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">rev 1:  x = &quot;a&quot;          ← 版本1</span><br><span class="line">rev 5:  x = &quot;b&quot;          ← 写新版本, &quot;a&quot; 还留着</span><br><span class="line">rev 8:  delete x         ← 写一个 tombstone(墓碑), 不是物理删</span><br></pre></td></tr></table></figure>
+<p>三个读者各看各的: &quot;读最新&quot;看到已删除; &quot;读 as of rev 6&quot;看到 <code>x=&quot;b&quot;</code>; &quot;读 as of rev 3&quot;看到 <code>x=&quot;a&quot;</code>; 同一份数据同一时刻, 带着各自的版本视角, 看到的不一样还都自洽;</p>
+<p>代价就是旧版本越堆越多, 所以得定期 compaction 把老版本丢掉回收空间; 但压缩之后那些老快照就读不到了, Watch 也没法从更早的点续传 (这个坑后面还会再撞一次);</p>
+<p>说到底, MVCC 把 etcd 从&quot;一个会用 Raft 同步的当前值存储&quot;, 升级成了&quot;一个带时间轴的存储&quot;; 而 k8s 要的恰恰就是这条时间轴: 谁在哪个 revision 改了什么;</p>
 <h2 id="watch-时间轴上的游标-重放引擎">Watch: 时间轴上的游标 + 重放引擎</h2>
 <h3 id="在做什么">在做什么</h3>
 <blockquote>
-<p>订阅一个 key 或一段区间 (前缀), 从某个 revision 开始, 把之后所有变更<strong>按序、不丢</strong>地推给你;</p>
+<p>订阅一个 key 或一段区间 (前缀), 从某个 revision 开始, 把之后所有变更按序、不丢地推给你;</p>
 </blockquote>
-<p>“从某个 revision 开始&quot;正是 MVCC 的直接产物: 因为旧版本还在, 才能让你&quot;回到过去某个点开始订阅”, 而不只是订阅未来;</p>
+<p>“从某个 revision 开始&quot;就是 MVCC 直接喂出来的能力: 因为旧版本还在, 才能让你&quot;回到过去某个点开始订阅”, 而不是只能盯着未来;</p>
 <h3 id="api-形态-v3-grpc-streaming">API 形态 (v3, gRPC streaming)</h3>
-<p>Watch 是一条<strong>双向 gRPC 流</strong>, 不是一次性请求:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">client → WatchCreateRequest &#123;</span><br><span class="line">    key, range_end,        // 单 key, 或区间/前缀</span><br><span class="line">    start_revision,        // 从哪开始; 省略 = 只看当前之后的未来</span><br><span class="line">    prev_kv,               // 是否带上变更前的旧值</span><br><span class="line">    progress_notify,       // 是否定期推进度</span><br><span class="line">    filters                // 比如只看 PUT 不看 DELETE</span><br><span class="line">&#125;</span><br><span class="line">server → WatchResponse 流 &#123;</span><br><span class="line">    watch_id, header.revision,</span><br><span class="line">    events: [ Event&#123;type:PUT|DELETE, kv:&#123;...&#125;, prev_kv:&#123;...&#125;&#125;, ... ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>一条 gRPC 流可以复用多个逻辑 watcher (各自一个 <code>watch_id</code>); DELETE 事件的 <code>kv.value</code> 为空 (对应那个 tombstone);</p>
+<p>Watch 是一条双向 gRPC 流, 不是一次性请求:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">client → WatchCreateRequest &#123;</span><br><span class="line">    key, range_end,        // 单 key, 或区间/前缀</span><br><span class="line">    start_revision,        // 从哪开始; 省略 = 只看当前之后的未来</span><br><span class="line">    prev_kv,               // 要不要带上变更前的旧值</span><br><span class="line">    progress_notify,       // 要不要定期推进度</span><br><span class="line">    filters                // 比如只看 PUT 不看 DELETE</span><br><span class="line">&#125;</span><br><span class="line">server → WatchResponse 流 &#123;</span><br><span class="line">    watch_id, header.revision,</span><br><span class="line">    events: [ Event&#123;type:PUT|DELETE, kv:&#123;...&#125;, prev_kv:&#123;...&#125;&#125;, ... ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>一条 gRPC 流能复用好多个逻辑 watcher (各有一个 <code>watch_id</code>); DELETE 事件的 <code>kv.value</code> 是空的 (对应那个 tombstone);</p>
 <h3 id="三条核心保证-一定要记">三条核心保证 (一定要记)</h3>
 <table>
 <thead>
@@ -265,159 +263,156 @@
 </thead>
 <tbody>
 <tr>
-<td><strong>Ordered 有序</strong></td>
+<td>Ordered 有序</td>
 <td>事件严格按 revision 递增, 绝不乱序</td>
 </tr>
 <tr>
-<td><strong>Reliable 可靠</strong></td>
-<td>只要没被 compaction 干掉, watched 区间内的事件一个都不会被悄悄丢</td>
+<td>Reliable 可靠</td>
+<td>只要没被 compaction 干掉, watched 区间里的事件一个都不会被悄悄丢</td>
 </tr>
 <tr>
-<td><strong>Atomic 原子</strong></td>
-<td>同一 revision 产生的多个事件, 一定在同一个 WatchResponse 里整批交付</td>
+<td>Atomic 原子</td>
+<td>同一个 revision 产生的多个事件, 一定在同一个 WatchResponse 里整批给你</td>
 </tr>
 </tbody>
 </table>
-<p>第三条很关键: 一次 Txn 可能同时改多个 key, 它们共享同一 mod_revision, Watch 保证打包给你, 你不会读到&quot;半个事务&quot;;</p>
+<p>第三条特别关键: 一次 Txn 可能同时改好几个 key, 它们共享同一个 mod_revision, Watch 保证把它们打包一起给你, 你不会读到&quot;半个事务&quot;;</p>
 <h3 id="内部实现-synced-unsynced-双队列">内部实现: synced / unsynced 双队列</h3>
-<p>服务端用 <code>watchableStore</code> 包住 MVCC store, 把所有 watcher 分两组:</p>
+<p>服务端拿 <code>watchableStore</code> 把 MVCC store 一裹, 然后把所有 watcher 分成两拨:</p>
 <ul>
-<li><strong>synced (已追平)</strong>: start_revision 已赶上当前 revision; 走热路径, 每次写提交后在 notify 流程里直接推, 延迟最低;</li>
-<li><strong>unsynced (落后)</strong>: start_revision 还停在过去 (比如 watch from rev 100 但现在已 rev 5000); 一个后台 goroutine <code>syncWatchers</code> 周期性从 bbolt 按 revision 区间扫历史事件、过滤出落在 watch 区间内的补发, 追平后把它从 unsynced 挪进 synced;</li>
+<li>synced (已经追平的): start_revision 已经赶上当前 revision 了; 走热路径, 每次写一提交就在 notify 流程里直接推过去, 延迟最低;</li>
+<li>unsynced (落后的): start_revision 还停在过去 (比如你 watch from rev 100, 现在都 rev 5000 了); 有个后台 goroutine <code>syncWatchers</code> 周期性地去 bbolt 按 revision 区间扫历史事件, 把落在你 watch 区间里的补发给你, 追平了再把它从 unsynced 挪进 synced;</li>
 </ul>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">你 watch from rev=100</span><br><span class="line">      │</span><br><span class="line">      ▼</span><br><span class="line">[unsynced] ──syncWatchers 扫 bbolt 历史(100→当前)──▶ 追平 ──▶ [synced] ──新写直接推──▶ 你</span><br></pre></td></tr></table></figure>
 <ul>
-<li><strong>victim/慢消费者</strong>: 若接收 channel 满了 (你处理太慢), etcd 把该 watcher 丢进 victim 列表缓冲、之后重试, 避免一个慢 watcher 拖死整个写路径;</li>
-<li>底层支撑: 内存里有个 <code>treeIndex</code> (B-tree) 把 <code>用户 key → keyIndex(该 key 历史所有 revision)</code> 映射起来; 补历史时拿 revision 区间去 bbolt 扫, 再用 treeIndex 过滤;</li>
+<li>victim / 慢消费者: 万一你的接收 channel 满了 (你处理太慢), etcd 把这个 watcher 丢进 victim 列表先缓着、之后再重试, 免得一个慢家伙把整条写路径拖死;</li>
+<li>底层撑这一切的是内存里一个 <code>treeIndex</code> (B-tree), 把&quot;用户 key → keyIndex(这 key 历史上所有 revision)&quot;映射起来; 补历史的时候拿 revision 区间去 bbolt 扫, 再用 treeIndex 过滤;</li>
 </ul>
 <h3 id="和-compaction-的致命交互">和 compaction 的致命交互</h3>
 <blockquote>
-<p>如果 <code>start_revision &lt;= compact_revision</code> (你想从的起点已被压缩), 服务端没法重放那段历史, 于是返回 <code>ErrCompacted</code>、把 watch 取消掉 (<code>canceled=true</code>);</p>
+<p>如果你的 <code>start_revision &lt;= compact_revision</code> (你想从的起点已经被压缩掉了), 服务端没法重放那段历史了, 就返回 <code>ErrCompacted</code>、把这个 watch 取消掉 (<code>canceled=true</code>);</p>
 </blockquote>
-<p>客户端唯一出路: <strong>重新拉一次全量当前状态, 拿到新 revision, 再从新 revision 重新 watch</strong> —— 记住这个模式, k8s 的 relist 就是它;</p>
+<p>客户端这时候唯一的出路: 重新拉一次全量当前状态, 拿到新 revision, 再从新 revision 重新 watch; 记住这个套路, k8s 的 relist 就是它;</p>
 <h3 id="断线续传">断线续传</h3>
-<p>客户端始终记住<strong>最后收到事件的 revision = R</strong>, 重连时用 <code>start_revision = R+1</code> 重建 watch (<code>+1</code> 因为 R 那条已收到过); <code>progress_notify</code> 对很久不变的 key 周期性推一个空 WatchResponse 只带当前 revision, 告诉你&quot;到这点为止没漏&quot;, 让 R 能跟着推进, 避免回退太多触发 compaction;</p>
-<h2 id="watch-的应用目的-用事件流取代轮询">Watch 的应用目的: 用事件流取代轮询</h2>
-<p>讲完机制, 退一步看<strong>为什么要有它</strong>; 一句话: <strong>让分布式组件从&quot;主动轮询共享状态&quot;变成&quot;被动接收变更&quot;, 把状态同步变成事件驱动</strong>;</p>
-<p>没有 Watch 只能轮询, 而轮询有个死结:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">while true:</span><br><span class="line">    state = etcd.get(&quot;/config&quot;)   // 拉全量</span><br><span class="line">    if state != last: react()</span><br><span class="line">    sleep(?)                       // 这个 ? 无解</span><br></pre></td></tr></table></figure>
+<p>客户端得一直记着自己最后收到的那条事件的 revision = R, 重连时用 <code>start_revision = R+1</code> 重建 watch (<code>+1</code> 是因为 R 那条已经收到过了); 对于很久不变的 key, <code>progress_notify</code> 会周期性推一个空 WatchResponse, 只带当前 revision, 告诉你&quot;到这儿为止你没漏&quot;, 让 R 能跟着往前挪, 免得回退太多一不小心撞上 compaction;</p>
+<h2 id="watch-到底是为了啥-拿事件流换掉轮询">Watch 到底是为了啥: 拿事件流换掉轮询</h2>
+<p>机制讲完, 退一步看它为啥存在; 一句话, 就是让分布式组件从&quot;自己主动去轮询共享状态&quot;变成&quot;被动收变更&quot;, 把状态同步变成事件驱动;</p>
+<p>没有 Watch 你只能轮询, 而轮询有个死结:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">while true:</span><br><span class="line">    state = etcd.get(&quot;/config&quot;)   // 拉全量</span><br><span class="line">    if state != last: react()</span><br><span class="line">    sleep(?)                       // 这个 ? 怎么填都不对</span><br></pre></td></tr></table></figure>
 <ul>
-<li>间隔短 → 实时但把 etcd 打爆 (惊群);</li>
-<li>间隔长 → 负载低但延迟高;</li>
-<li>更糟: 两次轮询之间改了又改回去, 你完全察觉不到中间发生过什么 (漏更新);</li>
+<li>间隔短, 实时是实时, 但 N 个组件高频拉, 直接把 etcd 打爆 (惊群);</li>
+<li>间隔长, 负载是下来了, 但变更得等下一轮才发现, 延迟高;</li>
+<li>更阴间的是漏更新: 两次轮询之间一个 key 被改了又改回去, 你压根察觉不到中间发生过啥;</li>
 </ul>
-<p>轮询的根本缺陷是<strong>只能看到&quot;现在的快照&quot;, 看不到&quot;发生过的事件序列&quot;</strong>; Watch 用 “推送 + 有序不丢 + 可从历史续传” 一次性补齐, 于是应用能安全构建:</p>
-<blockquote>
-<p><strong>本地维护一份共享状态的实时镜像 + 每次变更触发一段反应逻辑</strong> —— 即 List-Watch 模式;</p>
-</blockquote>
+<p>轮询的根子病在于它只能看到&quot;现在的快照&quot;, 看不到&quot;发生过的事件序列&quot;; Watch 拿&quot;推送 + 有序不丢 + 能从历史续传&quot;一次性把这仨补齐, 于是应用就能安心搭这么个东西: 本地存一份共享状态的实时镜像, 每来一个变更就触发一段反应逻辑, 也就是 List-Watch 模式;</p>
 <p>落到具体应用:</p>
 <table>
 <thead>
 <tr>
 <th>应用</th>
-<th>Watch 的目的</th>
+<th>Watch 在这干啥</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>动态配置</td>
-<td>watch 配置 key → 一改全实例热加载, 不重启不轮询</td>
+<td>watch 配置 key, 一改全实例热加载, 不重启也不轮询</td>
 </tr>
 <tr>
 <td>服务发现</td>
-<td>watch <code>/services/</code> 前缀 → 实时维护活的 endpoint 列表</td>
+<td>watch <code>/services/</code> 前缀, 实时维护一份活的 endpoint 列表</td>
 </tr>
 <tr>
 <td>Leader election</td>
-<td>watch leader key → leader 挂了立刻感知并接管</td>
+<td>watch leader key, leader 一挂立刻感知然后接管</td>
 </tr>
 <tr>
 <td>分布式锁/队列</td>
-<td>watch “排我前面那个 key” → 它释放时精确唤醒我</td>
+<td>watch “排我前面那个 key”, 它一释放就精确把我叫醒</td>
 </tr>
 <tr>
-<td><strong>k8s 控制器调谐</strong></td>
-<td>watch 期望状态 → 一变触发 reconcile, 驱动实际趋近期望</td>
+<td>k8s 控制器调谐</td>
+<td>watch 期望状态, 一变就触发 reconcile, 把实际拽向期望</td>
 </tr>
 </tbody>
 </table>
-<h2 id="reconcile-控制器调谐到底是什么">reconcile: 控制器调谐到底是什么</h2>
-<p>最后一行是 k8s 选 etcd 的根本理由, 单独展开;</p>
-<h3 id="reconcile-这个词的本义">reconcile 这个词的本义</h3>
-<p>它在会计里就是**“对账、使一致”**: 你 APP 里记的余额和银行对账单应该一样, 不一样就逐项核对调整直到吻合; k8s 把这个词原封搬来, 两份&quot;账&quot;换成:</p>
+<h2 id="reconcile-控制器调谐到底是个啥">reconcile: 控制器调谐到底是个啥</h2>
+<p>最后一行是 k8s 选 etcd 的根本理由, 单拎出来讲;</p>
+<h3 id="reconcile-这词的本义">reconcile 这词的本义</h3>
+<p>它在会计里就是&quot;对账、把两边弄一致&quot;: 你 APP 里记的余额和银行对账单本该一样, 不一样就逐项核对、调整, 直到对上; k8s 把这词原封不动搬了过来, 两份&quot;账&quot;换成了:</p>
 <ul>
-<li><strong>期望状态 (desired state)</strong>: 你声明的、存在 etcd 里的 (“我要 3 个 Pod”);</li>
-<li><strong>实际状态 (actual state)</strong>: 集群里真在跑的 (“现在只有 2 个 Pod”);</li>
+<li>期望状态 (desired state): 你声明的、存在 etcd 里的 (“我要 3 个 Pod”);</li>
+<li>实际状态 (actual state): 集群里真在跑的 (“现在只有 2 个 Pod”);</li>
 </ul>
 <h3 id="reconcile-就是一个循环跑的函数">reconcile 就是一个循环跑的函数</h3>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">reconcile():</span><br><span class="line">    desired = 读期望状态        // 从 informer 本地缓存</span><br><span class="line">    actual  = 观察实际状态</span><br><span class="line">    diff    = desired - actual</span><br><span class="line">    采取动作抹平 diff           // 多了删, 少了建</span><br></pre></td></tr></table></figure>
-<p>例子, Deployment 声明 <code>replicas: 3</code>:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">第1轮: desired=3, actual=2 → 差1 → 创建1个 Pod</span><br><span class="line">第2轮: desired=3, actual=3 → 差0 → 什么都不做</span><br><span class="line">(某 Pod 崩了)</span><br><span class="line">第3轮: desired=3, actual=2 → 差1 → 再创建1个</span><br></pre></td></tr></table></figure>
-<p>控制器 = 一个不停跑 reconcile 的死循环 (control loop);</p>
-<h3 id="关键洞察-level-triggered-而非-edge-triggered">关键洞察: level-triggered 而非 edge-triggered</h3>
+<p>拿 Deployment 声明 <code>replicas: 3</code> 走一遍:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">第1轮: desired=3, actual=2 → 差1 → 创建1个 Pod</span><br><span class="line">第2轮: desired=3, actual=3 → 差0 → 啥都不干</span><br><span class="line">(某个 Pod 崩了)</span><br><span class="line">第3轮: desired=3, actual=2 → 差1 → 再补1个</span><br></pre></td></tr></table></figure>
+<p>所谓控制器, 就是一个不停跑这个 reconcile 的死循环 (control loop);</p>
+<h3 id="关键的一点-它是-level-triggered-不是-edge-triggered">关键的一点: 它是 level-triggered, 不是 edge-triggered</h3>
 <table>
 <thead>
 <tr>
 <th>风格</th>
-<th>含义</th>
-<th>问题</th>
+<th>怎么反应</th>
+<th>毛病</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>edge-triggered 边沿触发</strong></td>
-<td>针对&quot;发生了什么变化&quot;反应 (“刚有人删了 Pod, 我补一个”)</td>
-<td>漏一个事件, 状态就永久错</td>
+<td>edge-triggered 边沿触发</td>
+<td>盯&quot;发生了什么变化&quot; (“刚有人删了个 Pod, 我补一个”)</td>
+<td>漏一个事件, 状态就永久错了</td>
 </tr>
 <tr>
-<td><strong>level-triggered 电平触发</strong></td>
-<td>针对&quot;当前是什么状态&quot;反应 (“不管发生过啥, 我现在看一眼差几个补几个”)</td>
-<td>漏事件无所谓, 下轮重算就修正</td>
+<td>level-triggered 电平触发</td>
+<td>盯&quot;当前是什么状态&quot; (“不管刚才发生过啥, 我现在看一眼差几个, 补几个”)</td>
+<td>漏事件无所谓, 下一轮重算就修正</td>
 </tr>
 </tbody>
 </table>
-<p><strong>k8s 的 reconcile 是 level-triggered 的</strong>; 这解释了为什么 Watch 偶尔漏个事件、或 relist 一下不致命:</p>
+<p>k8s 的 reconcile 是 level-triggered 的; 这就解释了为啥 Watch 偶尔漏个事件、或者 relist 一下不致命:</p>
 <blockquote>
-<p>Watch 事件在这里只是一个**&quot;醒一醒, 去重新对一次账&quot;的闹钟**; 真正干活的 reconcile 每次都重新读全量期望 + 重新观察实际 + 重算差距; 所以漏了事件, 下次任何事件 (或定时 resync) 触发 reconcile 照样修正;</p>
+<p>Watch 事件在这儿其实只是个&quot;醒一醒, 去重新对一次账&quot;的闹钟; 真正干活的 reconcile 每次都重新读全量期望、重新看一眼实际、重算差距; 所以你漏了某个事件, 下次随便哪个事件 (或者定时 resync) 触发 reconcile, 照样能算出差距修回来;</p>
 </blockquote>
-<p>这也要求 reconcile 必须<strong>幂等</strong>: 算出&quot;差 0&quot;时什么都不做, 重复跑无副作用;</p>
+<p>也正因为这样, reconcile 必须是幂等的: 算出&quot;差 0&quot;就什么都不做, 重复跑也没副作用;</p>
 <blockquote>
-<p>和别处见过的 reconcile (Terraform plan/apply、React 协调虚拟 DOM、Git merge) 本质同一模式: 比较&quot;想要的&quot;和&quot;现有的&quot;, 生成并执行抹平差异的动作; k8s 只是把它做成集群级、永续运行的基础范式;</p>
+<p>你在别处见过的 reconcile (Terraform 的 plan/apply、React 协调虚拟 DOM、Git merge) 本质都是同一个模式: 比较&quot;想要的&quot;和&quot;现有的&quot;, 生成并执行抹平差异的动作; k8s 只是把它做成了集群级、永不停歇的基础范式;</p>
 </blockquote>
-<h2 id="谁在-watch-谁-pod-需要自己维持-watch-吗">谁在 watch 谁: Pod 需要自己维持 Watch 吗</h2>
-<p>一个常见误解 —— 直接结论:</p>
+<h2 id="谁在-watch-谁-pod-要自己维持-watch-吗">谁在 watch 谁: Pod 要自己维持 Watch 吗</h2>
+<p>这是个特别常见的误解, 先甩结论:</p>
 <blockquote>
-<p><strong>普通应用 Pod 里的程序完全不需要、也根本不参与 Watch; Watch 是 k8s 控制面在&quot;外面&quot;自动维持的, 你的 Pod 对此一无所知;</strong></p>
+<p>普通应用 Pod 里的程序完全不需要、也根本不参与 Watch; Watch 是 k8s 控制面在&quot;外面&quot;自动维持的, 你的 Pod 对此一无所知;</p>
 </blockquote>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">        etcd</span><br><span class="line">          ▲  只有 kube-apiserver 直连 etcd(读/写/watch)</span><br><span class="line">          │</span><br><span class="line">    kube-apiserver   ← 唯一的 etcd 大门</span><br><span class="line">          ▲</span><br><span class="line">          │  这些组件 watch 的是 apiserver, 不是 etcd</span><br><span class="line">   ┌──────┼───────────────┬──────────────┐</span><br><span class="line">controller-manager   scheduler        kubelet</span><br><span class="line">          │</span><br><span class="line">          ▼</span><br><span class="line">   ┌─────────────┐</span><br><span class="line">   │  你的 Pod    │  ← 它是“被管理的对象”, 不是 watcher</span><br><span class="line">   │  (web/ML…)  │     里面程序啥都不用做, 正常跑业务</span><br><span class="line">   └─────────────┘</span><br></pre></td></tr></table></figure>
 <p>两个关键事实:</p>
 <ol>
-<li><strong>只有 kube-apiserver 直连 etcd</strong>; 你的 Pod 永远不碰 etcd, 连地址都不知道;</li>
-<li>干 Watch 活的是控制面组件 (controller-manager 里各种控制器、scheduler、kubelet), 它们 watch 的还是 <strong>apiserver</strong> (apiserver 再从 etcd 拿, 中间有 watch cache 挡着, 否则几千个 informer 会把 etcd 打穿);</li>
+<li>只有 kube-apiserver 直连 etcd; 你的 Pod 永远不碰 etcd, 连它地址都不知道;</li>
+<li>真正干 Watch 这活的是控制面组件 (controller-manager 里各种控制器、scheduler、kubelet), 它们 watch 的还是 apiserver (apiserver 再去 etcd 拿, 中间还垫了个 watch cache, 不然几千个 informer 能把 etcd 打穿);</li>
 </ol>
-<p>心智模型纠正: <strong>你的 Pod 是&quot;账本里被对账的一行 (actual state)&quot;, 不是&quot;对账的人&quot;</strong>; Pod 崩了是控制器 watch 到&quot;少了一个&quot;然后补一个 —— 不是 Pod 自己 watch 自己救自己; 所以应用层无需写任何 watch、无需心跳上报、无需维持连接, 这正是声明式的爽点: <strong>应用无感</strong>;</p>
-<p><strong>唯一例外</strong>: 你自己写控制器/Operator (ingress-controller、各种 Operator、service mesh 控制面) 时, 这个 Pod 本身就是个 watcher; 但即便如此 —— ① 它 watch 的仍是 apiserver, 绝不直连 etcd; ② 你不用手撸 gRPC watch 流/重连/relist, 用官方 <strong>client-go informer 框架</strong>: 注册几个事件回调 + 一个 reconcile 函数, watch 的生命周期 (连接、重连、relist、本地缓存) 全由库自动维持, 你只写&quot;差距出现时干什么&quot;;</p>
+<p>心智模型纠一下: 你的 Pod 是&quot;账本里被对账的那一行 (actual state)&quot;, 不是&quot;对账的人&quot;; Pod 崩了, 是控制器 watch 到&quot;少了一个&quot;然后补一个, 不是 Pod 自己 watch 自己、自己救自己; 所以应用层啥 watch 都不用写、不用心跳上报、不用维持连接, 这正是声明式最爽的地方: 应用无感;</p>
+<p>唯一的例外是你自己写控制器/Operator (ingress-controller、各种 Operator、service mesh 控制面) 的时候, 这个 Pod 本身就是个 watcher 了; 但就算这样, 一来它 watch 的仍然是 apiserver, 绝不直连 etcd; 二来你也不用手撸 gRPC watch 流、重连、relist 那一套, 用官方的 client-go informer 框架就行: 注册几个事件回调 + 一个 reconcile 函数, watch 的生命周期 (连接、重连、relist、本地缓存) 全由库替你维持, 你只管写&quot;差距出现时干啥&quot;;</p>
 <h2 id="k8s-怎么把这套吃下去-list-watch-全景">k8s 怎么把这套吃下去 (List-Watch 全景)</h2>
-<p>informer/reflector 几乎是 Watch 语义的教科书式用法:</p>
+<p>informer/reflector 基本就是 Watch 语义的教科书式用法:</p>
 <ol>
-<li><strong>List</strong>: 先全量拉一次某资源 (如所有 Pod), 拿到 <code>resourceVersion = RV0</code>; <code>resourceVersion</code> 本质就是 etcd revision (对上层是不透明字符串);</li>
-<li><strong>Watch</strong>: 从 <code>RV0 + 1</code> 开始 watch, 增量事件灌进本地缓存 (Indexer/Store), 控制器从本地缓存做 reconcile —— 这就是调谐数据的来路;</li>
-<li><strong>Relist (兜底)</strong>: watch 报 <code>410 Gone / too old resourceVersion</code> (底层就是 etcd <code>ErrCompacted</code>), 说明落后到被压缩了 —— reflector 丢弃缓存、重新 List、重新 Watch; 和前面 Watch 那节的续传模式一模一样;</li>
+<li>List: 先全量拉一次某个资源 (比如所有 Pod), 拿到 <code>resourceVersion = RV0</code>; 这个 <code>resourceVersion</code> 本质就是 etcd 的 revision (对上层是个不透明字符串);</li>
+<li>Watch: 从 <code>RV0 + 1</code> 开始 watch, 增量事件灌进本地缓存 (Indexer/Store), 控制器从本地缓存做 reconcile, 这就是调谐数据的来路;</li>
+<li>Relist (兜底): watch 报 <code>410 Gone / too old resourceVersion</code> (底层就是 etcd <code>ErrCompacted</code>), 说明你落后到被压缩了; reflector 就把缓存一扔, 重新 List、重新 Watch; 跟前面 Watch 那节的续传套路一模一样;</li>
 </ol>
-<p>两个 k8s 特有优化:</p>
+<p>两个 k8s 特有的优化:</p>
 <ul>
-<li><strong>Watch Cache</strong>: apiserver 在内存维护最近事件的环形缓冲, 几千个 informer 从 cache 服务而非各自打穿 etcd;</li>
-<li><strong>Bookmark 事件</strong>: apiserver 周期性发一个只带 resourceVersion、没有实际变化的 bookmark, 让空闲 watcher 也能推进自己的 RV (同 etcd 的 progress_notify 思路), 减少 relist;</li>
+<li>Watch Cache: apiserver 在内存里维护一圈最近事件的环形缓冲, 几千个 informer 都从这个 cache 拿, 而不是各自打穿到 etcd;</li>
+<li>Bookmark 事件: apiserver 周期性发一个只带 resourceVersion、没有实际变化的 bookmark, 让闲着的 watcher 也能把自己的 RV 往前挪 (跟 etcd 的 progress_notify 一个思路), 减少 relist;</li>
 </ul>
 <h2 id="小结-一条链路">小结: 一条链路</h2>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Raft(有序日志共识)</span><br><span class="line">   └→ MVCC(给存储装时间轴: revision)</span><br><span class="line">        └→ Watch(时间轴上的游标+重放: 有序/不丢/可续传)</span><br><span class="line">             └→ List-Watch(本地实时镜像)</span><br><span class="line">                  └→ reconcile(level-triggered 对账, 容忍丢事件)</span><br><span class="line">                       └→ 声明式 + 控制循环(k8s 的根范式)</span><br></pre></td></tr></table></figure>
-<p><strong>etcd 的角色: 不是&quot;存数据的数据库&quot;, 而是&quot;整个集群协调逻辑的事件骨架&quot;</strong>; MVCC 提供时间轴, Watch 把时间轴变成可靠事件流, reconcile 在事件流上做幂等对账 —— 三者叠起来, 才让 k8s “你声明期望、系统自己收敛” 这件事在工程上成立;</p>
+<p>所以 etcd 的角色, 与其说是&quot;存数据的数据库&quot;, 不如说是&quot;整个集群协调逻辑的事件骨架&quot;: MVCC 提供时间轴, Watch 把时间轴变成可靠事件流, reconcile 在事件流上做幂等对账; 这三层叠起来, k8s &quot;你声明期望、系统自己收敛&quot;这件事才在工程上真正成立;</p>
 <h2 id="待填-下一步">待填 / 下一步</h2>
 <ul>
-<li>[ ] <strong>Lease + leader election</strong> 实操: 上表&quot;成员管理/选主&quot;那一格的具体实现;</li>
-<li>[ ] <strong>线性一致读 (ReadIndex)</strong>: 读侧怎么保证不读到旧 Leader 的脏数据 (serializable vs linearizable read);</li>
-<li>[ ] <strong>Txn / CAS</strong> 乐观并发的实际写法;</li>
-<li>[ ] <strong>存储与持久化</strong>: bbolt 后端 + WAL + snapshot, Raft 日志怎么落盘、怎么截断;</li>
-<li>[ ] 回到 k8s: 抓 apiserver 访问 etcd 的实际 key 结构 (<code>/registry/...</code>) 看一眼;</li>
+<li>[ ] Lease + leader election 实操: 上表&quot;成员管理/选主&quot;那一格的具体实现;</li>
+<li>[ ] 线性一致读 (ReadIndex): 读侧怎么保证不读到旧 Leader 的脏数据 (serializable vs linearizable read);</li>
+<li>[ ] Txn / CAS 乐观并发的实际写法;</li>
+<li>[ ] 存储与持久化: bbolt 后端 + WAL + snapshot, Raft 日志怎么落盘、怎么截断;</li>
+<li>[ ] 回到 k8s: 抓一眼 apiserver 访问 etcd 的实际 key 结构 (<code>/registry/...</code>);</li>
 </ul>
-</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">Yuchen You (Wesley)</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2026/06/09/computer_system_basics/ds/etcd/">http://example.com/2026/06/09/computer_system_basics/ds/etcd/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/distributed-sys/">distributed_sys</a><a class="post-meta__tags" href="/tags/Consensus/">Consensus</a><a class="post-meta__tags" href="/tags/kubernetes/">kubernetes</a><a class="post-meta__tags" href="/tags/etcd/">etcd</a></div><div class="post_share"><div class="social-share" data-image="/img/me_new.jpeg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2026/06/10/computer_system_basics/ds/chubby/" title="Chubby: 一个面向松耦合分布式系统的锁服务"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Previous</div><div class="prev_info">Chubby: 一个面向松耦合分布式系统的锁服务</div></div></a></div><div class="next-post pull-right"><a href="/2026/05/31/computer_system_basics/network/security/Vpn%20from%20WireGuard%20Impl/" title="Vpn from WireGuard Impl — 从论文批判到 Go 手写隧道"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Next</div><div class="next_info">Vpn from WireGuard Impl — 从论文批判到 Go 手写隧道</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2026/06/10/computer_system_basics/ds/chubby/" title="Chubby: 一个面向松耦合分布式系统的锁服务"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-10</div><div class="title">Chubby: 一个面向松耦合分布式系统的锁服务</div></div></a></div><div><a href="/2025/12/14/computer_system_basics/ds/10.tradeoff/" title="10. Tradeoffs btw"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-14</div><div class="title">10. Tradeoffs btw</div></div></a></div><div><a href="/2025/10/16/computer_system_basics/ds/5.paxos/" title="5. Consensus: Paxos Made Simple (not to me)"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-10-16</div><div class="title">5. Consensus: Paxos Made Simple (not to me)</div></div></a></div><div><a href="/2025/12/13/computer_system_basics/ds/6.cap/" title="6. 从 FLP 不可能到 CAP 和 PACELC"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-13</div><div class="title">6. 从 FLP 不可能到 CAP 和 PACELC</div></div></a></div><div><a href="/2025/12/13/computer_system_basics/ds/7.eventual_consistency/" title="7. Eventual Consistency"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-13</div><div class="title">7. Eventual Consistency</div></div></a></div><div><a href="/2025/11/28/computer_system_basics/db/5.transaction/" title="5. Transaction and ACID DB"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-11-28</div><div class="title">5. Transaction and ACID DB</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/me_new.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Yuchen You (Wesley)</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">115</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">55</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">8</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/1WesleyYou"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/1Wesleyyou" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yuchenxr@umich.edu" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://www.linkedin.com/in/yuchen-you-a74940314/?locale=en_US" target="_blank" title="LinkedIn"><i class="fab fa-linkedin" style="color: #4a4dbe;"></i></a><a class="social-icon" href="/Yuchen_CV.pdf" target="_blank" title="CV"><i class="fas fa-address-card" style="color: #251456;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8E-raft-%E5%88%B0-etcd-%E4%B8%AD%E9%97%B4%E5%A4%9A%E4%BA%86%E4%BB%80%E4%B9%88"><span class="toc-number">1.</span> <span class="toc-text">从 Raft 到 etcd: 中间多了什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#mvcc-%E7%BB%99%E5%AD%98%E5%82%A8%E8%A3%85%E4%B8%8A%E4%B8%80%E6%9D%A1%E6%97%B6%E9%97%B4%E8%BD%B4"><span class="toc-number">2.</span> <span class="toc-text">MVCC: 给存储装上一条时间轴</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%83%E8%A6%81%E8%A7%A3%E5%86%B3%E7%9A%84%E7%9F%9B%E7%9B%BE-%E8%AF%BB%E5%86%99%E5%B9%B6%E5%8F%91%E4%B8%8D%E4%BA%92%E7%9B%B8%E9%98%BB%E5%A1%9E"><span class="toc-number">2.1.</span> <span class="toc-text">它要解决的矛盾: 读写并发不互相阻塞</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#etcd-%E9%87%8C%E7%9A%84-mvcc-%E9%95%BF%E4%BB%80%E4%B9%88%E6%A0%B7"><span class="toc-number">2.2.</span> <span class="toc-text">etcd 里的 MVCC 长什么样</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#watch-%E6%97%B6%E9%97%B4%E8%BD%B4%E4%B8%8A%E7%9A%84%E6%B8%B8%E6%A0%87-%E9%87%8D%E6%94%BE%E5%BC%95%E6%93%8E"><span class="toc-number">3.</span> <span class="toc-text">Watch: 时间轴上的游标 + 重放引擎</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%A8%E5%81%9A%E4%BB%80%E4%B9%88"><span class="toc-number">3.1.</span> <span class="toc-text">在做什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#api-%E5%BD%A2%E6%80%81-v3-grpc-streaming"><span class="toc-number">3.2.</span> <span class="toc-text">API 形态 (v3, gRPC streaming)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E6%9D%A1%E6%A0%B8%E5%BF%83%E4%BF%9D%E8%AF%81-%E4%B8%80%E5%AE%9A%E8%A6%81%E8%AE%B0"><span class="toc-number">3.3.</span> <span class="toc-text">三条核心保证 (一定要记)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-synced-unsynced-%E5%8F%8C%E9%98%9F%E5%88%97"><span class="toc-number">3.4.</span> <span class="toc-text">内部实现: synced &#x2F; unsynced 双队列</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%92%8C-compaction-%E7%9A%84%E8%87%B4%E5%91%BD%E4%BA%A4%E4%BA%92"><span class="toc-number">3.5.</span> <span class="toc-text">和 compaction 的致命交互</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%AD%E7%BA%BF%E7%BB%AD%E4%BC%A0"><span class="toc-number">3.6.</span> <span class="toc-text">断线续传</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#watch-%E7%9A%84%E5%BA%94%E7%94%A8%E7%9B%AE%E7%9A%84-%E7%94%A8%E4%BA%8B%E4%BB%B6%E6%B5%81%E5%8F%96%E4%BB%A3%E8%BD%AE%E8%AF%A2"><span class="toc-number">4.</span> <span class="toc-text">Watch 的应用目的: 用事件流取代轮询</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#reconcile-%E6%8E%A7%E5%88%B6%E5%99%A8%E8%B0%83%E8%B0%90%E5%88%B0%E5%BA%95%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">5.</span> <span class="toc-text">reconcile: 控制器调谐到底是什么</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#reconcile-%E8%BF%99%E4%B8%AA%E8%AF%8D%E7%9A%84%E6%9C%AC%E4%B9%89"><span class="toc-number">5.1.</span> <span class="toc-text">reconcile 这个词的本义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#reconcile-%E5%B0%B1%E6%98%AF%E4%B8%80%E4%B8%AA%E5%BE%AA%E7%8E%AF%E8%B7%91%E7%9A%84%E5%87%BD%E6%95%B0"><span class="toc-number">5.2.</span> <span class="toc-text">reconcile 就是一个循环跑的函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E6%B4%9E%E5%AF%9F-level-triggered-%E8%80%8C%E9%9D%9E-edge-triggered"><span class="toc-number">5.3.</span> <span class="toc-text">关键洞察: level-triggered 而非 edge-triggered</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B0%81%E5%9C%A8-watch-%E8%B0%81-pod-%E9%9C%80%E8%A6%81%E8%87%AA%E5%B7%B1%E7%BB%B4%E6%8C%81-watch-%E5%90%97"><span class="toc-number">6.</span> <span class="toc-text">谁在 watch 谁: Pod 需要自己维持 Watch 吗</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#k8s-%E6%80%8E%E4%B9%88%E6%8A%8A%E8%BF%99%E5%A5%97%E5%90%83%E4%B8%8B%E5%8E%BB-list-watch-%E5%85%A8%E6%99%AF"><span class="toc-number">7.</span> <span class="toc-text">k8s 怎么把这套吃下去 (List-Watch 全景)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93-%E4%B8%80%E6%9D%A1%E9%93%BE%E8%B7%AF"><span class="toc-number">8.</span> <span class="toc-text">小结: 一条链路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BE%85%E5%A1%AB-%E4%B8%8B%E4%B8%80%E6%AD%A5"><span class="toc-number">9.</span> <span class="toc-text">待填 &#x2F; 下一步</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/10/computer_system_basics/ds/chubby/" title="Chubby: 一个面向松耦合分布式系统的锁服务">Chubby: 一个面向松耦合分布式系统的锁服务</a><time datetime="2026-06-09T16:22:06.000Z" title="Created 2026-06-10 00:22:06">2026-06-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/09/computer_system_basics/ds/etcd/" title="etcd: 把 Raft 包装成 k8s 的事实数据源">etcd: 把 Raft 包装成 k8s 的事实数据源</a><time datetime="2026-06-09T14:57:07.000Z" title="Created 2026-06-09 22:57:07">2026-06-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/31/computer_system_basics/network/security/Vpn%20from%20WireGuard%20Impl/" title="Vpn from WireGuard Impl — 从论文批判到 Go 手写隧道">Vpn from WireGuard Impl — 从论文批判到 Go 手写隧道</a><time datetime="2026-05-31T10:10:00.000Z" title="Created 2026-05-31 18:10:00">2026-05-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/26/agentsys/planning/0.tree-of-thought/" title="Tree of Thought: 不再是 left-to-right 单向思维架构">Tree of Thought: 不再是 left-to-right 单向思维架构</a><time datetime="2026-05-26T12:57:56.279Z" title="Created 2026-05-26 20:57:56">2026-05-26</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/26/agentsys/orchestration/0.mcts/" title="0. 从 Minimax 到 MCTS - 经典博弈树搜索基础">0. 从 Minimax 到 MCTS - 经典博弈树搜索基础</a><time datetime="2026-05-26T08:02:36.715Z" title="Created 2026-05-26 16:02:36">2026-05-26</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2026 By Yuchen You (Wesley)</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">welcome to my blog!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/fireworks.min.js"></script><script defer="defer" id="fluttering_ribbon" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/canvas-fluttering-ribbon.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading the Database</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="Search for Posts" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=4.13.0"></script></div></div></body></html>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">Yuchen You (Wesley)</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2026/06/09/computer_system_basics/ds/etcd/">http://example.com/2026/06/09/computer_system_basics/ds/etcd/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/distributed-sys/">distributed_sys</a><a class="post-meta__tags" href="/tags/Consensus/">Consensus</a><a class="post-meta__tags" href="/tags/kubernetes/">kubernetes</a><a class="post-meta__tags" href="/tags/etcd/">etcd</a></div><div class="post_share"><div class="social-share" data-image="/img/me_new.jpeg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2026/06/10/computer_system_basics/ds/chubby/" title="Chubby: 一个面向松耦合分布式系统的锁服务"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Previous</div><div class="prev_info">Chubby: 一个面向松耦合分布式系统的锁服务</div></div></a></div><div class="next-post pull-right"><a href="/2026/05/31/computer_system_basics/network/security/Vpn%20from%20WireGuard%20Impl/" title="Vpn from WireGuard Impl — 从论文批判到 Go 手写隧道"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Next</div><div class="next_info">Vpn from WireGuard Impl — 从论文批判到 Go 手写隧道</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2026/06/10/computer_system_basics/ds/chubby/" title="Chubby: 一个面向松耦合分布式系统的锁服务"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-10</div><div class="title">Chubby: 一个面向松耦合分布式系统的锁服务</div></div></a></div><div><a href="/2025/12/14/computer_system_basics/ds/10.tradeoff/" title="10. Tradeoffs btw"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-14</div><div class="title">10. Tradeoffs btw</div></div></a></div><div><a href="/2025/10/16/computer_system_basics/ds/5.paxos/" title="5. Consensus: Paxos Made Simple (not to me)"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-10-16</div><div class="title">5. Consensus: Paxos Made Simple (not to me)</div></div></a></div><div><a href="/2025/12/13/computer_system_basics/ds/6.cap/" title="6. 从 FLP 不可能到 CAP 和 PACELC"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-13</div><div class="title">6. 从 FLP 不可能到 CAP 和 PACELC</div></div></a></div><div><a href="/2025/12/13/computer_system_basics/ds/7.eventual_consistency/" title="7. Eventual Consistency"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-13</div><div class="title">7. Eventual Consistency</div></div></a></div><div><a href="/2025/11/28/computer_system_basics/db/5.transaction/" title="5. Transaction and ACID DB"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-11-28</div><div class="title">5. Transaction and ACID DB</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/me_new.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Yuchen You (Wesley)</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">115</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">55</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">8</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/1WesleyYou"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/1Wesleyyou" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yuchenxr@umich.edu" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://www.linkedin.com/in/yuchen-you-a74940314/?locale=en_US" target="_blank" title="LinkedIn"><i class="fab fa-linkedin" style="color: #4a4dbe;"></i></a><a class="social-icon" href="/Yuchen_CV.pdf" target="_blank" title="CV"><i class="fas fa-address-card" style="color: #251456;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8E-raft-%E5%88%B0-etcd-%E4%B8%AD%E9%97%B4%E5%A4%9A%E4%BA%86%E4%BB%80%E4%B9%88"><span class="toc-number">1.</span> <span class="toc-text">从 Raft 到 etcd: 中间多了什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#mvcc-%E7%BB%99%E5%AD%98%E5%82%A8%E8%A3%85%E4%B8%8A%E4%B8%80%E6%9D%A1%E6%97%B6%E9%97%B4%E8%BD%B4"><span class="toc-number">2.</span> <span class="toc-text">MVCC: 给存储装上一条时间轴</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%83%E8%A6%81%E8%A7%A3%E5%86%B3%E7%9A%84%E7%9F%9B%E7%9B%BE-%E8%AF%BB%E5%86%99%E5%B9%B6%E5%8F%91%E5%88%AB%E4%BA%92%E7%9B%B8%E5%A0%B5"><span class="toc-number">2.1.</span> <span class="toc-text">它要解决的矛盾: 读写并发别互相堵</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#etcd-%E9%87%8C%E7%9A%84-mvcc-%E9%95%BF%E4%BB%80%E4%B9%88%E6%A0%B7"><span class="toc-number">2.2.</span> <span class="toc-text">etcd 里的 MVCC 长什么样</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#watch-%E6%97%B6%E9%97%B4%E8%BD%B4%E4%B8%8A%E7%9A%84%E6%B8%B8%E6%A0%87-%E9%87%8D%E6%94%BE%E5%BC%95%E6%93%8E"><span class="toc-number">3.</span> <span class="toc-text">Watch: 时间轴上的游标 + 重放引擎</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%A8%E5%81%9A%E4%BB%80%E4%B9%88"><span class="toc-number">3.1.</span> <span class="toc-text">在做什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#api-%E5%BD%A2%E6%80%81-v3-grpc-streaming"><span class="toc-number">3.2.</span> <span class="toc-text">API 形态 (v3, gRPC streaming)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E6%9D%A1%E6%A0%B8%E5%BF%83%E4%BF%9D%E8%AF%81-%E4%B8%80%E5%AE%9A%E8%A6%81%E8%AE%B0"><span class="toc-number">3.3.</span> <span class="toc-text">三条核心保证 (一定要记)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0-synced-unsynced-%E5%8F%8C%E9%98%9F%E5%88%97"><span class="toc-number">3.4.</span> <span class="toc-text">内部实现: synced &#x2F; unsynced 双队列</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%92%8C-compaction-%E7%9A%84%E8%87%B4%E5%91%BD%E4%BA%A4%E4%BA%92"><span class="toc-number">3.5.</span> <span class="toc-text">和 compaction 的致命交互</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%AD%E7%BA%BF%E7%BB%AD%E4%BC%A0"><span class="toc-number">3.6.</span> <span class="toc-text">断线续传</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#watch-%E5%88%B0%E5%BA%95%E6%98%AF%E4%B8%BA%E4%BA%86%E5%95%A5-%E6%8B%BF%E4%BA%8B%E4%BB%B6%E6%B5%81%E6%8D%A2%E6%8E%89%E8%BD%AE%E8%AF%A2"><span class="toc-number">4.</span> <span class="toc-text">Watch 到底是为了啥: 拿事件流换掉轮询</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#reconcile-%E6%8E%A7%E5%88%B6%E5%99%A8%E8%B0%83%E8%B0%90%E5%88%B0%E5%BA%95%E6%98%AF%E4%B8%AA%E5%95%A5"><span class="toc-number">5.</span> <span class="toc-text">reconcile: 控制器调谐到底是个啥</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#reconcile-%E8%BF%99%E8%AF%8D%E7%9A%84%E6%9C%AC%E4%B9%89"><span class="toc-number">5.1.</span> <span class="toc-text">reconcile 这词的本义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#reconcile-%E5%B0%B1%E6%98%AF%E4%B8%80%E4%B8%AA%E5%BE%AA%E7%8E%AF%E8%B7%91%E7%9A%84%E5%87%BD%E6%95%B0"><span class="toc-number">5.2.</span> <span class="toc-text">reconcile 就是一个循环跑的函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E7%9A%84%E4%B8%80%E7%82%B9-%E5%AE%83%E6%98%AF-level-triggered-%E4%B8%8D%E6%98%AF-edge-triggered"><span class="toc-number">5.3.</span> <span class="toc-text">关键的一点: 它是 level-triggered, 不是 edge-triggered</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B0%81%E5%9C%A8-watch-%E8%B0%81-pod-%E8%A6%81%E8%87%AA%E5%B7%B1%E7%BB%B4%E6%8C%81-watch-%E5%90%97"><span class="toc-number">6.</span> <span class="toc-text">谁在 watch 谁: Pod 要自己维持 Watch 吗</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#k8s-%E6%80%8E%E4%B9%88%E6%8A%8A%E8%BF%99%E5%A5%97%E5%90%83%E4%B8%8B%E5%8E%BB-list-watch-%E5%85%A8%E6%99%AF"><span class="toc-number">7.</span> <span class="toc-text">k8s 怎么把这套吃下去 (List-Watch 全景)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93-%E4%B8%80%E6%9D%A1%E9%93%BE%E8%B7%AF"><span class="toc-number">8.</span> <span class="toc-text">小结: 一条链路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BE%85%E5%A1%AB-%E4%B8%8B%E4%B8%80%E6%AD%A5"><span class="toc-number">9.</span> <span class="toc-text">待填 &#x2F; 下一步</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/10/computer_system_basics/ds/chubby/" title="Chubby: 一个面向松耦合分布式系统的锁服务">Chubby: 一个面向松耦合分布式系统的锁服务</a><time datetime="2026-06-09T16:22:06.000Z" title="Created 2026-06-10 00:22:06">2026-06-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/09/computer_system_basics/ds/etcd/" title="etcd: 把 Raft 包装成 k8s 的事实数据源">etcd: 把 Raft 包装成 k8s 的事实数据源</a><time datetime="2026-06-09T14:57:07.000Z" title="Created 2026-06-09 22:57:07">2026-06-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/31/computer_system_basics/network/security/Vpn%20from%20WireGuard%20Impl/" title="Vpn from WireGuard Impl — 从论文批判到 Go 手写隧道">Vpn from WireGuard Impl — 从论文批判到 Go 手写隧道</a><time datetime="2026-05-31T10:10:00.000Z" title="Created 2026-05-31 18:10:00">2026-05-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/26/agentsys/planning/0.tree-of-thought/" title="Tree of Thought: 不再是 left-to-right 单向思维架构">Tree of Thought: 不再是 left-to-right 单向思维架构</a><time datetime="2026-05-26T12:57:56.279Z" title="Created 2026-05-26 20:57:56">2026-05-26</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/26/agentsys/orchestration/0.mcts/" title="0. 从 Minimax 到 MCTS - 经典博弈树搜索基础">0. 从 Minimax 到 MCTS - 经典博弈树搜索基础</a><time datetime="2026-05-26T08:02:36.715Z" title="Created 2026-05-26 16:02:36">2026-05-26</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2026 By Yuchen You (Wesley)</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">welcome to my blog!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/fireworks.min.js"></script><script defer="defer" id="fluttering_ribbon" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/canvas-fluttering-ribbon.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading the Database</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="Search for Posts" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=4.13.0"></script></div></div></body></html>
