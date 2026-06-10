@@ -1,0 +1,337 @@
+<!DOCTYPE html><html lang="en-US" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Chubby: 一个面向松耦合分布式系统的锁服务 | Yuchen You</title><meta name="author" content="Yuchen You (Wesley)"><meta name="copyright" content="Yuchen You (Wesley)"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="📝 术语别名       Chubby: Google 内部的分布式锁服务, 底层用 Paxos 做共识, 对外暴露&quot;类文件系统的锁 + 小文件 + 事件&quot;接口, 是 etcd &#x2F; ZooKeeper 这一类协调服务的思想祖宗; cell: 一个故障隔离单元, 通常 1 master + 5 replica; coarse-grained lock: 粗粒度锁">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Chubby: 一个面向松耦合分布式系统的锁服务">
+<meta property="og:url" content="http://example.com/2026/06/10/computer_system_basics/ds/chubby/index.html">
+<meta property="og:site_name" content="Yuchen You">
+<meta property="og:description" content="📝 术语别名       Chubby: Google 内部的分布式锁服务, 底层用 Paxos 做共识, 对外暴露&quot;类文件系统的锁 + 小文件 + 事件&quot;接口, 是 etcd &#x2F; ZooKeeper 这一类协调服务的思想祖宗; cell: 一个故障隔离单元, 通常 1 master + 5 replica; coarse-grained lock: 粗粒度锁">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/img/me_new.jpeg">
+<meta property="article:published_time" content="2026-06-09T16:22:06.000Z">
+<meta property="article:modified_time" content="2026-06-09T16:23:35.272Z">
+<meta property="article:author" content="Yuchen You (Wesley)">
+<meta property="article:tag" content="distributed_sys">
+<meta property="article:tag" content="Consensus">
+<meta property="article:tag" content="kubernetes">
+<meta property="article:tag" content="Chubby">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/me_new.jpeg"><link rel="shortcut icon" href="/img/hackerrank.svg"><link rel="canonical" href="http://example.com/2026/06/10/computer_system_basics/ds/chubby/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Chubby: 一个面向松耦合分布式系统的锁服务',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-06-10 00:23:35'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 7.2.0"><link href="https://cdn.bootcss.com/KaTeX/0.11.1/katex.min.css" rel="stylesheet" />
+<style>
+.obsidian-callout { margin: 1em 0; }
+.obsidian-callout blockquote { border-left: none; margin: 0; padding: 0; background: transparent; }
+.obsidian-callout p { margin: 0.4em 0; }
+.obsidian-callout details > summary { list-style: none; }
+.obsidian-callout details > summary::-webkit-details-marker { display: none; }
+</style></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/me_new.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">115</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">55</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">8</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/math_master.jpeg')"><nav id="nav"><span id="blog-info"><a href="/" title="Yuchen You"><img class="site-icon" src="/img/avatar.png"/><span class="site-name">Yuchen You</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> Search</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Chubby: 一个面向松耦合分布式系统的锁服务</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2026-06-09T16:22:06.000Z" title="Created 2026-06-10 00:22:06">2026-06-10</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-06-09T16:23:35.272Z" title="Updated 2026-06-10 00:23:35">2026-06-10</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Chubby: 一个面向松耦合分布式系统的锁服务"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><div class="obsidian-callout callout-术语别名" style="border-left: 4px solid #448aff; background: #448aff11; border-radius: 4px; padding: 0; margin: 1em 0;">
+  <div style="padding: 8px 16px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+    <span>📝</span> <span>术语别名</span>
+  </div>
+  <div style="padding: 4px 16px 12px 16px;"><ul>
+<li>Chubby: Google 内部的分布式锁服务, 底层用 Paxos 做共识, 对外暴露&quot;类文件系统的锁 + 小文件 + 事件&quot;接口, 是 etcd / ZooKeeper 这一类协调服务的思想祖宗;</li>
+<li>cell: 一个故障隔离单元, 通常 1 master + 5 replica;</li>
+<li>coarse-grained lock: 粗粒度锁, 持有时间小时/天级 (典型如&quot;我是这个集群的 master&quot;), 与毫秒级临界区互斥的 fine-grained lock 相对;</li>
+<li>advisory lock: 建议锁, 不由系统强制, 靠&quot;守规矩的应用&quot;自觉遵守;</li>
+<li>safety / liveness: 安全性(“坏事永不发生”, 如绝不脑裂) / 活性(“好事最终发生”, 如最终能达成决定);</li>
+<li>FLP: Fischer-Lynch-Paterson 1985, 纯异步 + 可能崩溃下, 不存在同时保证 safety 和 liveness 的确定性共识算法;</li>
+<li>failure detector: 失效检测器, 用&quot;超时 ⟹ 假定死亡&quot;把&quot;它死没死&quot;(不可判定) 换成&quot;它超时没&quot;(可判定);</li>
+</ul></div>
+</div>
+<h2 id="论文定位">论文定位</h2>
+<blockquote>
+<p>Mike Burrows, “The Chubby lock service for loosely-coupled distributed systems”, OSDI 2006, Google;</p>
+</blockquote>
+<p>署名只有 Burrows 一个人, 这是一篇<strong>工程经验总结</strong>而非理论论文 —— Chubby 在 Google 内部已经支撑 GFS / Bigtable 选主跑了好几年, 所以全文反思极多, 读它的正确姿势是&quot;看一个老练系统工程师如何在现实约束里做权衡&quot;; 时间线上它比 Raft (2014) 早了整整 8 年, 写作时 Paxos 是唯一主流的异步共识算法;</p>
+<p>Chubby 的核心主张听起来反直觉: 当时解决分布式选主/协调的&quot;理论正确答案&quot;是给每个应用塞一个 <strong>Paxos 库</strong> 让它们自己投票; 但 Chubby 偏要把共识<strong>藏进一个中心化服务</strong>, 对外只露出一个<strong>像文件系统的锁接口</strong>;</p>
+<blockquote>
+<p><strong>&quot;a lock service is more useful than a Paxos library&quot;</strong> —— 对工程团队而言, 锁服务比共识库更有用;</p>
+</blockquote>
+<p>注意这句<strong>批的不是 Paxos 算法本身</strong> (Chubby 底层正是用 Paxos), 而是&quot;把 Paxos 做成库直接发给开发者&quot;这种<strong>交付方式</strong>; Chubby 对 Paxos 是拥抱的, 次年还专门写了《Paxos Made Live》讲怎么把它落地踩坑;</p>
+<h2 id="2-1-rationale-为什么是锁服务而不是-paxos-库">§2.1 Rationale: 为什么是锁服务而不是 Paxos 库</h2>
+<p>这一节给了四条理由, 是整篇的灵魂; 四条其实是<strong>同一个立场的四个侧面</strong>;</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>核心论点</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>保留既有程序结构, 易于事后加高可用</td>
+<td>改动小, 不用重写</td>
+</tr>
+<tr>
+<td>2</td>
+<td>需要&quot;发布选举结果&quot;, 所以得能存取小数据</td>
+<td>光有锁不够, 还要能存小文件</td>
+</tr>
+<tr>
+<td>3</td>
+<td>锁/文件接口对程序员更熟悉</td>
+<td>心智成本低</td>
+</tr>
+<tr>
+<td>4</td>
+<td>让客户端不必凑多数派就能取到结果</td>
+<td>把 quorum 需求挪进服务内部</td>
+</tr>
+</tbody>
+</table>
+<h3 id="理由-1-保留既有结构-易于事后补高可用">理由 1: 保留既有结构, 易于事后补高可用</h3>
+<p>开发者一开始很少为高可用做设计 —— 系统常是个原型, 负载低, 代码<strong>根本没按共识协议的样子组织</strong>; 等服务成熟、客户变多, 才回头加副本和选主;</p>
+<p>这时锁服务能让你几乎不动原有结构就把高可用加上; Burrows 举的例子: 让一组进程选出 master、再由它去写一个已有的文件服务器, 用锁服务只需<strong>加两条语句和一个 RPC 参数</strong> (“启动时抢个锁, 写的时候带上 lock 信息”); 而共识库逼你把整个程序围着状态机重构; <strong>锁服务是增量改造, 共识库是推倒重来;</strong></p>
+<h3 id="理由-2-要能-广而告之-结果-得能存取小文件">理由 2: 要能&quot;广而告之&quot;结果 → 得能存取小文件</h3>
+<p>很多服务选出 primary、或做了数据分区之后, <strong>需要把结果告诉所有人</strong> (“现在 master 是谁”、“分区表长啥样”); 光有&quot;加锁/解锁&quot;办不到 —— 还得能<strong>读写少量数据</strong>; 所以 Chubby 顺手让每个 node 能存一个小文件; 这本可交给独立的 name service, 但既然强一致的锁服务已经在那, <strong>把&quot;存结果 + 广播结果&quot;并进来最省事</strong>;</p>
+<blockquote>
+<p>这正是 etcd 既是协调原语、又是 KV 存储的根源: 选主和&quot;发布选主结果&quot;是同一个需求的两半; 见 <a href="#">etcd</a>;</p>
+</blockquote>
+<h3 id="理由-3-锁-文件接口对程序员更熟悉">理由 3: 锁/文件接口对程序员更熟悉</h3>
+<p>程序员都懂锁、都懂文件; 几乎没人懂怎么正确使用 Paxos; 用已有心智模型 (acquire/release、open/read/write) 包装共识, <strong>上手快、误用少</strong>; 哪怕分布式锁语义和单机锁有微妙差别 (这正是后面 sequencer / lock-delay 要补的坑), 熟悉的外壳仍大幅降低采用门槛;</p>
+<h3 id="理由-4-让客户端不必亲自凑多数派就能往前走">理由 4: 让客户端不必亲自凑多数派就能往前走</h3>
+<p>这条最微妙, 也最值得琢磨; 容易卡的点是: <strong>“Chubby 自己明明也要 3/5 多数派, 怎么会只要 1 台在线?”</strong> —— 关键在于**&quot;1 台在线&quot;指的不是 Chubby 服务器, 而是你自己应用的副本**;</p>
+<p><strong>世界 A (用共识库)</strong>: 你的应用要高可用就得<strong>自己复制自己</strong> (比如跑 3 个副本内嵌 Paxos), 那么&quot;做决定&quot;就需要<strong>你这 3 个副本里的多数派 (2 台) 同时在线且互通</strong>; 挂到只剩 1 台 → 自己凑不出多数派 → 选不出主 → 卡死; <strong>quorum 的负担压在你自己的副本集上;</strong></p>
+<p><strong>世界 B (用锁服务)</strong>: &quot;谁是主&quot;这个决定<strong>外包给 Chubby</strong> —— 谁抢到锁谁是主; 这时哪怕你的应用<strong>只剩 1 个实例存活</strong>, 它照样能去 Chubby 抢到锁、成为 primary、继续干活;</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">世界A:  App副本1 ┐</span><br><span class="line">        App副本2 ├─ 互相投票, 要 2/3 在线才能决定谁是主</span><br><span class="line">        App副本3 ┘   挂到剩 1 台就废了</span><br><span class="line"></span><br><span class="line">世界B:  App副本1 (活着) ──抢锁──┐</span><br><span class="line">        App副本2 (挂了)         ├──▶ Chubby cell (5副本, 内部自己凑 3/5)</span><br><span class="line">        App副本3 (挂了)         ┘   只要还剩 1 个实例 + 能连上 Chubby 就能往前走</span><br></pre></td></tr></table></figure>
+<p>quorum 并没有消失, 而是被<strong>搬走 + 摊薄</strong>了: 从&quot;每个应用各养一套 5 副本 Paxos&quot;, 挪进了<strong>共享的 Chubby 内部那一套 (3/5)</strong>;</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>谁背 quorum</th>
+<th>代价</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>共识库</td>
+<td>每个应用各背一套, N 个应用 = N 套 5 副本</td>
+<td>重复、贵、每个团队都得懂 Paxos</td>
+</tr>
+<tr>
+<td>锁服务</td>
+<td>大家共享 Chubby 这一套</td>
+<td>一套 5 副本被全公司成百上千应用复用</td>
+</tr>
+</tbody>
+</table>
+<p><strong>所以第四条真正的杠杆是</strong>: 多数派要求省不掉, 但<strong>不必让每个客户端都自己扛一份</strong>; 集中到共享协调服务后, 每个客户端退化成&quot;只要 1 个实例 + 能连上 Chubby&quot;就能安全推进;</p>
+<blockquote>
+<p>两个&quot;1&quot;别混: <strong>应用自有副本 1 个实例</strong>就能安全成为主 (核心论点); <strong>网络上要连的 Chubby 只有 1 个 master</strong> (master 替你扛内部 quorum, 这是接口上的次要简化);<br>
+对应 <a href="#">etcd</a> 在 k8s 里的角色: 整个集群就一套 etcd 扛共识, 上面成百的控制器/kubelet 各自可单实例, 不用每个都自建 Paxos 组;</p>
+</blockquote>
+<h2 id="系统骨架-2-速写">系统骨架 (§2 速写)</h2>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">     一个 cell (故障隔离单元)</span><br><span class="line">┌──────────────────────────────┐</span><br><span class="line">│   master  ← 唯一对客户端服务   │   持有 master-lease</span><br><span class="line">│   ┌──┐ ┌──┐ ┌──┐ ┌──┐         │</span><br><span class="line">│   │R │ │R │ │R │ │R │  5 副本  │   用 Paxos 选 master + 复制状态</span><br><span class="line">│   └──┘ └──┘ └──┘ └──┘         │   5 副本容忍 2 个同时挂 (3/5 可用即上线)</span><br><span class="line">└──────────────┬───────────────┘</span><br><span class="line">               │ 客户端只跟 master 说话, 维持 session + KeepAlive</span><br><span class="line">         ┌─────┴─────┐</span><br><span class="line">      client       client       ← 抢锁 / 读小文件 / 订阅事件</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>一个 cell = 1 master + 通常 5 个副本</strong>, 3/5 在线即可工作;</li>
+<li><strong>只有 master 服务客户端</strong> (副本只参与 Paxos 投票、随时准备顶上); 这个&quot;主从不对称&quot;是为了让一致性和顺序保证变简单, 和 <a href="#">etcd</a> 里&quot;只有 apiserver 直连 etcd&quot;是同一种&quot;收窄入口换简单性&quot;的思路;</li>
+<li>接口是<strong>简化版文件系统</strong>: 每个文件/目录是一个 node, 可加锁、可存小文件、可订阅事件; 但<strong>故意砍掉</strong>了部分读写、seek、rename、move、符号链接 —— 它不是真文件系统, 是&quot;披着文件外皮的协调原语&quot;;</li>
+</ul>
+<h3 id="最该抓住的定位-粗粒度锁">最该抓住的定位: 粗粒度锁</h3>
+<blockquote>
+<p>Chubby 专为 <strong>coarse-grained (粗粒度)</strong> 锁设计 —— 锁被持有的时间是小时、天级 (典型如&quot;我是这个集群的 master&quot;), 而不是毫秒级的临界区互斥;</p>
+</blockquote>
+<p>这一刀决定了它所有后续取舍:</p>
+<ul>
+<li>锁持有时间长、获取频率低 → <strong>服务端负载小</strong> → 一个 5 副本 cell 就能扛上万客户端;</li>
+<li>因此 Chubby <strong>故意不优化高吞吐</strong>, 反而优化<strong>可用性和一致性</strong>;</li>
+<li>它明确说: “要细粒度锁 (高频短临界区), 别用我, 自己在应用里做;”</li>
+</ul>
+<p><strong>这正是为什么 etcd 也&quot;故意做得小、强一致、不追吞吐&quot; —— 它继承的是 Chubby 这套协调服务的定位, 而非通用数据库;</strong></p>
+<h2 id="一个理论硬核-paxos-的-safety-liveness-与-flp">一个理论硬核: Paxos 的 safety / liveness 与 FLP</h2>
+<p>论文里有一句高密度的理论陈述:</p>
+<blockquote>
+<p><strong>&quot;Paxos maintains safety without timing assumptions, but clocks must be introduced to ensure liveness; this overcomes the impossibility result of Fischer et al.&quot;</strong></p>
+</blockquote>
+<p>拆开讲, 先分清两种&quot;正确&quot;:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Safety 安全性</th>
+<th>Liveness 活性</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>口号</td>
+<td><strong>坏事永远不发生</strong></td>
+<td><strong>好事最终会发生</strong></td>
+</tr>
+<tr>
+<td>共识里</td>
+<td>绝不会有两个节点对同一位置达成<strong>矛盾决定</strong> (不脑裂)</td>
+<td>系统<strong>最终一定能达成某个决定</strong>, 不永远卡住</td>
+</tr>
+<tr>
+<td>坏了会怎样</td>
+<td>数据不一致, 灾难, 不可恢复</td>
+<td>系统挂起不进展, 但数据还是对的</td>
+</tr>
+</tbody>
+</table>
+<p>记住这个<strong>不对称</strong>: safety 坏了是灾难, liveness 坏了只是卡住 —— 整句话的精髓全在这;</p>
+<p><strong>FLP (1985)</strong>: 在<strong>纯异步</strong>系统里 (延迟无上界), 只要哪怕一个节点可能崩溃, 就<strong>不存在</strong>确定性算法能<strong>同时保证 safety 和 liveness</strong>; 病根是 <strong>&quot;它死了吗?&quot;在异步里不可判定</strong> (无法区分&quot;死了&quot;和&quot;只是慢&quot;); 于是陷入两难: 死等 → 可能永远等 (没 liveness); 超时就往前走 → 慢节点带着旧决定回来 → 可能冲突 (没 safety);</p>
+<p><strong>Paxos 的破局: 把两半解耦</strong></p>
+<ul>
+<li><strong>Safety 无条件成立</strong>: 靠 <strong>ballot number + quorum 交集</strong>这套纯逻辑机制, 无论消息怎么延迟乱序、时钟怎么乱跑, 绝不产生冲突决定; 它从不&quot;赌时间&quot;, 所以时间怎么坏都坑不了 safety; —— 对应高亮句前半句;</li>
+<li><strong>Liveness 必须引入时钟</strong>: 纯异步下 Paxos 可能永远不进展 (经典的 dueling proposers: 两个提案者用越来越高的编号互相抢占, 谁都提交不了); 破解办法是<strong>选一个唯一 leader 只让它发提案</strong>, 而判断&quot;老 leader 死没死&quot;靠<strong>超时 = 时钟</strong>; —— 对应后半句;</li>
+</ul>
+<p><strong>怎么就&quot;overcome&quot;了 FLP</strong>: 注意是 overcome (绕过) 不是 disprove; FLP 的前提是&quot;纯异步&quot;; 现实做法是<strong>放弃纯异步、加入一个很弱的时间假设</strong> (理论上叫 partial synchrony: 延迟和时钟漂移&quot;绝大多数时候&quot;有界), 这在真实数据中心几乎总成立; 加了它就能用超时可靠地判 leader 死活, liveness 就回来了;</p>
+<p><strong>最精妙的收口</strong>: <code>timeout ⟹ 假定死亡</code> 不是&quot;定义 liveness&quot;, 而是一个<strong>可能出错的失效检测器 (failure detector)</strong> —— 它把&quot;死没死&quot;(不可判定) 换成&quot;超时没&quot;(可判定), 然后<strong>武断规定&quot;超时就当死&quot;</strong>; 关键是它<strong>允许误判</strong>: 一个只是 GC 卡住的活节点可能被判死, 但<strong>误判只伤 liveness (多选一轮、临时双 leader), 永不伤 safety</strong> (safety 由 ballot+quorum 独立死保); 正因为&quot;错了也不致命&quot;, 这个粗暴检测器才敢用;</p>
+<blockquote>
+<p>理论配套: FLP (1985) 划下界说&quot;0 时间假设 → 不可解&quot;; <strong>Chandra-Toueg (JACM 1996)</strong> 补上另一半: 给共识配一个&quot;最终弱&quot;失效检测器 ◇W (允许长期犯错但最终大致准), 共识就可解; <code>timeout=死</code> 就是 ◇W 的最朴素工程实现;</p>
+</blockquote>
+<p><strong>连回 lease</strong>: 这和 lease 是同一思想的两次出现 —— 都用<strong>时间这个本地可判定的东西</strong>, 替代&quot;对方死没死&quot;这个不可判定问题; Chubby 同时用了两层: 底层 Paxos 用时钟保进展, 上层 session 用 lease 管客户端死活 (lease 思想源自 Gray-Cheriton SOSP 1989, Chubby 把它用到协调服务上, 是 <a href="#">etcd</a> Lease 的直系祖先);</p>
+<h2 id="待续-下一步">待续 / 下一步</h2>
+<ul>
+<li>[ ] §2.x <strong>session + KeepAlive + lease</strong>: jeopardy / grace period, 用时间替代故障检测的工程落地;</li>
+<li>[ ] <strong>锁语义三件套</strong>: advisory lock / sequencer / lock-delay —— “分布式里锁为什么会骗你, 怎么补救”;</li>
+<li>[ ] <strong>缓存 + 失效协议 + events</strong>: 和 <a href="#">etcd</a> 的 Watch 正面对照;</li>
+<li>[ ] §3 用 Paxos 做的持久化 DB (已懂 Raft, 对照扫一眼即可);</li>
+<li>[ ] §4 scaling: proxy / partition / lease 减负;</li>
+<li>[ ] §7 Lessons Learned (全篇精华, 建议读两遍);</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">Yuchen You (Wesley)</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2026/06/10/computer_system_basics/ds/chubby/">http://example.com/2026/06/10/computer_system_basics/ds/chubby/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/distributed-sys/">distributed_sys</a><a class="post-meta__tags" href="/tags/Consensus/">Consensus</a><a class="post-meta__tags" href="/tags/kubernetes/">kubernetes</a><a class="post-meta__tags" href="/tags/Chubby/">Chubby</a></div><div class="post_share"><div class="social-share" data-image="/img/me_new.jpeg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2026/06/09/computer_system_basics/ds/etcd/" title="etcd: 把 Raft 包装成 k8s 的事实数据源"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Next</div><div class="next_info">etcd: 把 Raft 包装成 k8s 的事实数据源</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2026/06/09/computer_system_basics/ds/etcd/" title="etcd: 把 Raft 包装成 k8s 的事实数据源"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-09</div><div class="title">etcd: 把 Raft 包装成 k8s 的事实数据源</div></div></a></div><div><a href="/2025/12/14/computer_system_basics/ds/10.tradeoff/" title="10. Tradeoffs btw"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-14</div><div class="title">10. Tradeoffs btw</div></div></a></div><div><a href="/2025/10/16/computer_system_basics/ds/5.paxos/" title="5. Consensus: Paxos Made Simple (not to me)"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-10-16</div><div class="title">5. Consensus: Paxos Made Simple (not to me)</div></div></a></div><div><a href="/2025/12/13/computer_system_basics/ds/6.cap/" title="6. 从 FLP 不可能到 CAP 和 PACELC"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-13</div><div class="title">6. 从 FLP 不可能到 CAP 和 PACELC</div></div></a></div><div><a href="/2025/12/13/computer_system_basics/ds/7.eventual_consistency/" title="7. Eventual Consistency"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-13</div><div class="title">7. Eventual Consistency</div></div></a></div><div><a href="/2025/11/28/computer_system_basics/db/5.transaction/" title="5. Transaction and ACID DB"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-11-28</div><div class="title">5. Transaction and ACID DB</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/me_new.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Yuchen You (Wesley)</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">115</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">55</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">8</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/1WesleyYou"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/1Wesleyyou" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yuchenxr@umich.edu" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://www.linkedin.com/in/yuchen-you-a74940314/?locale=en_US" target="_blank" title="LinkedIn"><i class="fab fa-linkedin" style="color: #4a4dbe;"></i></a><a class="social-icon" href="/Yuchen_CV.pdf" target="_blank" title="CV"><i class="fas fa-address-card" style="color: #251456;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BA%E6%96%87%E5%AE%9A%E4%BD%8D"><span class="toc-number">1.</span> <span class="toc-text">论文定位</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-rationale-%E4%B8%BA%E4%BB%80%E4%B9%88%E6%98%AF%E9%94%81%E6%9C%8D%E5%8A%A1%E8%80%8C%E4%B8%8D%E6%98%AF-paxos-%E5%BA%93"><span class="toc-number">2.</span> <span class="toc-text">§2.1 Rationale: 为什么是锁服务而不是 Paxos 库</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%90%86%E7%94%B1-1-%E4%BF%9D%E7%95%99%E6%97%A2%E6%9C%89%E7%BB%93%E6%9E%84-%E6%98%93%E4%BA%8E%E4%BA%8B%E5%90%8E%E8%A1%A5%E9%AB%98%E5%8F%AF%E7%94%A8"><span class="toc-number">2.1.</span> <span class="toc-text">理由 1: 保留既有结构, 易于事后补高可用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%90%86%E7%94%B1-2-%E8%A6%81%E8%83%BD-%E5%B9%BF%E8%80%8C%E5%91%8A%E4%B9%8B-%E7%BB%93%E6%9E%9C-%E5%BE%97%E8%83%BD%E5%AD%98%E5%8F%96%E5%B0%8F%E6%96%87%E4%BB%B6"><span class="toc-number">2.2.</span> <span class="toc-text">理由 2: 要能&quot;广而告之&quot;结果 → 得能存取小文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%90%86%E7%94%B1-3-%E9%94%81-%E6%96%87%E4%BB%B6%E6%8E%A5%E5%8F%A3%E5%AF%B9%E7%A8%8B%E5%BA%8F%E5%91%98%E6%9B%B4%E7%86%9F%E6%82%89"><span class="toc-number">2.3.</span> <span class="toc-text">理由 3: 锁&#x2F;文件接口对程序员更熟悉</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%90%86%E7%94%B1-4-%E8%AE%A9%E5%AE%A2%E6%88%B7%E7%AB%AF%E4%B8%8D%E5%BF%85%E4%BA%B2%E8%87%AA%E5%87%91%E5%A4%9A%E6%95%B0%E6%B4%BE%E5%B0%B1%E8%83%BD%E5%BE%80%E5%89%8D%E8%B5%B0"><span class="toc-number">2.4.</span> <span class="toc-text">理由 4: 让客户端不必亲自凑多数派就能往前走</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E9%AA%A8%E6%9E%B6-2-%E9%80%9F%E5%86%99"><span class="toc-number">3.</span> <span class="toc-text">系统骨架 (§2 速写)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%80%E8%AF%A5%E6%8A%93%E4%BD%8F%E7%9A%84%E5%AE%9A%E4%BD%8D-%E7%B2%97%E7%B2%92%E5%BA%A6%E9%94%81"><span class="toc-number">3.1.</span> <span class="toc-text">最该抓住的定位: 粗粒度锁</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E4%B8%AA%E7%90%86%E8%AE%BA%E7%A1%AC%E6%A0%B8-paxos-%E7%9A%84-safety-liveness-%E4%B8%8E-flp"><span class="toc-number">4.</span> <span class="toc-text">一个理论硬核: Paxos 的 safety &#x2F; liveness 与 FLP</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BE%85%E7%BB%AD-%E4%B8%8B%E4%B8%80%E6%AD%A5"><span class="toc-number">5.</span> <span class="toc-text">待续 &#x2F; 下一步</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/10/computer_system_basics/ds/chubby/" title="Chubby: 一个面向松耦合分布式系统的锁服务">Chubby: 一个面向松耦合分布式系统的锁服务</a><time datetime="2026-06-09T16:22:06.000Z" title="Created 2026-06-10 00:22:06">2026-06-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/09/computer_system_basics/ds/etcd/" title="etcd: 把 Raft 包装成 k8s 的事实数据源">etcd: 把 Raft 包装成 k8s 的事实数据源</a><time datetime="2026-06-09T14:57:07.000Z" title="Created 2026-06-09 22:57:07">2026-06-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/31/computer_system_basics/network/security/Vpn%20from%20WireGuard%20Impl/" title="Vpn from WireGuard Impl — 从论文批判到 Go 手写隧道">Vpn from WireGuard Impl — 从论文批判到 Go 手写隧道</a><time datetime="2026-05-31T10:10:00.000Z" title="Created 2026-05-31 18:10:00">2026-05-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/26/agentsys/planning/0.tree-of-thought/" title="Tree of Thought: 不再是 left-to-right 单向思维架构">Tree of Thought: 不再是 left-to-right 单向思维架构</a><time datetime="2026-05-26T12:57:56.279Z" title="Created 2026-05-26 20:57:56">2026-05-26</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/26/agentsys/orchestration/0.mcts/" title="0. 从 Minimax 到 MCTS - 经典博弈树搜索基础">0. 从 Minimax 到 MCTS - 经典博弈树搜索基础</a><time datetime="2026-05-26T08:02:36.715Z" title="Created 2026-05-26 16:02:36">2026-05-26</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2026 By Yuchen You (Wesley)</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">welcome to my blog!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/fireworks.min.js"></script><script defer="defer" id="fluttering_ribbon" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/canvas-fluttering-ribbon.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading the Database</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="Search for Posts" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=4.13.0"></script></div></div></body></html>
