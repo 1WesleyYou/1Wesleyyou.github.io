@@ -1,0 +1,355 @@
+<!DOCTYPE html><html lang="en-US" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Effective context engineering for AI agents | Yuchen You</title><meta name="author" content="Yuchen You (Wesley)"><meta name="copyright" content="Yuchen You (Wesley)"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="[!术语速查 &#x2F; 黑称]  context: 从 LLM 采样时塞进窗口的那一整坨 token —— system prompt, tools, MCP, 外部数据, message history 全算在内; attention budget: 模型的 “注意力预算”, 每多塞一个 token 就从里面扣一点, 不是免费的; context rot: context 越长, 模型越记不住前面说">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Effective context engineering for AI agents">
+<meta property="og:url" content="http://example.com/2026/06/16/agentsys/context_engineering/Effective%20context%20engineering%20for%20AI%20agents/index.html">
+<meta property="og:site_name" content="Yuchen You">
+<meta property="og:description" content="[!术语速查 &#x2F; 黑称]  context: 从 LLM 采样时塞进窗口的那一整坨 token —— system prompt, tools, MCP, 外部数据, message history 全算在内; attention budget: 模型的 “注意力预算”, 每多塞一个 token 就从里面扣一点, 不是免费的; context rot: context 越长, 模型越记不住前面说">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/img/me_new.jpeg">
+<meta property="article:published_time" content="2026-06-16T13:49:17.270Z">
+<meta property="article:modified_time" content="2026-06-16T13:49:17.271Z">
+<meta property="article:author" content="Yuchen You (Wesley)">
+<meta property="article:tag" content="agentsys">
+<meta property="article:tag" content="memory_management">
+<meta property="article:tag" content="context_engineering">
+<meta property="article:tag" content="agentic_search">
+<meta property="article:tag" content="prompt_engineering">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/me_new.jpeg"><link rel="shortcut icon" href="/img/hackerrank.svg"><link rel="canonical" href="http://example.com/2026/06/16/agentsys/context_engineering/Effective%20context%20engineering%20for%20AI%20agents/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Effective context engineering for AI agents',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-06-16 21:49:17'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 7.2.0"><link href="https://cdn.bootcss.com/KaTeX/0.11.1/katex.min.css" rel="stylesheet" />
+<style>
+.obsidian-callout { margin: 1em 0; }
+.obsidian-callout blockquote { border-left: none; margin: 0; padding: 0; background: transparent; }
+.obsidian-callout p { margin: 0.4em 0; }
+.obsidian-callout details > summary { list-style: none; }
+.obsidian-callout details > summary::-webkit-details-marker { display: none; }
+</style></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/me_new.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">118</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">61</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">8</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/math_master.jpeg')"><nav id="nav"><span id="blog-info"><a href="/" title="Yuchen You"><img class="site-icon" src="/img/avatar.png"/><span class="site-name">Yuchen You</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> Search</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Effective context engineering for AI agents</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2026-06-16T13:49:17.270Z" title="Created 2026-06-16 21:49:17">2026-06-16</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-06-16T13:49:17.271Z" title="Updated 2026-06-16 21:49:17">2026-06-16</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/agentsys/">agentsys</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Effective context engineering for AI agents"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><blockquote>
+<p>[!术语速查 / 黑称]</p>
+<ul>
+<li><strong>context</strong>: 从 LLM 采样时塞进窗口的那一整坨 token —— system prompt, tools, MCP, 外部数据, message history 全算在内;</li>
+<li><strong>attention budget</strong>: 模型的 “注意力预算”, 每多塞一个 token 就从里面扣一点, 不是免费的;</li>
+<li><strong>context rot</strong>: context 越长, 模型越记不住前面说过啥 —— “上下文腐烂”, 每个模型都有这毛病;</li>
+<li><strong>just-in-time</strong>: 不在 inference 前把数据全嚼碎喂进去, 而是让 agent 攥着轻量标识 (文件路径, query, 链接), 运行时按需 <strong>拉回</strong> 数据;</li>
+<li><strong>progressive disclosure</strong>: agent 靠探索一点点把相关 context 挖出来 —— 文件大小暗示复杂度, 命名暗示用途, 时间戳暗示新鲜度;</li>
+<li><strong>compaction</strong>: context 快满时, 把对话 <strong>压</strong> 成摘要, 拿摘要开一个新窗口接着跑;</li>
+</ul>
+</blockquote>
+<h2 id="前置直觉-为什么-context-越长反而越笨">前置直觉: 为什么 context 越长反而越笨</h2>
+<p>先讲个最朴素的画面: 人塞太多东西进脑子也会断片; LLM 一模一样;</p>
+<p>接上文逻辑, LLM 和人一样是有 <strong>attention budget</strong> 的, 每多塞一个 token 就从这个预算里扣掉一点; transformer 让每个 token 都要 attend 到其他所有 token, 于是 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi></mrow><annotation encoding="application/x-tex">n</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">n</span></span></span></span> 个 token 就有 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>O</mi><mo stretchy="false">(</mo><msup><mi>n</mi><mn>2</mn></msup><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">O(n^2)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span> 对关系要算, context 一长这些关系就被摊薄, 模型自然就开始 <strong>context rot</strong> —— 越读越记不住前面说了啥;</p>
+<p>这事的根子是架构性的, 不是调教不够:</p>
+<ul>
+<li><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi></mrow><annotation encoding="application/x-tex">n</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">n</span></span></span></span> tokens → <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>n</mi><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">n^2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span> 对 pairwise 关系, context 越长这张关系网越被拉扯到极限;</li>
+<li>模型训练时见的多半是 <strong>短序列</strong>, 给 context-wide 长程依赖准备的专用参数本来就少;</li>
+<li>靠 position encoding 插值硬撑长序列是能跑, 但模型对 token 位置的理解会 <strong>退化</strong>;</li>
+</ul>
+<p>所以结论不是 “超过某个长度就崩”, 而是一条 <strong>性能渐变的斜坡</strong> —— context 是个有限资源, 边际收益递减; 由此引出整篇的 <strong>指导原则</strong>: <strong>找到那一小撮高信号 token, 用最少的量把目标行为撬出来</strong>;</p>
+<h2 id="context-engineering-vs-prompt-engineering">context engineering vs prompt engineering</h2>
+<p>prompt engineering 是写一段话; context engineering 是每一轮都重新决定 “这次该把哪些 token 端给模型”;</p>
+<div class="obsidian-callout callout-一句话区分" style="border-left: 4px solid #448aff; background: #448aff11; border-radius: 4px; padding: 0; margin: 1em 0;">
+  <div style="padding: 8px 16px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+    <span>📝</span> <span>一句话区分</span>
+  </div>
+  <div style="padding: 4px 16px 12px 16px;"><ul>
+<li>prompt engineering 是一次性的写作任务; context engineering 是 agent 在 loop 里跑起来后, 每一轮都要做的 <strong>迭代式策展</strong>;</li>
+</ul></div>
+</div>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>Prompt Engineering</th>
+<th>Context Engineering</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>管什么</td>
+<td>写 / 组织 LLM 指令 (尤其 system prompt)</td>
+<td>策展并维护 inference 期间最优的那组 token</td>
+</tr>
+<tr>
+<td>范围</td>
+<td>主要是 prompt 文本</td>
+<td>prompt 之外全包: 指令, tools, MCP, 外部数据, message history</td>
+</tr>
+<tr>
+<td>形态</td>
+<td>离散的一次性写作</td>
+<td>周期性 / 迭代, 每轮重新筛选</td>
+</tr>
+<tr>
+<td>适配场景</td>
+<td>one-shot 分类 / 生成</td>
+<td>agent 在 loop 里不断滚雪球地产出新数据</td>
+</tr>
+</tbody>
+</table>
+<p>agent 在 loop 里每跑一轮就会生出更多 “对下一轮有用” 的数据, 这堆信息必须 <strong>周期性地精炼</strong>; 所以 context engineering 是 prompt engineering 的自然延伸 —— 不是替代, 是把视野从 “那段话” 扩到 “整个窗口”;</p>
+<h2 id="高信号-context-的解剖">高信号 context 的解剖</h2>
+<p>把指导原则落到三个料上: system prompt, tools, examples; 总纲是 <strong>既要信息量足, 又要紧</strong>;</p>
+<h3 id="system-prompt-的-right-altitude">system prompt 的 “right altitude”</h3>
+<p>system prompt 要用 <strong>极其清晰, 简单直接</strong> 的语言, 写在那个不高不低的 “Goldilocks 区”; 两种翻车姿势:</p>
+<table>
+<thead>
+<tr>
+<th>失败模式</th>
+<th>长什么样</th>
+<th>后果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>写太低 (硬编码)</td>
+<td>把复杂脆弱的 if-else 逻辑钉死在 prompt 里</td>
+<td>脆 + 维护成本爆炸</td>
+</tr>
+<tr>
+<td>写太高 (太空泛)</td>
+<td>给一堆高层废话, 没有具体信号, 还假设模型跟你共享上下文</td>
+<td>模型抓不到可落地的指引</td>
+</tr>
+</tbody>
+</table>
+<p><strong>最优 altitude = 具体到能引导行为, 又灵活到只给强启发而非死规则</strong>; 实操上:</p>
+<ul>
+<li>用 XML tags 或 Markdown header 把 prompt 切成清楚的小节 (<code>&lt;background_information&gt;</code>, <code>## Tool guidance</code>, <code>## Output description</code>);</li>
+<li>追求 “完整勾勒出预期行为的最小信息集” —— 注意 <strong>minimal 不等于 short</strong>;</li>
+<li>起手用最 <strong>精简</strong> 的 prompt 配最强模型, 然后照着观察到的 failure mode 一条条加指令 / 加例子;</li>
+</ul>
+<h3 id="tools">tools</h3>
+<p>tools 定义的是 agent 和它的 “动作 / 信息空间” 之间的契约; 好的 tool 要 token-efficient, 还要鼓励 agent 高效行动 —— 自包含, 抗错, 用途极清楚, 入参描述无歧义;</p>
+<p>最常见的翻车: <strong>臃肿的 tool set, 功能重叠, 决策点含糊</strong>; 一句狠话戳穿本质: <strong>如果一个人类工程师都说不清该用哪个 tool, agent 当然也说不清</strong>; 所以要 <strong>策展出一套最小可用 tool set</strong>;</p>
+<h3 id="few-shot-examples">few-shot examples</h3>
+<p>强烈建议给, 但别把一长串 edge case 全堆上去; 正确做法是 <strong>策展一组多样, 典型 (canonical) 的例子</strong>, 把预期行为画给模型看;</p>
+<p><strong>对 LLM 来说, examples 就是那张 “一图胜千言” 的图</strong>;</p>
+<h2 id="运行时取-context-agentic-search-与-just-in-time">运行时取 context: agentic search 与 just-in-time</h2>
+<p>agent 的最简定义: <strong>LLM 在 loop 里自主用 tools</strong>; 模型越强, 能给的自主权就越大 —— 取数据的方式也跟着从 “inference 前嚼碎” 往 “运行时按需拿” 迁移;</p>
+<p>直觉先行: 人脑也不会把整个图书馆背进脑子, 而是靠文件系统, 收件箱, 书签这些 <strong>外部索引</strong> 临时检索; agent 同理, 攥着 file path / query / link 这些轻量标识, 要用时再用 tool <strong>拉回</strong>;</p>
+<table>
+<thead>
+<tr>
+<th>策略</th>
+<th>怎么取 context</th>
+<th>代价 / 适配</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pre-retrieval (embedding)</td>
+<td>inference 前把数据全过一遍, 预计算好塞进去</td>
+<td>快, 但可能塞进无关数据 + 索引会过期</td>
+</tr>
+<tr>
+<td>Just-in-time</td>
+<td>攥住标识, 运行时动态 load 进 context</td>
+<td>灵活, 自管窗口; 但运行时探索 <strong>更慢</strong>, 工具/启发式不到位就会追着死胡同 <strong>吃 token</strong></td>
+</tr>
+<tr>
+<td>Hybrid (混合)</td>
+<td>一部分数据前置求速度 + 一部分留给 agent 自主探索</td>
+<td>复杂研究里通常最优; 越是不太变的内容 (法律, 金融) 越偏前置</td>
+</tr>
+</tbody>
+</table>
+<p>引用的 <strong>元数据本身就在精炼行为</strong>: <code>tests/</code> 下的 <code>test_utils.py</code> 和 <code>src/core_logic/</code> 下同名文件, 用途天差地别; 文件夹层级, 命名约定, 时间戳全是信号 —— 这就是 <strong>progressive disclosure</strong>: agent 靠探索一点点发现相关 context, 文件大小暗示复杂度, 命名暗示用途, 时间戳代理新鲜度;</p>
+<p>Claude Code 就是个 hybrid 样板: <code>CLAUDE.md</code> 前置丢进去, 而 glob / grep 在运行时 <strong>just-in-time</strong> 导航, 绕开会过期的索引和复杂的语法树; <strong>最优 agent 往往混着用 —— 一句箴言压舱: “do the simplest thing that works”</strong>;</p>
+<h2 id="长程任务的三板斧">长程任务的三板斧</h2>
+<p>长程任务指 token 总量会超出窗口的活: 代码库迁移, 全面调研, 动辄几十分钟到几小时; 注意 —— <strong>更大的窗口救不了你</strong>, 任何尺寸都逃不过 context 污染和相关性问题; 三个杠杆:</p>
+<table>
+<thead>
+<tr>
+<th>技术</th>
+<th>机制</th>
+<th>适用场景</th>
+<th>代价</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Compaction (压缩)</td>
+<td>对话快满时总结内容, 拿摘要重开一个新窗口</td>
+<td>需要大量来回 / 对话流的活</td>
+<td>压太狠会丢掉微妙但关键的 context</td>
+</tr>
+<tr>
+<td>Structured note-taking (结构化记笔记)</td>
+<td>agent 把笔记持久化到 <strong>窗口外</strong> 的 memory, 之后再拉回</td>
+<td>有清晰里程碑的迭代式开发</td>
+<td>几乎零开销, 但依赖笔记质量</td>
+</tr>
+<tr>
+<td>Sub-agent 架构</td>
+<td>专职 sub-agent 拿干净窗口做聚焦子任务, 只回吐精炼摘要</td>
+<td>复杂研究 / 分析, 并行探索能回本</td>
+<td>协调成本, 主从职责要切清楚</td>
+</tr>
+</tbody>
+</table>
+<h3 id="compaction">compaction</h3>
+<p>长程一致性的 <strong>第一根杠杆</strong>; Claude Code 的做法: 把 message history 喂给模型 <strong>压</strong> 成摘要 —— 保留架构决策, 未解决的 bug, 实现细节, 丢掉冗余的 tool 输出和废话, 然后带着压缩后的 context + 最近访问的 5 个文件接着跑;</p>
+<p>难点是 <strong>拿捏留什么 / 丢什么</strong> (压过头会损失微妙的关键 context); 调 prompt 的顺序是 <strong>先把 recall 拉满, 再靠剔除冗余提升 precision</strong>; 最轻的一档是 tool result clearing (已是 Claude Developer Platform 的功能): 一个 tool 在历史深处早被调过了, 没必要再看它的原始结果;</p>
+<p><strong>先保证不漏, 再谈精简 —— compaction 的核心是手艺, 不是开关;</strong></p>
+<h3 id="structured-note-taking">structured note-taking</h3>
+<p>让 agent 定期写笔记落到窗口外的 memory, 开销极小; 例子: Claude Code 的 to-do list, 一个 <code>NOTES.md</code>; 它能横跨几十次 tool call 追踪进度;</p>
+<p>最生动的是 Claude 打 Pokémon: 它能跨上千步维护计数 (“过去 1234 步我一直在 Route 1 练级, 皮卡丘朝目标 10 级涨了 8 级”), 自己画地图, 记成就, 记战斗策略 —— 全程没人教它该怎么组织 memory; context 一 reset, 它读回自己的笔记就能接着跑几小时的连续操作; Sonnet 4.5 发布时随附了一个 memory tool (public beta) 做窗口外的文件式存储;</p>
+<p><strong>笔记是 agent 给未来的自己留的锚 —— context 清空也能续上;</strong></p>
+<h3 id="sub-agent-架构">sub-agent 架构</h3>
+<p>专职 sub-agent 用干净窗口做聚焦子任务; 主 agent 协调高层计划, sub-agent 钻深技术活 / 用 tool; 每个 sub-agent 可能烧掉几万 token, 但只回吐一份压缩蒸馏后的摘要 (常 1000-2000 token);</p>
+<p>这是漂亮的关注点分离: 细碎的搜索 context 被隔离在 sub-agent 里, lead agent 只做综合; 在复杂研究上对单 agent 是 <strong>实质性提升</strong>;</p>
+<p>怎么选: <strong>compaction → 要大量来回 / 对话流; note-taking → 有清晰里程碑的迭代开发; multi-agent → 并行探索能回本的复杂研究分析;</strong></p>
+<div class="obsidian-callout callout-主流观点总结" style="border-left: 4px solid #448aff; background: #448aff11; border-radius: 4px; padding: 0; margin: 1em 0;">
+  <div style="padding: 8px 16px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+    <span>📝</span> <span>主流观点总结</span>
+  </div>
+  <div style="padding: 4px 16px 12px 16px;"><ol>
+<li>context 是 <strong>有限的珍贵资源</strong>, attention budget 会被每个 token 消耗, 边际收益递减;</li>
+<li>根因是架构性的: transformer 的 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>O</mi><mo stretchy="false">(</mo><msup><mi>n</mi><mn>2</mn></msup><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">O(n^2)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span> 注意力 + 短序列训练偏置, 导致 context 越长越 <strong>context rot</strong>;</li>
+<li>context engineering 是 prompt engineering 的自然延伸 —— 从 “写好那段话” 升级到 “每轮策展整个窗口”;</li>
+<li>高信号 context 三要件: system prompt 写在 <strong>right altitude</strong>, tools 做成最小可用集, examples 选典型而非堆 edge case;</li>
+<li>取数据从 pre-retrieval 转向 <strong>just-in-time</strong> 与 <strong>hybrid</strong>, 靠元数据和 progressive disclosure 让 agent 自己挖;</li>
+<li>长程任务靠 compaction / note-taking / sub-agent 三板斧, 大窗口救不了你; 一切回到那条原则: <strong>找到最小的高信号 token 集, 撬出想要的行为</strong> —— 模型越聪明, 越该少规训, 多放权;</li>
+</ol></div>
+</div>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">Yuchen You (Wesley)</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2026/06/16/agentsys/context_engineering/Effective%20context%20engineering%20for%20AI%20agents/">http://example.com/2026/06/16/agentsys/context_engineering/Effective%20context%20engineering%20for%20AI%20agents/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/agentsys/">agentsys</a><a class="post-meta__tags" href="/tags/memory-management/">memory_management</a><a class="post-meta__tags" href="/tags/context-engineering/">context_engineering</a><a class="post-meta__tags" href="/tags/agentic-search/">agentic_search</a><a class="post-meta__tags" href="/tags/prompt-engineering/">prompt_engineering</a></div><div class="post_share"><div class="social-share" data-image="/img/me_new.jpeg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2026/06/20/computer_system_basics/ds/13.zookeeper/" title="ZooKeeper: 不发钥匙, 改立公告板的协调服务"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Previous</div><div class="prev_info">ZooKeeper: 不发钥匙, 改立公告板的协调服务</div></div></a></div><div class="next-post pull-right"><a href="/2026/06/11/computer_system_basics/ds/0.ds_history/" title="0. 分布式系统编年史: 2000-2020"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Next</div><div class="next_info">0. 分布式系统编年史: 2000-2020</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2026/05/20/agentsys/memory/MemGPT%20-%20Towards%20LLMs%20as%20Operating%20Systems/" title="MemGPT - Towards LLMs as Operating Systems"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-20</div><div class="title">MemGPT - Towards LLMs as Operating Systems</div></div></a></div><div><a href="/2026/05/26/agentsys/planning/0.tree-of-thought/" title="Tree of Thought: 不再是 left-to-right 单向思维架构"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-26</div><div class="title">Tree of Thought: 不再是 left-to-right 单向思维架构</div></div></a></div><div><a href="/2026/05/26/agentsys/orchestration/0.mcts/" title="0. 从 Minimax 到 MCTS - 经典博弈树搜索基础"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-26</div><div class="title">0. 从 Minimax 到 MCTS - 经典博弈树搜索基础</div></div></a></div><div><a href="/2026/05/21/agentsys/Paper/ReAct%20+%20Reflexion%20-%20Reasoning%20Acting%20and%20Verbal%20Reinforcement%20Learning/" title="ReAct + Reflexion - Reasoning Acting and Verbal Reinforcement Learning"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-21</div><div class="title">ReAct + Reflexion - Reasoning Acting and Verbal Reinforcement Learning</div></div></a></div><div><a href="/2026/05/20/agentsys/rca/rcacopilot/" title="RCACopilot - Automatic Root Cause Analysis via Large Language Models for Cloud Incidents"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-20</div><div class="title">RCACopilot - Automatic Root Cause Analysis via Large Language Models for Cloud Incidents</div></div></a></div><div><a href="/2026/05/20/agentsys/rca/onion/" title="Onion - Identifying Incident-indicating Logs for Cloud Systems"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-20</div><div class="title">Onion - Identifying Incident-indicating Logs for Cloud Systems</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/me_new.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Yuchen You (Wesley)</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">118</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">61</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">8</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/1WesleyYou"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/1Wesleyyou" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yuchenxr@umich.edu" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://www.linkedin.com/in/yuchen-you-a74940314/?locale=en_US" target="_blank" title="LinkedIn"><i class="fab fa-linkedin" style="color: #4a4dbe;"></i></a><a class="social-icon" href="/Yuchen_CV.pdf" target="_blank" title="CV"><i class="fas fa-address-card" style="color: #251456;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E7%BD%AE%E7%9B%B4%E8%A7%89-%E4%B8%BA%E4%BB%80%E4%B9%88-context-%E8%B6%8A%E9%95%BF%E5%8F%8D%E8%80%8C%E8%B6%8A%E7%AC%A8"><span class="toc-number">1.</span> <span class="toc-text">前置直觉: 为什么 context 越长反而越笨</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#context-engineering-vs-prompt-engineering"><span class="toc-number">2.</span> <span class="toc-text">context engineering vs prompt engineering</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AB%98%E4%BF%A1%E5%8F%B7-context-%E7%9A%84%E8%A7%A3%E5%89%96"><span class="toc-number">3.</span> <span class="toc-text">高信号 context 的解剖</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#system-prompt-%E7%9A%84-right-altitude"><span class="toc-number">3.1.</span> <span class="toc-text">system prompt 的 “right altitude”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#tools"><span class="toc-number">3.2.</span> <span class="toc-text">tools</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#few-shot-examples"><span class="toc-number">3.3.</span> <span class="toc-text">few-shot examples</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%90%E8%A1%8C%E6%97%B6%E5%8F%96-context-agentic-search-%E4%B8%8E-just-in-time"><span class="toc-number">4.</span> <span class="toc-text">运行时取 context: agentic search 与 just-in-time</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%95%BF%E7%A8%8B%E4%BB%BB%E5%8A%A1%E7%9A%84%E4%B8%89%E6%9D%BF%E6%96%A7"><span class="toc-number">5.</span> <span class="toc-text">长程任务的三板斧</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#compaction"><span class="toc-number">5.1.</span> <span class="toc-text">compaction</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#structured-note-taking"><span class="toc-number">5.2.</span> <span class="toc-text">structured note-taking</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#sub-agent-%E6%9E%B6%E6%9E%84"><span class="toc-number">5.3.</span> <span class="toc-text">sub-agent 架构</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/20/computer_system_basics/ds/13.zookeeper/" title="ZooKeeper: 不发钥匙, 改立公告板的协调服务">ZooKeeper: 不发钥匙, 改立公告板的协调服务</a><time datetime="2026-06-20T06:30:00.000Z" title="Created 2026-06-20 14:30:00">2026-06-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/16/agentsys/context_engineering/Effective%20context%20engineering%20for%20AI%20agents/" title="Effective context engineering for AI agents">Effective context engineering for AI agents</a><time datetime="2026-06-16T13:49:17.270Z" title="Created 2026-06-16 21:49:17">2026-06-16</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/11/computer_system_basics/ds/0.ds_history/" title="0. 分布式系统编年史: 2000-2020">0. 分布式系统编年史: 2000-2020</a><time datetime="2026-06-11T15:18:42.000Z" title="Created 2026-06-11 23:18:42">2026-06-11</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/10/computer_system_basics/ds/11.chubby/" title="Google Chubby: 解耦控制数据平面的分布式锁系统">Google Chubby: 解耦控制数据平面的分布式锁系统</a><time datetime="2026-06-09T16:22:06.000Z" title="Created 2026-06-10 00:22:06">2026-06-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/09/computer_system_basics/ds/12.etcd/" title="etcd: 把 Raft 包装成 k8s 的事实数据源">etcd: 把 Raft 包装成 k8s 的事实数据源</a><time datetime="2026-06-09T14:57:07.000Z" title="Created 2026-06-09 22:57:07">2026-06-09</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2026 By Yuchen You (Wesley)</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">welcome to my blog!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/fireworks.min.js"></script><script defer="defer" id="fluttering_ribbon" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/canvas-fluttering-ribbon.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading the Database</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="Search for Posts" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=4.13.0"></script></div></div></body></html>
