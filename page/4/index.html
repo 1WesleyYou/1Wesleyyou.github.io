@@ -52,7 +52,7 @@
   isHome: true,
   isHighlightShrink: false,
   isToc: false,
-  postUpdate: '2026-06-26 15:11:48'
+  postUpdate: '2026-10-20 04:14:43'
 }</script><script>(win=>{
       win.saveToLocal = {
         set: (key, value, ttl) => {
@@ -156,186 +156,156 @@
 .obsidian-callout p { margin: 0.4em 0; }
 .obsidian-callout details > summary { list-style: none; }
 .obsidian-callout details > summary::-webkit-details-marker { display: none; }
-</style></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/me_new.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">119</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">61</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">8</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="page" id="body-wrap"><header class="full_page" id="page-header" style="background-image: url('/img/math_master.jpeg')"><nav id="nav"><span id="blog-info"><a href="/" title="Yuchen You"><img class="site-icon" src="/img/avatar.png"/><span class="site-name">Yuchen You</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> Search</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="site-info"><h1 id="site-title">Yuchen You</h1><div id="site-subtitle"><span id="subtitle"></span></div><div id="site_social_icons"><a class="social-icon" href="https://github.com/1Wesleyyou" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yuchenxr@umich.edu" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://www.linkedin.com/in/yuchen-you-a74940314/?locale=en_US" target="_blank" title="LinkedIn"><i class="fab fa-linkedin" style="color: #4a4dbe;"></i></a><a class="social-icon" href="/Yuchen_CV.pdf" target="_blank" title="CV"><i class="fas fa-address-card" style="color: #251456;"></i></a></div></div><div id="scroll-down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout" id="content-inner"><div class="recent-posts" id="recent-posts"><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/11/06/computer_system_basics/db/4.storage/" title="4. Database Storage Structure">4. Database Storage Structure</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2026-03-25T20:03:01.704Z" title="Updated 2026-03-26 04:03:01">2026-03-26</time></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/database/">database</a></span></div><div class="content">Database Storage
-Disk-Based Architecture(磁盘架构)
-DBMS 假定数据库的主存储位置在非易失性磁盘 (Disk / SSD);
-系统组件负责在 volatile memory(主存) 与 non-volatile storage(磁盘) 之间移动数据;
-Storage Hierarchy(存储层次)
-CPU Registers &lt; CPU Cache &lt; DRAM &lt; SSD &lt; HDD &lt; Network Storage
-越靠上速度越快, 容量越小, 成本越高;
-DBMS 设计目标: 最大化利用高速层, 最小化慢速访问;
-为什么不直接用 OS 管理存储
-虽然可以用 mmap() 将文件映射到内存, 但:
-
-DBMS 无法控制 page replacement 策略;
-OS 不保证 flush 顺序;
-并发写入下可能引发不可控的 page fault;
-因此 DBMS 自己实现 Buffer Pool, Page Replacement 与 Flush 策略更可控;
-
-常见 OS 辅助机制:
-
-madvise: 告 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/10/16/computer_system_basics/ds/5.paxos/" title="5. Consensus: Paxos Made Simple (not to me)">5. Consensus: Paxos Made Simple (not to me)</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2026-03-25T20:03:01.618Z" title="Updated 2026-03-26 04:03:01">2026-03-26</time></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/distributed-sys/">distributed_sys</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/Consensus/">Consensus</a></span></div><div class="content">Introduction
-上回书我们说到, PB 复制存储的设计对比 Replicated State Machine (RSM) 有 Fault Tolerant 方向的极大优点, 也就是 RSM 在某个节点卡住的时候会导致整个系统卡顿, 因为 RSM 利用了 Lamport Clock 逻辑顺序的 握手机制来达到实际上的全局一致顺序, 如果局部卡死我们这里的握手就无法达成, 逻辑链就断掉了
-但是 PB 肯定也有其缺点 不然为什么还要特意讲讲 RSM, 在我们实现了 PB 设计的原理基础上, 让我们来看看 PB 设计的缺点:
-
-PB 同步链路失效: 这样其实就卡死了, 因为 priamry 一定要同步给 backup 但是由于 link 挂了, 整个同步就无法成立
-Primary Push 过程失效: 如果 primary 在 push 的时候挂了, 那么 backup 永远收不到更新, 也就永远无法同步
-
-因此我们折中派就要考虑如何优化 RSM 来修复 PB 的这两个问题了, 而且 RSM 在带宽上肯定是更有优势的 (每个 RSM node 都可以接收外来请求)
-设计目标 (从整个 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/10/13/computer_system_basics/ds/4.lexical_pb_vs/" title="4. Primary-Backup Storage System Design and Implementation (PBSSDI)">4. Primary-Backup Storage System Design and Implementation (PBSSDI)</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2026-03-25T20:03:01.621Z" title="Updated 2026-03-26 04:03:01">2026-03-26</time></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/distributed-sys/">distributed_sys</a></span></div><div class="content">本文是针对 UMich EECS491 (这课抄了致敬 MIT CS 6.824) 的 project2 的设计思路和实现的总结, 也可以作为一般的 primary-backup 1-fault-tolerant distributed storage system 的设计参考.
-本文不会涉及具体的实现细节, 只会涉及一些 high-level 的设计思路 如果有 JI/GC 同学当了 IA/GSI 希望不要举报我
-Lexical Confinement: 串行逻辑链
-在分布式系统的高并发请求中并不会完全像我们在单机操作系统中看到的 performance
-是最重要的, 在分布式系统中 consistency 才是最重要的, 为了避免各种不同步的分布式
-failure 导致的不一致问题以及编码实现的复杂性, 我们可以通过串行化的方式来简化
-回忆 Go 语言设计中非常重要的 CSP 模型:
-
-Sharing Memory by Communicating, not Communicating by Sharing Memory
-
-也就是要利用 channel 机制来实现不同线程之间的数据 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/10/06/computer_system_basics/os/historical/21.lfs/" title="21. The Design and Implementation of a Log-Structured File System">21. The Design and Implementation of a Log-Structured File System</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2026-03-25T20:03:01.787Z" title="Updated 2026-03-26 04:03:01">2026-03-26</time></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/operating-system/">operating_system</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/unix/">unix</a></span></div><div class="content">Design for File Systems of the 1990’s
-文件系统的设计受到两种力量驱动:
-
-技术 (Technology): 提供基本的硬件能力与性能边界;
-工作负载 (Workload): 决定系统需要高效完成的操作类型;
-
-本节总结了 1990 年代的技术变迁及其对文件系统设计的影响, 并说明为何当时的传统文件系统难以适应这些变化, 从而引出了 Sprite LFS(Log-Structured File System) 的设计动机;
-2.1 技术背景 (Technology)
-1. 处理器 (Processors)
-
-CPU 性能以近乎指数级速度提升, 并将持续很长一段时间;
-这种提升迫使系统中其他组件(如磁盘, 内存)也必须加快, 否则系统整体性能会&quot;失衡&quot;;
-
-2. 磁盘 (Disks)
-
-磁盘技术的主要改进集中在 成本与容量, 而非性能;
-磁盘性能包含两个部分:
-
-传输带宽 (transfer bandwidth): 可通过磁盘阵列或并行磁头提升;
-访问时间 (access time): 受机械结构限制, 几乎无法显著改善;
-
-
-因此 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/10/02/computer_system_basics/db/3.normalization/" title="3. Normalization">3. Normalization</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2026-03-25T20:03:01.710Z" title="Updated 2026-03-26 04:03:01">2026-03-26</time></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/database/">database</a></span></div><div class="content">为什么需要规范化
-
-坏表的典型问题
-
-冗余 redundancy: 比如 供应商地址, 商品描述被重复存储
-插入异常: 插入供应商必须附带商品信息, 关联不大的两个信息要一起插入
-删除异常: 删除商品时可能导致供应商信息丢失
-更新异常: 修改供应商地址需要更新多行
-
-
-
-Normalization 目标: 避免冗余, 找到不同属性之间的依赖性和继承关系
-
-Short Summary: We want tables where the attributes depend on the primary key,
-on the whole key, and nothing but (有且仅有) the key.
-
-不过这个方法完全可以用 ER 来解决, 但是这里讲得是另一种思路, 即更加侧重形式化方法实现 functional dependency 的分析和分解.
-Redundancy Problems
-
-Redundant Storage: 同样的信息被重复存储, 浪费空间
-Update Anomalies: 更新时需要修改多处, 容易出错
-Insertion Anomalies: 插入新 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/10/01/computer_system_basics/os/historical/20.lottery_scheduling/" title="20. Lottery Scheduling: Flexible Proportional-Share Resource Management">20. Lottery Scheduling: Flexible Proportional-Share Resource Management</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2026-03-25T20:03:01.773Z" title="Updated 2026-03-26 04:03:01">2026-03-26</time></span></div><div class="content">Lottery Scheduling 基本机制
-Resource Rights (资源权利)
-
-彩票 (ticket) 表示资源权利, 具有 三个性质:
-
-抽象 (abstract): 与具体机器细节无关;
-相对 (relative): 票所代表的份额随竞争情况 (总彩票数量) 动态变化;
-统一 (uniform): 异构资源都能抽象为 tickets; 比如各种 CPU, I/O 设备;
-
-
-
-Lotteries (抽签调度)
-
-
-每次调度就是一次抽签, 任务的获胜概率: p=tTp = \frac{t}{T}p=Tt​, 其中 t = 本任务票数, T = 总票数;
-
-
-获胜次数服从 binomial distribution; 等待第一次获胜的时间服从 geometric distribution;
-
-
-长期看, 任务的资源份额 ≈\approx≈ 票份额; 因此保证概率公平 (probabilistic fairness);
-
-
-任何持有 非零 票数的任务都会在有限时间内赢得抽签, 因此不会出现饿死 (starvation);
-
-
-问题: 如果一个任务的彩票数量很少, 为什么不 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/09/30/computer_system_basics/os/historical/19.scheduler_activation/" title="19. Scheduler Activations: Effective Kernel Support  for the User-Level Management of Parallelism">19. Scheduler Activations: Effective Kernel Support  for the User-Level Management of Parallelism</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2026-03-25T20:03:01.783Z" title="Updated 2026-03-26 04:03:01">2026-03-26</time></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/operating-system/">operating_system</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/kernel/">kernel</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/schedule/">schedule</a></span></div><div class="content">背景
-
-并行计算的效果, 取决于创建和管理并行的开销; 开销大的话即使 coarse grained parallelism 也不划算; 开销小的话, 即使 fine grained parallelism 也划算;
-传统 UNIX 进程 = 单地址空间 + 单执行流;
-设计目标是单核多道程序环境(multiprogramming), 适合粗粒度并行, 不适合细粒度并行;
-
-线程支持的两种方式
-
-用户级线程 (User-level threads)
-
-
-通过 runtime library 库实现(不改内核);
-优点:
-
-性能好: 上下文切换, 创建销毁的代价接近过程调用;
-灵活: 可以按语言/应用需求定制;
-
-
-缺点:
-
-内核对线程不可见, 仍然只认识&quot;进程&quot;;
-进程就像虚拟 CPU, 被内核调度到物理 CPU 上;
-遇到 I/O 阻塞, 页面缺页, 多道并发 时, 线程库感知不到真实 CPU 情况, 导致性能下降甚至错误;
-
-
-
-
-内核级线程 (Kernel threads)
-
-
-
-内核直接提供多线程支持, 每个线程对内核可见, 内核负责调度;
-
-
-优点:
-
-与 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/09/29/computer_system_basics/os/historical/18.vmware_esx_mem/" title="18.vmware_esx_mem">18.vmware_esx_mem</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2026-03-25T20:03:01.782Z" title="Updated 2026-03-26 04:03:01">2026-03-26</time></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/operating-system/">operating_system</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/memory/">memory</a></span></div><div class="content">Introduction
-VMware ESX Server is a thin software layer designed to multiplex hardware resources efficiently among virtual machines. The current system virtualizes the Intel IA-32 architecture
-In contrast, ESX Server manages system hardware directly, providing significantly higher I/O performance and complete control over resource management.
-
-machine addr: real hardware address
-physical addr: guest OS’s address
-pmap: data structure for each VM that maps physical addr to machine addr (ppn -&gt;  ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/09/28/computer_system_basics/os/historical/17.superpage/" title="17.superpage">17.superpage</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2026-03-25T20:03:01.780Z" title="Updated 2026-03-26 04:03:01">2026-03-26</time></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/operating-system/">operating_system</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/memory/">memory</a></span></div><div class="content">概念
-
-TLB coverage is defined as the amount of memory accessible through these cached mappings, i.e., without incurring misses in the TLB
-A superpage is a memory page of larger size than an ordinary page (henceforth called a base page).
-
-</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/09/25/computer_system_basics/ds/3.PB-Replication%20&amp;%20Linearizability/" title="3.PB-Replication &amp; Linearizability">3.PB-Replication &amp; Linearizability</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2026-03-25T20:03:01.624Z" title="Updated 2026-03-26 04:03:01">2026-03-26</time></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/distributed-sys/">distributed_sys</a></span></div><div class="content">Visibility 可见性
-这是分布式设计的一个核心概念, 也就是只有让用户看到的结果才是重要的, 无所谓系统内部在某一个时刻某一个进程/node 的状态是什么样的
-这篇笔记在讨论主备复制的情况的时候, 我们的目标是在拥有 2 台主机(不一定都可用)的单位分布式系统中维持 one fault-tolerant, 也就是说允许一个节点失败, 但是系统整体不宕机
-主备复制 (Primary/Backup Replication)
-
-基本机制 (Mechanism)
-
-客户端请求先到主节点 (primary)
-
-client 只需要知道, 也只能知道主节点
-visibility/external consistency: 外部用户能看到的集群整体的状态, 集群内部的信息同步和交互以及 failure 不需要暴露给用户
-
-这里还有一层意思就是允许 primary-backup inconsistency.
-
-
-
-
-主节点更新后, 同步给备份 (backup)
-
-如果要确保高度的一致性, 那么就要在 client 提交请求之后完全完成 client -&gt; primary -&gt; ba ...</div></div></div><nav id="pagination"><div class="pagination"><a class="extend prev" rel="prev" href="/page/3/#content-inner"><i class="fas fa-chevron-left fa-fw"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/#content-inner">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/#content-inner">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/#content-inner">12</a><a class="extend next" rel="next" href="/page/5/#content-inner"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/me_new.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Yuchen You (Wesley)</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">119</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">61</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">8</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/1WesleyYou"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/1Wesleyyou" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yuchenxr@umich.edu" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://www.linkedin.com/in/yuchen-you-a74940314/?locale=en_US" target="_blank" title="LinkedIn"><i class="fab fa-linkedin" style="color: #4a4dbe;"></i></a><a class="social-icon" href="/Yuchen_CV.pdf" target="_blank" title="CV"><i class="fas fa-address-card" style="color: #251456;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/26/agentsys/memory/Mem0%20-%20Building%20Production-Ready%20AI%20Agents%20with%20Scalable%20Long-Term%20Memory/" title="Mem0 - Building Production-Ready AI Agents with Scalable Long-Term Memory">Mem0 - Building Production-Ready AI Agents with Scalable Long-Term Memory</a><time datetime="2026-06-26T07:09:58.248Z" title="Created 2026-06-26 15:09:58">2026-06-26</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/20/computer_system_basics/ds/13.zookeeper/" title="ZooKeeper: 不发钥匙, 改立公告板的协调服务">ZooKeeper: 不发钥匙, 改立公告板的协调服务</a><time datetime="2026-06-20T06:30:00.000Z" title="Created 2026-06-20 14:30:00">2026-06-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/16/agentsys/context_engineering/Effective%20context%20engineering%20for%20AI%20agents/" title="Effective context engineering for AI agents">Effective context engineering for AI agents</a><time datetime="2026-06-16T13:49:17.270Z" title="Created 2026-06-16 21:49:17">2026-06-16</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/11/computer_system_basics/ds/0.ds_history/" title="0. 分布式系统编年史: 2000-2020">0. 分布式系统编年史: 2000-2020</a><time datetime="2026-06-11T15:18:42.000Z" title="Created 2026-06-11 23:18:42">2026-06-11</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/10/computer_system_basics/ds/11.chubby/" title="Google Chubby: 解耦控制数据平面的分布式锁系统">Google Chubby: 解耦控制数据平面的分布式锁系统</a><time datetime="2026-06-09T16:22:06.000Z" title="Created 2026-06-10 00:22:06">2026-06-10</time></div></div></div></div><div class="card-widget card-categories"><div class="item-headline">
+</style></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/me_new.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">134</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">78</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">2</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="page" id="body-wrap"><header class="full_page" id="page-header" style="background-image: url('/img/math_master.jpeg')"><nav id="nav"><span id="blog-info"><a href="/" title="Yuchen You"><img class="site-icon" src="/img/avatar.png"/><span class="site-name">Yuchen You</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> Search</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="site-info"><h1 id="site-title">Yuchen You</h1><div id="site-subtitle"><span id="subtitle"></span></div><div id="site_social_icons"><a class="social-icon" href="https://github.com/1Wesleyyou" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yuchenxr@umich.edu" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://www.linkedin.com/in/yuchen-you-a74940314/?locale=en_US" target="_blank" title="LinkedIn"><i class="fab fa-linkedin" style="color: #4a4dbe;"></i></a><a class="social-icon" href="/Yuchen_CV.pdf" target="_blank" title="CV"><i class="fas fa-address-card" style="color: #251456;"></i></a></div></div><div id="scroll-down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout" id="content-inner"><div class="recent-posts" id="recent-posts"><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/05/20/mlsys/Paper/Taming%20Throughput-Latency%20Tradeoff%20in%20LLM%20Inference%20with%20Sarathi-Serve/" title="Taming Throughput-Latency Tradeoff in LLM Inference with Sarathi-Serve">Taming Throughput-Latency Tradeoff in LLM Inference with Sarathi-Serve</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2026-09-03T00:47:39.067Z" title="Updated 2026-09-03 08:47:39">2026-09-03</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/papers/">papers</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/mlsys/">mlsys</a></span></div><div class="content">Prefill vs. Decode
+Prefill 阶段做了什么
+prefill = 对整个 prompt 做一次完整的 transformer forward。
+包括了:
+
+对所有输入 token 一起做 embedding
+过每一层的 attention
+过每一层的 FFN
+同时把每层对应的 K/V 写入 KV cache
+最后根据最后位置的 hidden state 过 lm head，得到 next-token logits
+采样 / greedy / top-k / top-p，选出第一个输出 token
+
+这个过程由于是有了所有的输入参数的计算，所以其可以在输入启动阶段就做所有启动处理，结果是 compute-bound.
+Decode 阶段做了什么
+对每一个新的 token (这里来看类似于一个单词的 向量表示), 来计算他们预测的下一个单词输出，这里应该会经过多个阶段，分别是
+
+linear 阶段，也就是从 token X 处理得到 Q, K, V
+attention 阶段，也就是通过 QKV, softmax 等计算得到 attention 得分
+FFN 阶段，也就 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/05/20/mlsys/Paper/Megatron-LM%20-%20Training%20Multi-Billion%20Parameter%20Language%20Models%20Using%20Model%20Parallelism/" title="Megatron-LM - Training Multi-Billion Parameter Language Models Using Model Parallelism">Megatron-LM - Training Multi-Billion Parameter Language Models Using Model Parallelism</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2026-09-03T00:47:39.067Z" title="Updated 2026-09-03 08:47:39">2026-09-03</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/papers/">papers</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/mlsys/">mlsys</a></span></div><div class="content">Attention 计算的线性代数问题
+attention 和 FFN 的关系
+如果记某层输入为 x, 那么可以粗略理解成:
+
+attention 输出: 给 x 补充上下文信息, 像&quot;开会听别人说话&quot;
+FFN 输出: 给 x 补充局部计算后的新特征, - 像&quot;你自己在脑子里消化, 归纳, 形成判断&quot;
+如果我们尝试把一个 FFN 层变成一个 attention 层, 结果就是可能会更加适合长距离语义传输但是缺少本地语义特征变换器
+
+多层 attention-FFN 结构
+可以理解为不断重复&quot;交换信息 →\rightarrow→ 消化信息 →\rightarrow→ 再交换 →\rightarrow→ 再消化&quot;
+也就是说各自对本 token 处于上下文的含义理解之后再次进行交换分享，让整体的文意理解更加深刻
+Transformer 架构的训练计算
+假设训练句子是：The capital of France is Paris.
+训练时，decoder-only 模型会把它转成一种“前缀预测后一个 token”的形式, 比如模型看到 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/05/20/mlsys/Paper/GPipe%20-%20efficient%20training%20of%20giant%20neural%20networks%20using%20pipeline%20parallelism/" title="GPipe - efficient training of giant neural networks using pipeline parallelism">GPipe - efficient training of giant neural networks using pipeline parallelism</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2026-09-03T00:47:39.066Z" title="Updated 2026-09-03 08:47:39">2026-09-03</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/papers/">papers</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/mlsys/">mlsys</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/ml-training/">ml_training</a></span></div><div class="content">神经网络基础
+
+如图是一个基础的神经网络结构, 我们这里首先要明确几个函数:
+
+每一层内部的计算是 hi:=σ(zi)h_i := \sigma(z_i)hi​:=σ(zi​), zi:=Wihi−1+biz_i := W_i h_{i-1} + b_izi​:=Wi​hi−1​+bi​
+我们最终的输出函数是 L:=L :=L:=loss(sample; forward)
+forward: 指的是从输入样本数据 h0h_0h0​ 到 最终输出 σ(z2)\sigma(z_2)σ(z2​) 的所有计算过程
+backward: 从 LLL 开始不断计算每一层中的 ∂L∂Wi\frac{\partial L}{\partial W_i}∂Wi​∂L​ 和 ∂L∂bi\frac{\partial L}{\partial b_i}∂bi​∂L​ 的方向梯度, 然后用这个来不断更新 Wi, biW_i,\ b_iWi​, bi​
+
+现在来拆解一下反向传播的过程: 基本根据的是莱布尼茨链式法则 (chain-rule)
+
+∂L∂W2=∂L∂z2∂z2∂W2=∂L∂z2h1T\frac{\partia ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/04/25/computer_system_basics/pl/java/1.%20JVM%20GC%20%E5%B7%A5%E4%BD%9C%E6%80%9D%E8%B7%AF/" title="1. JVM GC 工作思路">1. JVM GC 工作思路</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2026-09-03T00:47:39.077Z" title="Updated 2026-09-03 08:47:39">2026-09-03</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/notes/">notes</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/pl/">pl</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/java/">java</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/jvm/">jvm</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/gc/">gc</a></span></div><div class="content">
+  
+    📝 术语别名
+  
+  
+GC: Garbage Collection, 自动垃圾回收;
+STW: Stop-The-World, GC 期间所有应用线程被 JVM 冻住;
+Heap: JVM 管理的对象内存区, 所有 new 出来的东西都在这里;
+GC Roots: 一组&quot;一定还活着&quot;的引用起点, 可达性分析的种子;
+
+
+前置: 为什么 Java 需要 GC
+C/C++ 程序员是手动管内存的, 你 malloc 一块就要负责 free 一块, 漏了就内存泄漏, 重复 free 就 double-free crash; Java 把这个负担拿走了, 程序员只负责 new Foo(), 永远不主动释放;
+那对象怎么消失? 答案是 JVM 启动了一个叫 GC 的后台机制, 周期性扫整个 heap, 把&quot;再也不会被用到的对象&quot;自动清掉, 这一行为的代价是: 扫的时候得短暂冻住应用线程 (STW), 这就是 GC 给你带来的延迟代价;
+所以理解 GC 本质上要回答两个问题:
+
+怎么判断一个对象&quot;已经死了&quot;;
+判断完之 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/04/25/computer_system_basics/network/6.%20Unix%20ping%20%E4%B8%8E%20ICMP%20%E5%8D%8F%E8%AE%AE/" title="6. Unix ping 与 ICMP 协议">6. Unix ping 与 ICMP 协议</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2026-09-03T00:47:39.092Z" title="Updated 2026-09-03 08:47:39">2026-09-03</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/notes/">notes</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/network/">network</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/icmp/">icmp</a></span></div><div class="content">
+  
+    📝 术语别名
+  
+  
+ICMP: Internet Control Message Protocol, IP 层的&quot;控制/反馈&quot;协议;
+RTT: Round-Trip Time, 一来一回的总时延;
+Echo Request / Echo Reply: ICMP type 8 / type 0, 就是 ping 用到的两种报文;
+
+
+前置: ICMP 在协议栈中的位置
+ICMP 经常被人当成&quot;网络层之上的小协议&quot;, 但它实际上是 IP 协议的一个直接附庸, 跑在 IP 之上, 但属于 network layer 的控制平面;
+
+IP 包的 header 里 Protocol 字段为 1 时, 上层就是 ICMP (对比 TCP=6, UDP=17);
+ICMP 报文不走传输层, 没有端口号; 它的&quot;复用&quot;由 ICMP type + code 这两个字节自己完成;
+ICMP 的存在意义是给 IP 这个 best-effort 协议一个反馈信道, 比如告诉 src “你这个包 TTL 跑光了”, “目标不可达 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/04/24/computer_system_basics/network/5.%20Docker%20%E7%BD%91%E7%BB%9C%E6%A0%88%E5%8D%8F%E8%AE%AE/" title="5. Docker 网络栈协议">5. Docker 网络栈协议</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2026-09-03T00:47:39.091Z" title="Updated 2026-09-03 08:47:39">2026-09-03</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/notes/">notes</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/container/">container</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/network/">network</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/docker/">docker</a></span></div><div class="content">
+  
+    📝 术语别名
+  
+  
+NIC: Network Interface Card, 物理网卡, 真正的硬件;
+net_device: Linux 内核里描述&quot;一张网卡&quot;的统一抽象, 虚拟和物理共用同一个数据结构;
+虚拟网卡: 没有对应物理硬件、纯软件模拟的 net_device, 例如 lo / veth / tap / tun / bridge;
+tap / tun: 给用户态进程收发包用的虚拟网卡, VM 和 VPN 的标配;
+netns: Linux network namespace, 内核提供的网络栈隔离机制;
+veth pair: virtual ethernet pair, 一对虚拟网卡, 一端发, 另一端收, 是连接两个 netns 的通道;
+bridge: 内核虚拟二层交换机, 把若干网卡拉到同一广播域;
+DNAT / SNAT: destination / source NAT, iptables 用来改包的 dst/src IP, 是端口映射和&quot;出口走主机 IP&quot;的核心;
+
+
+前置 A: 物理网卡 (NIC ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/03/29/computer_system_basics/ds/Kubernetes/" title="kubernetes">kubernetes</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2026-09-03T00:47:39.085Z" title="Updated 2026-09-03 08:47:39">2026-09-03</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/notes/">notes</a></span></div><div class="content">Load Balance
+</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/03/19/mlsys/1.%20Distributed%20Data%20Parallel/" title="1. Distributed Data Parallel">1. Distributed Data Parallel</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2026-09-03T00:47:39.102Z" title="Updated 2026-09-03 08:47:39">2026-09-03</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/notes/">notes</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/mlsys/">mlsys</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/gpu/">gpu</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/cuda/">cuda</a></span></div><div class="content">DDP 是什么
+DDP(Distributed Data Parallel)是 PyTorch 官方提供的分布式数据并行训练机制;
+它的核心思想是:
+
+让多个训练进程各自持有同一个模型的副本, 分别处理不同的数据子集, 并在反向传播阶段自动同步梯度, 从而保持所有模型副本的一致更新;
+
+DDP 要解决什么问题
+深度学习训练通常面临两个核心限制:
+
+单张 GPU 的计算吞吐有限
+单张 GPU 每一步能处理的数据量有限
+如果只用单卡训练, 随着模型和数据规模变大, 训练速度会越来越慢;
+
+DDP 的目标是:
+
+利用多张 GPU 并行处理更多数据
+在提高吞吐的同时, 仍然保持&quot;训练的是同一个模型&quot;
+让多卡训练的优化语义尽量接近单卡上的大 batch 训练
+
+因此, DDP 本质上是在解决: 如何让多个 GPU 高效, 稳定地共同训练同一个模型;
+DDP 的设计理念
+DDP 的设计建立在一个基本前提上: 如果 单张 GPU 能放下完整模型, 那么最自然的数据并行方式不是切模型, 而是复制模型; 所以 DDP 的基本设计不是&quot;拆模型&quot;, 而是:
+
+每个进程 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2026/01/14/mlsys/0.%20%E5%9F%BA%E6%9C%AC%20GPU%20%E6%9E%B6%E6%9E%84/" title="0. 基本 GPU 架构">0. 基本 GPU 架构</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2026-09-03T00:47:39.102Z" title="Updated 2026-09-03 08:47:39">2026-09-03</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/notes/">notes</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/mlsys/">mlsys</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/gpu/">gpu</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/cuda/">cuda</a></span></div><div class="content">Data-Level Parallelism (DLP)
+在前面的工作中我们主要学习的 并行架构 就是 pipelining
+简单的做法就是并行使用多个 核 core 或者使用多个硬件结构实现并行, 但是这里要讨论的是 数据层面的并行
+在固有的处理器中, 我们计算如下公式
+12for(i = 0; i &lt; 100; i++) z[i] = A * x[i] + y[i];
+很显然这一步可以用矩阵和向量等式进行优化
+即表达式 z⃗=A⋅x⃗+y⃗\vec z = A\cdot \vec x + \vec yz=A⋅x+y​
+那么接下来的问题就是如何用硬件快速计算向量
+SIMD 方法论
+基础方法称为 single insturction single data 处理, 即每个指令获取一个对应的 data 部分, 但是事实上我们可以从一个指令调用多个 变量(来自一个 vector 的多个相关变量) 这就是 simd (可以在单核处理器上面有出色表现)
+当然也可以 多个指令调用多个变量, 这个取决于多核同时工作
+
+对比 cpu 和 gpu, 我们会发现当我们要处理大量相同类型的数据的时候 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/12/14/computer_system_basics/ds/10.tradeoff/" title="10. Tradeoffs btw">10. Tradeoffs btw</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2026-09-03T00:47:39.079Z" title="Updated 2026-09-03 08:47:39">2026-09-03</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/notes/">notes</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/distributed-sys/">distributed_sys</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/Consensus/">Consensus</a></span></div><div class="content">平衡的背景
+利用冗余(replicas)来降低尾延迟(tail latency), 以及它和 Paxos 共识, load / sharding 之间的关系;
+核心是: 复制本来是为了容错/可用性, 但你也可以把它当成&quot;多条独立路径/多台机器&quot;的并行机会, 用来对抗偶发慢请求;
+一个 key 有多个副本(N replicas);
+- 正常读: 只读一个副本
+- 好处: 负载低, 便宜
+- 风险: 这一次刚好遇到这个副本慢(GC, 排队, 抖动), 尾延迟就被拖垮
+First idea: read from all in parallel(最直接: 全部并行读, 取最快)
+做法: 同时向所有副本发 GET, 拿到第一个返回就用(其他请求丢掉/忽略);
+
+优点: 尾延迟会显著下降(你拿的是 min(response times))
+问题(slide 点出的): 系统负载和成本暴涨
+每次读都变成 N 倍 RPC
+平均延迟可能更好, 但整体排队更严重, 反而把系统推到更拥塞, 导致更差的 tail
+
+所以&quot;全并行&quot;通常太贵, 只能在极少数场景用;
+Sec ...</div></div></div><nav id="pagination"><div class="pagination"><a class="extend prev" rel="prev" href="/page/3/#content-inner"><i class="fas fa-chevron-left fa-fw"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/#content-inner">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/#content-inner">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/14/#content-inner">14</a><a class="extend next" rel="next" href="/page/5/#content-inner"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/me_new.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Yuchen You (Wesley)</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">134</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">78</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">2</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/1WesleyYou"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/1Wesleyyou" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yuchenxr@umich.edu" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://www.linkedin.com/in/yuchen-you-a74940314/?locale=en_US" target="_blank" title="LinkedIn"><i class="fab fa-linkedin" style="color: #4a4dbe;"></i></a><a class="social-icon" href="/Yuchen_CV.pdf" target="_blank" title="CV"><i class="fas fa-address-card" style="color: #251456;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/09/21/notes/network/nccl/prims_simple.h/" title="prims_simple.h">prims_simple.h</a><time datetime="2026-09-21T13:12:56.000Z" title="Created 2026-09-21 21:12:56">2026-09-21</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/09/02/mlsys/LanguageModel/10.kimi-linear/" title="Kimi Linear: An Expressive, Efficient Attention Architecture">Kimi Linear: An Expressive, Efficient Attention Architecture</a><time datetime="2026-09-02T15:43:10.000Z" title="Created 2026-09-02 23:43:10">2026-09-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/09/02/mlsys/Paper/FreeToken%20-%20Efficient%20Edge-Native%20MoE%20Serving%20with%20Bandwidth-Adaptive%20Execution/" title="FreeToken: Efficient Edge-Native MoE Serving with Bandwidth-Adaptive Execution">FreeToken: Efficient Edge-Native MoE Serving with Bandwidth-Adaptive Execution</a><time datetime="2026-09-02T13:27:27.000Z" title="Created 2026-09-02 21:27:27">2026-09-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/09/01/mlsys/LanguageModel/4.inference-time-intervention/" title="4. Inference-Time Intervention (Steering 与 Rollback)">4. Inference-Time Intervention (Steering 与 Rollback)</a><time datetime="2026-09-01T02:00:00.000Z" title="Created 2026-09-01 10:00:00">2026-09-01</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/29/mlsys/InferenceEngine/8.deepseekv2/" title="8.deepseekv2">8.deepseekv2</a><time datetime="2026-07-29T08:43:19.000Z" title="Created 2026-07-29 16:43:19">2026-07-29</time></div></div></div></div><div class="card-widget card-categories"><div class="item-headline">
             <i class="fas fa-folder-open"></i>
             <span>Categories</span>
             
             </div>
             <ul class="card-category-list" id="aside-cat-list">
-            <li class="card-category-list-item "><a class="card-category-list-link" href="/categories/agentsys/"><span class="card-category-list-name">agentsys</span><span class="card-category-list-count">8</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/cs-basic/"><span class="card-category-list-name">cs_basic</span><span class="card-category-list-count">25</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/cybersecurity/"><span class="card-category-list-name">cybersecurity</span><span class="card-category-list-count">12</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/eecs281/"><span class="card-category-list-name">eecs281</span><span class="card-category-list-count">7</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/math/"><span class="card-category-list-name">math</span><span class="card-category-list-count">9</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/mlsys/"><span class="card-category-list-name">mlsys</span><span class="card-category-list-count">4</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/network/"><span class="card-category-list-name">network</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/os/"><span class="card-category-list-name">os</span><span class="card-category-list-count">1</span></a></li>
-            </ul></div><div class="card-widget card-tags"><div class="item-headline"><i class="fas fa-tags"></i><span>Tags</span></div><div class="card-tag-cloud"><a href="/tags/reinforcement-learning/" style="font-size: 1.1em; color: #999">reinforcement_learning</a> <a href="/tags/gc/" style="font-size: 1.1em; color: #999">gc</a> <a href="/tags/mcts/" style="font-size: 1.1em; color: #999">mcts</a> <a href="/tags/search/" style="font-size: 1.1em; color: #999">search</a> <a href="/tags/cyber-security/" style="font-size: 1.35em; color: #99a3b1">cyber_security</a> <a href="/tags/Chubby/" style="font-size: 1.1em; color: #999">Chubby</a> <a href="/tags/ml-training/" style="font-size: 1.1em; color: #999">ml_training</a> <a href="/tags/context-engineering/" style="font-size: 1.1em; color: #999">context_engineering</a> <a href="/tags/go/" style="font-size: 1.1em; color: #999">go</a> <a href="/tags/history/" style="font-size: 1.1em; color: #999">history</a> <a href="/tags/kubernetes/" style="font-size: 1.17em; color: #999ca0">kubernetes</a> <a href="/tags/algorithm/" style="font-size: 1.39em; color: #99a5b5">algorithm</a> <a href="/tags/llm-agent/" style="font-size: 1.1em; color: #999">llm_agent</a> <a href="/tags/agentsys/" style="font-size: 1.32em; color: #99a2ae">agentsys</a> <a href="/tags/mlsys/" style="font-size: 1.25em; color: #999fa7">mlsys</a> <a href="/tags/container/" style="font-size: 1.14em; color: #999a9c">container</a> <a href="/tags/system-failure/" style="font-size: 1.21em; color: #999da3">system_failure</a> <a href="/tags/tool-use/" style="font-size: 1.1em; color: #999">tool_use</a> <a href="/tags/Consensus/" style="font-size: 1.28em; color: #99a0aa">Consensus</a> <a href="/tags/gpu/" style="font-size: 1.14em; color: #999a9c">gpu</a> <a href="/tags/pl/" style="font-size: 1.1em; color: #999">pl</a> <a href="/tags/database/" style="font-size: 1.21em; color: #999da3">database</a> <a href="/tags/prompt-engineering/" style="font-size: 1.1em; color: #999">prompt_engineering</a> <a href="/tags/etcd/" style="font-size: 1.1em; color: #999">etcd</a> <a href="/tags/rca/" style="font-size: 1.14em; color: #999a9c">rca</a> <a href="/tags/structure/" style="font-size: 1.17em; color: #999ca0">structure</a> <a href="/tags/icmp/" style="font-size: 1.1em; color: #999">icmp</a> <a href="/tags/cloud-native/" style="font-size: 1.1em; color: #999">cloud_native</a> <a href="/tags/computer-composition/" style="font-size: 1.43em; color: #99a6b8">computer_composition</a> <a href="/tags/os/" style="font-size: 1.1em; color: #999">os</a> <a href="/tags/distributed-sys/" style="font-size: 1.46em; color: #99a8bc">distributed_sys</a> <a href="/tags/reflection/" style="font-size: 1.1em; color: #999">reflection</a> <a href="/tags/unix/" style="font-size: 1.14em; color: #999a9c">unix</a> <a href="/tags/self-improvement/" style="font-size: 1.1em; color: #999">self_improvement</a> <a href="/tags/chaos-system/" style="font-size: 1.14em; color: #999a9c">chaos_system</a> <a href="/tags/kernel/" style="font-size: 1.35em; color: #99a3b1">kernel</a> <a href="/tags/agentic-search/" style="font-size: 1.1em; color: #999">agentic_search</a> <a href="/tags/operating-system/" style="font-size: 1.5em; color: #99a9bf">operating_system</a> <a href="/tags/docker/" style="font-size: 1.1em; color: #999">docker</a> <a href="/tags/planning/" style="font-size: 1.1em; color: #999">planning</a></div></div><div class="card-widget card-archives"><div class="item-headline"><i class="fas fa-archive"></i><span>Archives</span><a class="card-more-btn" href="/archives/" title="View More">
-    <i class="fas fa-angle-right"></i></a></div><ul class="card-archive-list"><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2026/06/"><span class="card-archive-list-date">June 2026</span><span class="card-archive-list-count">6</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2026/05/"><span class="card-archive-list-date">May 2026</span><span class="card-archive-list-count">12</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2026/04/"><span class="card-archive-list-date">April 2026</span><span class="card-archive-list-count">3</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2026/03/"><span class="card-archive-list-date">March 2026</span><span class="card-archive-list-count">2</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2026/01/"><span class="card-archive-list-date">January 2026</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2025/12/"><span class="card-archive-list-date">December 2025</span><span class="card-archive-list-count">4</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2025/11/"><span class="card-archive-list-date">November 2025</span><span class="card-archive-list-count">3</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2025/10/"><span class="card-archive-list-date">October 2025</span><span class="card-archive-list-count">5</span></a></li></ul></div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>Info</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">Article :</div><div class="item-count">119</div></div><div class="webinfo-item"><div class="item-name">UV :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">PV :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-06-26T07:11:48.615Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2026 By Yuchen You (Wesley)</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">welcome to my blog!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>window.typedJSFn = {
+            <li class="card-category-list-item "><a class="card-category-list-link" href="/categories/notes/"><span class="card-category-list-name">notes</span><span class="card-category-list-count">88</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/papers/"><span class="card-category-list-name">papers</span><span class="card-category-list-count">45</span></a></li>
+            </ul></div><div class="card-widget card-tags"><div class="item-headline"><i class="fas fa-tags"></i><span>Tags</span></div><div class="card-tag-cloud"><a href="/tags/agentic-search/" style="font-size: 1.1em; color: #999">agentic_search</a> <a href="/tags/unix/" style="font-size: 1.14em; color: #999b9d">unix</a> <a href="/tags/jvm/" style="font-size: 1.1em; color: #999">jvm</a> <a href="/tags/acpi/" style="font-size: 1.1em; color: #999">acpi</a> <a href="/tags/os/" style="font-size: 1.1em; color: #999">os</a> <a href="/tags/transformer/" style="font-size: 1.18em; color: #999ca1">transformer</a> <a href="/tags/llm-agent/" style="font-size: 1.1em; color: #999">llm_agent</a> <a href="/tags/llm-inference/" style="font-size: 1.26em; color: #999fa8">llm_inference</a> <a href="/tags/context-engineering/" style="font-size: 1.1em; color: #999">context_engineering</a> <a href="/tags/llm/" style="font-size: 1.3em; color: #99a1ac">llm</a> <a href="/tags/vllm/" style="font-size: 1.1em; color: #999">vllm</a> <a href="/tags/java/" style="font-size: 1.1em; color: #999">java</a> <a href="/tags/rca/" style="font-size: 1.14em; color: #999b9d">rca</a> <a href="/tags/edge-inference/" style="font-size: 1.1em; color: #999">edge_inference</a> <a href="/tags/agentsys/" style="font-size: 1.3em; color: #99a1ac">agentsys</a> <a href="/tags/distributed-sys/" style="font-size: 1.5em; color: #99a9bf">distributed_sys</a> <a href="/tags/log-analysis/" style="font-size: 1.1em; color: #999">log_analysis</a> <a href="/tags/mlsys/" style="font-size: 1.38em; color: #99a4b4">mlsys</a> <a href="/tags/probability/" style="font-size: 1.1em; color: #999">probability</a> <a href="/tags/memory-management/" style="font-size: 1.18em; color: #999ca1">memory_management</a> <a href="/tags/virtual-machine/" style="font-size: 1.22em; color: #999ea4">virtual_machine</a> <a href="/tags/queueing/" style="font-size: 1.1em; color: #999">queueing</a> <a href="/tags/container/" style="font-size: 1.14em; color: #999b9d">container</a> <a href="/tags/cyber-security/" style="font-size: 1.34em; color: #99a3b0">cyber_security</a> <a href="/tags/computer-composition/" style="font-size: 1.46em; color: #99a7bb">computer_composition</a> <a href="/tags/algorithm/" style="font-size: 1.42em; color: #99a6b7">algorithm</a> <a href="/tags/Chubby/" style="font-size: 1.1em; color: #999">Chubby</a> <a href="/tags/hallucination/" style="font-size: 1.1em; color: #999">hallucination</a> <a href="/tags/decoding/" style="font-size: 1.1em; color: #999">decoding</a> <a href="/tags/p-np/" style="font-size: 1.14em; color: #999b9d">p_np</a> <a href="/tags/docker/" style="font-size: 1.1em; color: #999">docker</a> <a href="/tags/safety/" style="font-size: 1.1em; color: #999">safety</a> <a href="/tags/gc/" style="font-size: 1.1em; color: #999">gc</a> <a href="/tags/linear-attention/" style="font-size: 1.1em; color: #999">linear_attention</a> <a href="/tags/icmp/" style="font-size: 1.1em; color: #999">icmp</a> <a href="/tags/reasoning/" style="font-size: 1.14em; color: #999b9d">reasoning</a> <a href="/tags/go/" style="font-size: 1.1em; color: #999">go</a> <a href="/tags/self-improvement/" style="font-size: 1.1em; color: #999">self_improvement</a> <a href="/tags/kvcache/" style="font-size: 1.14em; color: #999b9d">kvcache</a> <a href="/tags/pl/" style="font-size: 1.1em; color: #999">pl</a></div></div><div class="card-widget card-archives"><div class="item-headline"><i class="fas fa-archive"></i><span>Archives</span><a class="card-more-btn" href="/archives/" title="View More">
+    <i class="fas fa-angle-right"></i></a></div><ul class="card-archive-list"><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2026/09/"><span class="card-archive-list-date">September 2026</span><span class="card-archive-list-count">4</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2026/07/"><span class="card-archive-list-date">July 2026</span><span class="card-archive-list-count">11</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2026/06/"><span class="card-archive-list-date">June 2026</span><span class="card-archive-list-count">6</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2026/05/"><span class="card-archive-list-date">May 2026</span><span class="card-archive-list-count">12</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2026/04/"><span class="card-archive-list-date">April 2026</span><span class="card-archive-list-count">3</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2026/03/"><span class="card-archive-list-date">March 2026</span><span class="card-archive-list-count">2</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2026/01/"><span class="card-archive-list-date">January 2026</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2025/12/"><span class="card-archive-list-date">December 2025</span><span class="card-archive-list-count">4</span></a></li></ul></div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>Info</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">Article :</div><div class="item-count">134</div></div><div class="webinfo-item"><div class="item-name">UV :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">PV :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-10-19T20:14:42.838Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2026 By Yuchen You (Wesley)</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">welcome to my blog!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>window.typedJSFn = {
   init: (str) => {
     window.typed = new Typed('#subtitle', Object.assign({
       strings: str,

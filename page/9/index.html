@@ -52,7 +52,7 @@
   isHome: true,
   isHighlightShrink: false,
   isToc: false,
-  postUpdate: '2026-06-26 15:11:48'
+  postUpdate: '2026-10-20 04:14:43'
 }</script><script>(win=>{
       win.saveToLocal = {
         set: (key, value, ttl) => {
@@ -156,246 +156,368 @@
 .obsidian-callout p { margin: 0.4em 0; }
 .obsidian-callout details > summary { list-style: none; }
 .obsidian-callout details > summary::-webkit-details-marker { display: none; }
-</style></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/me_new.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">119</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">61</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">8</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="page" id="body-wrap"><header class="full_page" id="page-header" style="background-image: url('/img/math_master.jpeg')"><nav id="nav"><span id="blog-info"><a href="/" title="Yuchen You"><img class="site-icon" src="/img/avatar.png"/><span class="site-name">Yuchen You</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> Search</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="site-info"><h1 id="site-title">Yuchen You</h1><div id="site-subtitle"><span id="subtitle"></span></div><div id="site_social_icons"><a class="social-icon" href="https://github.com/1Wesleyyou" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yuchenxr@umich.edu" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://www.linkedin.com/in/yuchen-you-a74940314/?locale=en_US" target="_blank" title="LinkedIn"><i class="fab fa-linkedin" style="color: #4a4dbe;"></i></a><a class="social-icon" href="/Yuchen_CV.pdf" target="_blank" title="CV"><i class="fas fa-address-card" style="color: #251456;"></i></a></div></div><div id="scroll-down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout" id="content-inner"><div class="recent-posts" id="recent-posts"><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/01/19/computer_system_basics/network/%E7%BD%91%E7%BB%9C%20Socket%20%E7%BC%96%E7%A8%8B/" title="网络 Socket 编程">网络 Socket 编程</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2026-03-25T20:03:01.679Z" title="Updated 2026-03-26 04:03:01">2026-03-26</time></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/network/">network</a></span></div><div class="content">Socket 定义
-socket 即套接字，是一个双向通信通道，两端为两个process或者两个机器
+</style></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/me_new.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">134</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">78</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">2</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="page" id="body-wrap"><header class="full_page" id="page-header" style="background-image: url('/img/math_master.jpeg')"><nav id="nav"><span id="blog-info"><a href="/" title="Yuchen You"><img class="site-icon" src="/img/avatar.png"/><span class="site-name">Yuchen You</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> Search</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="site-info"><h1 id="site-title">Yuchen You</h1><div id="site-subtitle"><span id="subtitle"></span></div><div id="site_social_icons"><a class="social-icon" href="https://github.com/1Wesleyyou" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yuchenxr@umich.edu" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://www.linkedin.com/in/yuchen-you-a74940314/?locale=en_US" target="_blank" title="LinkedIn"><i class="fab fa-linkedin" style="color: #4a4dbe;"></i></a><a class="social-icon" href="/Yuchen_CV.pdf" target="_blank" title="CV"><i class="fas fa-address-card" style="color: #251456;"></i></a></div></div><div id="scroll-down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout" id="content-inner"><div class="recent-posts" id="recent-posts"><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/03/24/computer_system_basics/network/security/8.%20%E9%9A%90%E7%A7%81%E6%9D%83%E9%99%90%20privacy/" title="8. 隐私权限 privacy">8. 隐私权限 privacy</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2026-09-03T00:47:39.093Z" title="Updated 2026-09-03 08:47:39">2026-09-03</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/notes/">notes</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/cyber-security/">cyber_security</a></span></div><div class="content">数据隐私概述
+数据生成与收集
 
-socket是对网络通信的一种抽象
-提供了数据交换的 api
-去处了一些网卡交互的细节
+数据爆炸: 每天生成约2.5千亿字节数据(如社交媒体互动, 在线购物记录)
+数据聚合者: 如Acxiom和Oracle, 整合多源数据构建用户画像并出售
 
-服务器工作流 server flow
+隐私的定义
 
-用户工作流 client flow
+经典定义:
 
-工作流解读
-SC 交互
-
-socket() 构造
-参数为 socket(int domain, int type, int protocol, 都使用宏定义进行输入的
-
-domain 表示交流的范围，对于 IPv4 使用宏 AF_NET
-type 定义了交流的semantics, 对于双向交流的 socket，使用宏 SOCK_STREAM
-protocol 定义了协议，使用宏 IPPROTO_tCP 即可
-整个函数定义在 &lt;sys/socket.h&gt;
-
-bind() 绑定
-参数为 bind(int sockfd, const struct sockaddr_in * addr, socklen_t addrlen);
-
-sockfd: 上文构造的 socket 对象
-addr 定义了一些参数包括 port ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/01/13/computer_system_basics/network/security/1.%20%E5%AF%86%E7%A0%81%E5%AD%A6%E5%9F%BA%E7%A1%80/" title="1. 密码学基础">1. 密码学基础</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2026-03-25T20:03:01.665Z" title="Updated 2026-03-26 04:03:01">2026-03-26</time></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/cyber-security/">cyber_security</a></span></div><div class="content">Message Integrity 信息完整性
-定义
-ensures that attackers cannot modify a message w/o being detected.
-MITM 模型
-传输部分
-
-并不完全相信网络的信息的真实性
-希望 Bob 接收到的完全就是 Alice 发出的信息
+隔离权(Louis Brandeis): 免受他人侵扰的权利
+控制权: 选择何时, 如何共享个人信息的控制能力
+保密权(Richard Posner): 隐藏可能对自身不利的信息
+自由基础: 隐私是言论自由与个人自主的前提
 
 
-威胁模型 threat model
-
-Mallory 可以 see/modify/forge(伪造) message
-Mallory 的目的是让 Bob 相信一个不是由 Alice 发出的信息
-
-防御威胁的方法论
-verifier 验证器
-如图所示，在发送的时候额外传送一个验证码，即要求验证码 v=f(m)v = f(m)v=f(m)
-
-random function 完全随机函数
-
-被 A/B 容易计算，但是不容易被 M 计算 (即不被知道)
-如果被找到 x≠mx\neq mx​=m 且 f(m)=f(x)f(m) = f(x)f(m)=f(x) 的 collision 就失败了
-表示方法：用一个很大的表格记录映射关系，需要内存非常大
-优点: 完全安全，即 M 除了瞎猜没有更好的 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/01/13/computer_system_basics/network/1.%20OSI%20%E6%A6%82%E8%BF%B0%E4%B8%8E%E5%BA%94%E7%94%A8%E5%B1%82/" title="1. OSI 概述与应用层">1. OSI 概述与应用层</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2026-03-25T20:03:01.686Z" title="Updated 2026-03-26 04:03:01">2026-03-26</time></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/network/">network</a></span></div><div class="content">概述
-网络信息传播需要遵循 应用(Application) -&gt; 封装送货信息+路由选择(Transport) -&gt; 国际地址封装(Network) -&gt; 地区地址封装(Data Link) -&gt; 物理层发送(Physical) 的五层收发结构
-
-低层级 (后面的不需要知道前面发生了什么)
-每一层只负责该层任务以及与相邻层的 api 交互
-同层之间遵循同样的协议，可以互相交流
 
 
-分层的优缺点
+隐私侵犯案例
+医疗数据泄露
+
+案例:
+
+Jane Doe因雇主获知其携带亨廷顿病基因被解雇
+Kate Smith基因突变检测结果导致健康保险费飙升
+
+
+
+商业数据滥用
+
+Target预测怀孕:
+
+通过购物模式预测用户怀孕状态, 误向未成年少女发送婴儿用品优惠券
+
+
+Strava热图泄露军事基地:
+
+用户运动轨迹数据暴露美军在叙利亚, 阿富汗的军事基地位置
+
+
+
+匿名化失效
+
+GIC链接攻击:
+
+通过马萨诸塞州选民登记数据(公开)与匿名医疗数据关联, 重新识别州长 William Weld
+关键信息: 出生日期 + 5位 zip 可识别69%美国人 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/03/20/computer_system_basics/network/security/7.%20%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90%E6%8E%A7%E5%88%B6%E6%94%BB%E5%87%BB%20Access%20Control/" title="7. 访问权限控制攻击 Access Control">7. 访问权限控制攻击 Access Control</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2026-09-03T00:47:39.092Z" title="Updated 2026-09-03 08:47:39">2026-09-03</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/notes/">notes</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/cyber-security/">cyber_security</a></span></div><div class="content">访问控制基础 Access Control Basics
+核心概念
+
+
+安全模型(Security Model)
+
+系统抽象, 用于描述和制定安全策略
+三要素: 主体(Subject), 客体(Object), 操作(Operation)
+
+主体 Subject: users, Android Apps, Web Origins
+客体: resources, including 文件, 目录, 数据库表, 设备(如UNIX文件, 进程)
+操作: 读, 写, 执行, 调用等
+
+
+
+
+
+安全策略(Security Policy)
+
+
+定义访问控制矩阵, 明确主体对客体的权限
+
+
+
+主体/客体
+文件1
+文件2
+
+
+
+
+Alice
+读
+读/写
+
+
+Bob
+读
+无权限
+
+
+
+
+
+
+
+安全机制(Security Mechanism)
+
+实现安全策略的技术(如操作系统内核, 加密)
+
+
+
+2. 核心原则
+
+
+最小权限原则(Principle of Least Privilege)
+
+用户/程序**仅**拥有完成任务的必要权限
+优势: 限制意外或恶意操作的影响范围
+
+
+
+完全中介原则(Principl ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/03/12/computer_system_basics/network/security/6.%20binary%20%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%94%BB%E5%87%BB/" title="6. binary 二进制攻击">6. binary 二进制攻击</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2026-09-03T00:47:39.092Z" title="Updated 2026-09-03 08:47:39">2026-09-03</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/notes/">notes</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/cyber-security/">cyber_security</a></span></div><div class="content">控制劫持基础(Control Hijacking Basics)
+
+定义: 通过二进制利用(Binary Exploitation)破坏应用程序的信任边界, 典型手段为内存损坏(Memory Corruption);
+
+目标: 实现远程代码执行(Remote Code Execution, RCE)或提权(Privilege Escalation);
+常见攻击类型:
+
+缓冲区溢出(Buffer Overflow)
+格式化字符串攻击(Format String)
+整数溢出(Integer Overflow)
+
+
+
+
+
+
+内存与汇编基础(Memory &amp; Assembly Fundamentals)
+
+内存布局:
+
+x64 架构的每一个 entry 尺寸为 64b = 8B;
+代码段(Text Segment): 存储可执行指令;
+数据段(Data Segment): 存储全局变量;
+堆(Heap): 动态分配内存;
+栈(Stack): 管理函数调用与局部变量(后进先出);
+
+从高地址向低地址增长;
+0xffffffff -&gt; 0x00000000;
+$rsp 地址小于等于  ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/03/11/computer_system_basics/os/5.%20%E5%86%85%E5%AD%98%E7%A9%BA%E9%97%B4%E6%8A%BD%E8%B1%A1%20Address%20Space/" title="5. 内存空间抽象 Address Space">5. 内存空间抽象 Address Space</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2026-09-03T00:47:39.109Z" title="Updated 2026-09-03 08:47:39">2026-09-03</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/notes/">notes</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/operating-system/">operating_system</a></span></div><div class="content">地址空间与抽象 Address Space and Abstract
+
+os视角: 地址空间是在 process
+内部的用于不同进程之间对物理内存高效, 安全访问的一种抽象方式;
+
+Process = one or more threads running in an address space;
+
+
+组成: 包括 code, data, heap, stack
+Phisical Machine Interface: 多个任务共享同一个物理内存, 比如一个 config 文件
+Virtual Machine Interface: 每个任务有独立的虚拟内存空间
+
+地址空间抽象的三条准则
+
+Address Space Independence:
+Protection (controlled isolation):
+Large Address Space:
+
+单进程执行缺陷
+多个进程执行
+动态地址翻译 Dynamic Address Translation
+Method 1: Base + Bound
+
+机制
 优点
-
-reduce complexity
-improve flexibility
-better manageability
-increase redundancy (冗余多): 每一层都有自己的恢复措施，因此可靠性更强
-
 缺点
 
-high overhead
-cross layer information is often useful
-speed decreased
+Method 2: Segmentation
+Method 3: P ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/03/11/computer_system_basics/network/security/5.%20%E5%AF%86%E7%A0%81%E6%94%BB%E5%87%BB%20Password%20Attack/" title="5. 密码攻击 Password Attack">5. 密码攻击 Password Attack</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2026-09-03T00:47:39.091Z" title="Updated 2026-09-03 08:47:39">2026-09-03</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/notes/">notes</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/cyber-security/">cyber_security</a></span></div><div class="content">认证基础(Authentication Basics)
 
-封装形式
+定义: 确认实体声明的属性真实性, 常用于验证用户或设备的身份(Identity);
 
-Header: 每一层协议，除了物理层都会给数据包在前面 append 一个表头表示 instructions on how to process payload.
-Payload: 表示有效 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/11/07/computer_system_basics/structure_algorithm/18.%20%E5%9F%BA%E7%A1%80%E5%9B%BE%E8%AE%BA/" title="18. 基础图论">18. 基础图论</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2026-03-25T20:03:01.662Z" title="Updated 2026-03-26 04:03:01">2026-03-26</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/eecs281/">eecs281</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/algorithm/">algorithm</a></span></div><div class="content">定义
-一个图 G=(V,E)G = (V,E)G=(V,E) 由点的集合 VVV 和边的集合 EEE 组成
-平行边 两个节点之间存在多条边界
-self-loop 自循环
-没有自循环的图称为 simple graph，两端不同的边称为 simple path
-connect path: 一个 simple path 存在于任意一对 vertices 之间 (节点间均间接/直接相连)
-cycle: 简单路径除了首尾 vertex 相同
-稠密度
+目的:
 
-complete graph 任意两个 vertex 直接相连
-dense graph 稠密图表示图内的 edge 数量很多 E∼V2E\sim V^2E∼V2
-sparse graph 稀疏图 E∼VE\sim VE∼V
+实施访问控制策略(Access Control Policies)
+防止冒充攻击(Impersonation Attacks)
 
-相邻关系表示
-邻接矩阵 adjacency matrix
-一个 0-1 矩阵，坐标 i,j 表示边 (i,j) 是否存在于图中
-常用于无权图
-距离矩阵 distance matrix
-在这个距离矩阵中，对应坐标的值表示对应 edge 的距离
-一般用 ∞\infty∞ 表示不存在通路
-邻接表 adjacency list
-点均边 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/11/04/computer_system_basics/structure_algorithm/P=NP/4.%20Cook-Levin%20Theorem/" title="4. Cook-Levin Theorem">4. Cook-Levin Theorem</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2026-03-25T20:03:01.655Z" title="Updated 2026-03-26 04:03:01">2026-03-26</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/math/">math</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/computability/">computability</a></span></div><div class="content">定理内容
-SAT 问题是 NP-complete 问题
-由于 SAT 问题在给定 certificate 的情况下只需要逐个检验是否符合, 复杂度是 polynomial -&gt; NP, 因此这里只需要证明其是 NP-hard 即可
-证明 NP-Hard
-利用 NP-hard 的定义, 这里需要证明对所有的 language L∈NPL\in NPL∈NP 都有 L≤pSATL\le_p SATL≤p​SAT (因为 SAT 问题往往会作为 NP-hard origin 来归纳其他的问题是否 NP-hard, 这里不能用其他 NP-hard 来归纳之)
-因此假设我们有一个任意 np 问题的 instance x 和一个输入语言 L ∈\in∈ NP, 即存在 Verify−LVerify-LVerify−L 可以在多项式时间内决定 L;
-证明目的是是否存在一个 SAT instance ϕ\phiϕ satisfiable iff 存在 c 使得 Verify-L(x,c) accept
-定义 VL 算法为一个 TM, 并将其编码为一个 ∣x∣k×∣x∣k|x|^k\times | ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/11/04/computer_system_basics/structure_algorithm/P=NP/3.%20NP-Complete/" title="3. NP-Complete">3. NP-Complete</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2026-03-25T20:03:01.657Z" title="Updated 2026-03-26 04:03:01">2026-03-26</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/math/">math</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/computability/">computability</a></span></div><div class="content">定义
-A language LLL is NP-complete if
 
-L∈L\inL∈ NP
-LLL is NP-hard
+示例:
 
-证明方法: polynomial-time mapping reduction
-定义归纳关系 A≤pBA\le_p BA≤p​B 表示 ∃f s.t. x∈A⇔f(x)∈B\exists f \text{ s.t. } x \in A\Leftrightarrow f(x) \in B∃f s.t. x∈A⇔f(x)∈B
-引理 lemma
-
-B∈P⇒A∈PB\in P \Rightarrow A \in PB∈P⇒A∈P
-AAA NP-hard ⇒\Rightarrow⇒ B NP-hard
-
-用法
-
-选取一个已知的 NP-hard 问题 A 来归纳关系 A≤pBA\le_p BA≤p​B
-定义问题转变映射: 如何将问题集合 A 的某个确定 instance 转变为 B 的对应的 instance
-证明这个转变 f 的时间复杂度是 polynomial
-证明 correctness:
-
-证明一个能解决 A 的 answer 同样在转变的问题中可以以同样的答案 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/10/31/computer_system_basics/structure_algorithm/17.%20%E4%BA%8C%E5%8F%89%E6%A0%91%E5%92%8C%E8%87%AA%E5%B9%B3%E8%A1%A1%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91/" title="17. 二叉树和自平衡二叉搜索树">17. 二叉树和自平衡二叉搜索树</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2026-03-25T20:03:01.646Z" title="Updated 2026-03-26 04:03:01">2026-03-26</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/eecs281/">eecs281</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/algorithm/">algorithm</a></span></div><div class="content">树的定义
-
-没有 cycle 的无向图
-rooted tree
-
-存在某个 node 作为根节点
-每个节点事实上都可以作为 root
+网站通过密码认证用户
+手机通过指纹识别机主
+浏览器通过证书验证服务器
 
 
 
-二叉树的操作复杂度
-二叉树的方法时间复杂度看的主要是二叉树自身的结构形状，如果是 complete 树是最好情况; 如果是 每个节点都只有一个子枝，其复杂度最大，是 worst case
-数组法
-
-insert
-
-最好 O(1)
-最差 O(n)
-和树的排布方式有关，如果树的根节点的某个字节点为空那么直接插入，复杂度 O(1); 如果全部排满我们需要遍历找到空节点位置那么时间复杂度 O(n)
-
-
-remove
-
-最差 O(n)
-
-
-parent O(1)
-child O(1)
-space
-
-最好 O(n)
-最差 O(2^n)
-这里取决于数据的排布方式, 如果是完全二叉树，那只需要 O(n) 空间; 如果是完全一叉树 (每个node最多只有一个节点) 就需要 O(2^n) 空间
 
 
 
-指针法
+认证方式(Authentication Factors)
 
-insert 好 O(1) 坏 O(n)
-remove 坏 O(n)
-parent O(n) 因为没有爹指针
-child O(1)
-space 好 O(n) 坏 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/10/29/computer_system_basics/computer_composition/8.%20%E7%BC%93%E5%AD%98%20cache/" title="8. 缓存 cache">8. 缓存 cache</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2026-03-25T20:03:01.627Z" title="Updated 2026-03-26 04:03:01">2026-03-26</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/cs-basic/">cs_basic</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/computer-composition/">computer_composition</a></span></div><div class="content">SRAM, DRAM, SSD
-SRAM 静态随机访问内存
-
-由六个三极管组成
-脆弱volatile：需要常量的电压来保存数据
-快速: 1ns 左右的数据访问时间
-空间占用率低: 只能在芯片上存储 MB 大小的数据
+所知之物(Something You Know)
+密码(Password), PIN码, 密钥
+所有之物(Something You Have)
+手机, 安全令牌(Security Token), 身份证
+所是之物(Something You Are)
+生物特征(Biometrics): 指纹, 面部识别(FaceID), 虹膜扫描
 
 
-DRAM 动态随机访问内存
+密码问题与防御(Password Problems &amp; Defenses)
 
-每一个 bit 用一个 三极管和一个电容组成
-需要常量的电压来保存数据
-缓慢: 大约 50 ns 的访问时间
-便宜，可以提供 GB 单位的内存空间
 
-现代硬件结构中这个往往被用作是主要内存硬盘
+常见弱密码问题:
 
-Disk 光盘
-硬件将数据存储在 磁电,通过光盘的旋转来进行数据获取
-数据获取非常缓慢，约 3ms 的访问时间
-不脆弱：即使没有电压也可以保存数据
-固态硬盘 solid-state disk, SSD
-相比光盘，访问时间快很多，大约 0.1 ms 的时间
-十分便宜
-总结
-reg, cache, memory 的速度和内存大小的关系如下图:
+用户倾向于选择简单密码(如123456, password);
+防御建议:
 
-缓存 Caches
+用户: 使用密码管理器(Passw ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/03/11/computer_system_basics/network/3.%20%E7%BD%91%E7%BB%9C%E5%B1%82/" title="3. 网络层">3. 网络层</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2026-09-03T00:47:39.089Z" title="Updated 2026-09-03 08:47:39">2026-09-03</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/notes/">notes</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/network/">network</a></span></div><div class="content">网络层基础
+
+
+核心功能:
+
+寻址(Addressing)
+转发(Forwarding): 将数据包定向到正确接口(基于本地转发表);
+路由(Routing): 全局计算转发表(通过路由协议);
+
+
+
+架构分层:
+
+数据平面(Data Plane): 处理单个数据包的转发(快速, 本地决策);
+控制平面(Control Plane): 计算转发表的分布式算法(全局, 慢速);
+
+
+
+
+IP协议核心设计
+
+
+IP数据包结构:
+
+
+Header:
+
+
+
+字段名
+位数
 功能
-缓存存储了我们认为最有可能会被使用的数据, 从时间和空间维度，共有两种可能：
-
-空间(spatial locality)：最近被调用的数据的附近更有可能会被调用
 
 
 
 
-时间(temp ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/10/29/computer_system_basics/structure_algorithm/P=NP/2.%20NP-Hardness/" title="2. NP-Hardness">2. NP-Hardness</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2026-03-25T20:03:01.654Z" title="Updated 2026-03-26 04:03:01">2026-03-26</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/math/">math</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/p-np/">p_np</a></span></div><div class="content">NP-hard 定义
-一个语言 LLL 是 NP-hard 若对任意 NP 中的语言 X 存在关系 X≤pLX\le_p LX≤p​L
-定义这个关系为：at least as hard as
-并不要求 NP-hard 问题属于 NP
-NP-complete
-定义语言 LLL 是 NP-complete 的如果 1. L∈L\inL∈ NP 且 2. L∈L\inL∈ NP-hard
-从简单上来认识这个 class，可以理解为这是最难解决的 NP 问题
-NP-hard 的复杂度性质
-如果对于任何一个 NP-hard 的问题，存在一个 多项式复杂度的解 那么任何 NP 问题都可以在 P 时间内解决
-因此有两种可能性:
+版本号(Version)
+4
+标识IP版本(如IPv4=4);
 
-NP-complete 问题全部都属于 P
-NP-complete 问题全部需要超过 多项式时间复杂度的求解难度
 
-NP-hard reduction
-定义符号 ≤p\le_p≤p​ 使得 A≤pB⇔A\le_p B \LeftrightarrowA≤p​B⇔ ∃f\exists f∃f 多项式函数 s.t. x∈A⇔f(x)∈Bx\in A \Leftrightarrow ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/10/29/computer_system_basics/structure_algorithm/P=NP/1.%20%E8%AE%A1%E7%AE%97%E7%9A%84%E5%A4%8D%E6%9D%82%E6%80%A7%20complexity/" title="1. 计算的复杂性 complexity">1. 计算的复杂性 complexity</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2026-03-25T20:03:01.656Z" title="Updated 2026-03-26 04:03:01">2026-03-26</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/math/">math</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/p-np/">p_np</a></span></div><div class="content">P 类 多项式可解类
-定义 P class:= 所有的 decidable 的 problem 中可以在多项式中决定的集合
-即若有 L∈PL\in PL∈P, 那么就会存在图灵机 MMM decides LLL, 且 MMM 的时间复杂度是 O(nk)O(n^k)O(nk)
-难以解决的问题-例: traveling salesperson problem  (TSP) 旅行商问题
-在一个图中，是否存在一条路径经过每个点一次且路径权值和小于常数 b ?
-这个问题的求解步骤或许非常麻烦，但是当我们提出一种解之后，我们很容易就可以根据定义来进行验证其真伪，我们称这类容易验证的问题为 efficiently verifiable
-其他难解决易证明问题
-走迷宫问题、数独求解问题
-证明属于 P 类
+头部长度(IHL)
+4
+以32位word为单位的头部长度(如无选项时为5, 对应20字节, 最长 60B 因为 IHL 最长 4bit 即 0xF word = 60B);
 
-证明属于 decidable 问题 (用伪代码定义图灵机的存在, 需要证明 correctness)
-证明过程可以在 O(nk)O(n^k)O(nk) 时间内停止，这里 nnn 表示 input size
 
-NP 类 多项式可验证类
-定义 NP class := 所有的能在多项式时间内验证一个问题的真 ...</div></div></div><nav id="pagination"><div class="pagination"><a class="extend prev" rel="prev" href="/page/8/#content-inner"><i class="fas fa-chevron-left fa-fw"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/#content-inner">8</a><span class="page-number current">9</span><a class="page-number" href="/page/10/#content-inner">10</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/#content-inner">12</a><a class="extend next" rel="next" href="/page/10/#content-inner"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/me_new.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Yuchen You (Wesley)</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">119</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">61</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">8</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/1WesleyYou"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/1Wesleyyou" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yuchenxr@umich.edu" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://www.linkedin.com/in/yuchen-you-a74940314/?locale=en_US" target="_blank" title="LinkedIn"><i class="fab fa-linkedin" style="color: #4a4dbe;"></i></a><a class="social-icon" href="/Yuchen_CV.pdf" target="_blank" title="CV"><i class="fas fa-address-card" style="color: #251456;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/26/agentsys/memory/Mem0%20-%20Building%20Production-Ready%20AI%20Agents%20with%20Scalable%20Long-Term%20Memory/" title="Mem0 - Building Production-Ready AI Agents with Scalable Long-Term Memory">Mem0 - Building Production-Ready AI Agents with Scalable Long-Term Memory</a><time datetime="2026-06-26T07:09:58.248Z" title="Created 2026-06-26 15:09:58">2026-06-26</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/20/computer_system_basics/ds/13.zookeeper/" title="ZooKeeper: 不发钥匙, 改立公告板的协调服务">ZooKeeper: 不发钥匙, 改立公告板的协调服务</a><time datetime="2026-06-20T06:30:00.000Z" title="Created 2026-06-20 14:30:00">2026-06-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/16/agentsys/context_engineering/Effective%20context%20engineering%20for%20AI%20agents/" title="Effective context engineering for AI agents">Effective context engineering for AI agents</a><time datetime="2026-06-16T13:49:17.270Z" title="Created 2026-06-16 21:49:17">2026-06-16</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/11/computer_system_basics/ds/0.ds_history/" title="0. 分布式系统编年史: 2000-2020">0. 分布式系统编年史: 2000-2020</a><time datetime="2026-06-11T15:18:42.000Z" title="Created 2026-06-11 23:18:42">2026-06-11</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/10/computer_system_basics/ds/11.chubby/" title="Google Chubby: 解耦控制数据平面的分布式锁系统">Google Chubby: 解耦控制数据平面的分布式锁系统</a><time datetime="2026-06-09T16:22:06.000Z" title="Created 2026-06-10 00:22:06">2026-06-10</time></div></div></div></div><div class="card-widget card-categories"><div class="item-headline">
+服务类型(ToS/DSCP)
+8
+定义优先级或拥塞通知(如ECN);
+
+
+总长度(Total Length)
+16
+整个IP包的总字节数(最大65535字节);
+
+
+生存时间(TTL)
+8
+防环路, 每经过一跳减1, 归零时丢弃包;
+
+
+协议(Protocol)
+8
+标识 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/03/07/computer_system_basics/network/security/John-the-Ripper/" title="John the Ripper">John the Ripper</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2026-09-03T00:47:39.094Z" title="Updated 2026-09-03 08:47:39">2026-09-03</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/notes/">notes</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/cyber-security/">cyber_security</a></span></div><div class="content">简介和背景
+由于Linux是Internet最流行的服务器操作系统,因此它的安全性备受关注,这种安全主要靠口令实现
+Linux使用一个单向函数 crypt() 来加密用户口令;单向函数 crypt() 从数学原理上保证了从加密的密文得到加密前的明文是不可能的或是非常困难的; 当用户登录系统时,系统并不是去解密已加密的口令, 而是将输入的口令明文字符串传给加密函数, 将加密函数的输出与 /etc/passwd 文件中该用户的PASSWORD域进行比较,若匹配成功,则允许用户登录系统;
+John-the-Ripper 是一款免费,开源的暴力密码破解器,它有多平台版本,支持目前大多数的加密算法,如DES, MD4, MD5等;该软件破解密码方式简单而粗暴,理论上只要时间上面允许,该软件可以破译绝大多数用户密码;
+用法
+在 macOS 上面安装 John-the-Ripper:
+1brew install john-jumbo
+简单的使用方式是 john --wordlist=/path/to/wordlist.txt /path/to/passwords.txt,
+其中 john 会基于你提 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/02/19/computer_system_basics/network/security/4.%20Network%20%E5%9F%BA%E7%A1%80%20(%E8%AF%A6%E8%A7%81489)/" title="4. Network 基础">4. Network 基础</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2026-09-03T00:47:39.089Z" title="Updated 2026-09-03 08:47:39">2026-09-03</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/notes/">notes</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/cyber-security/">cyber_security</a></span></div><div class="content">物理层攻击
+
+数据链路层攻击
+Ethernet
+以太网(Ethernet) 是最常见的数据链路层协议, 用于在本地网络中传输数据:
+• 通过 MAC 地址寻址(而不是 IP 地址);
+• 传输单位是帧(Frame), 而不是 IP 包;
+• 可以在有线(RJ45)或无线(Wi-Fi)网络上运行;
+• 每个以太网帧大约 1500 字节
+MAC
+每个网卡(NIC)都有一个唯一的 48-bit MAC 地址
+格式: xx:xx:xx:xx:xx:xx(如 e8:39:35:2d:3e:18),前 3 个字节(OUI)标识制造商(如 Intel, Cisco),后 3 个字节是设备的唯一编号;
+但 MAC 地址可以被用户伪造! 使用 ifconfig 或 ip link set 命令可以更改 MAC 地址,攻击者可以使用 MAC 欺骗进行 ARP 欺骗(ARP Spoofing)攻击
+网络层攻击
+IP 地址
+一个 IP 地址(IPv4, 如 192.168.1.100)由两部分组成:
+
+Network Prefix(网络前缀)
+• 类似于邮政编码(ZIP Code), 用于标识一个网络(LAN ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/02/18/computer_system_basics/os/4.%20%E6%AD%BB%E9%94%81%20Deadlock/" title="4. 死锁 Deadlock">4. 死锁 Deadlock</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2026-09-03T00:47:39.109Z" title="Updated 2026-09-03 08:47:39">2026-09-03</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/notes/">notes</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/operating-system/">operating_system</a></span></div><div class="content">死锁简介 (Introduction to Deadlock)
+
+定义 (Definition): 线程因循环等待资源 (Cyclical Resource Waiting) 而无限期阻塞的状态.
+为了确保程序合理运行的必要条件:
+
+安全性 (Safety): 所有操作必须正确 (避免非法交错).
+活性 (Liveness): 操作必须持续进行; 死锁违反活性.
+
+
+
+
+[!Fix Attempts]
+
+Ignore: 1. 0S会自己完成的; 2. 这个方法占用cpu时间为0;
+Detect and Fix:
+
+
+
+Kill the deadlock threads:会导致一定!的 invariant条件破裂
+Rollback actions and then try again:某些指令如 output 并不能 roll back
+
+
+
+Prevent: 得知道有哪些造成 deadlock 的必要条件
+
+
+
+  
+    💡 等待图 (Wait-for Graph):
+  
+  
+顶点 (Vertices): 线程和资源.
+边 (Edges):
+
+线程 → 资源 (线程等待资源) ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2025/02/18/computer_system_basics/os/3.%20%E4%BF%A1%E5%8F%B7%E9%87%8F%20Semaphore/" title="3. 信号量 Semaphore">3. 信号量 Semaphore</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="fas fa-history"></i><span class="article-meta-label">Updated</span><time datetime="2026-09-03T00:47:39.108Z" title="Updated 2026-09-03 08:47:39">2026-09-03</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/notes/">notes</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/operating-system/">operating_system</a></span></div><div class="content">信号量基础 (Semaphore Basics)
+
+定义 (Definition): 一种抽象的整数计数器 (Integer Counter), 用于控制多线程对共享资源的访问.
+核心操作 (Core Operations):
+
+down() (或 P()/wait()): 原子性地减少计数器值; 若值为0则阻塞线程.
+up() (或 V()/signal()): 原子性地增加计数器值; 唤醒等待的线程.
+
+
+类型 (Types):
+
+二进制信号量 (Binary Semaphore): 值仅0或1, 初始化为 1 的情况下等效于锁 (Lock).
+计数信号量 (Counting Semaphore): 值可为任意非负整数, 表示资源的可用数量.
+
+
+
+
+信号量的应用场景 (Applications of Semaphores)
+
+
+互斥 (Mutual Exclusion):
+1234semaphore sem(1);sem.down();// 临界区 (Critical Section)sem.up();
+
+
+顺序约束 (Ordering Constraints):
+
+
+例如确保线 ...</div></div></div><nav id="pagination"><div class="pagination"><a class="extend prev" rel="prev" href="/page/8/#content-inner"><i class="fas fa-chevron-left fa-fw"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/#content-inner">8</a><span class="page-number current">9</span><a class="page-number" href="/page/10/#content-inner">10</a><span class="space">&hellip;</span><a class="page-number" href="/page/14/#content-inner">14</a><a class="extend next" rel="next" href="/page/10/#content-inner"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/me_new.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Yuchen You (Wesley)</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">134</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">78</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">2</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/1WesleyYou"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/1Wesleyyou" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yuchenxr@umich.edu" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://www.linkedin.com/in/yuchen-you-a74940314/?locale=en_US" target="_blank" title="LinkedIn"><i class="fab fa-linkedin" style="color: #4a4dbe;"></i></a><a class="social-icon" href="/Yuchen_CV.pdf" target="_blank" title="CV"><i class="fas fa-address-card" style="color: #251456;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/09/21/notes/network/nccl/prims_simple.h/" title="prims_simple.h">prims_simple.h</a><time datetime="2026-09-21T13:12:56.000Z" title="Created 2026-09-21 21:12:56">2026-09-21</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/09/02/mlsys/LanguageModel/10.kimi-linear/" title="Kimi Linear: An Expressive, Efficient Attention Architecture">Kimi Linear: An Expressive, Efficient Attention Architecture</a><time datetime="2026-09-02T15:43:10.000Z" title="Created 2026-09-02 23:43:10">2026-09-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/09/02/mlsys/Paper/FreeToken%20-%20Efficient%20Edge-Native%20MoE%20Serving%20with%20Bandwidth-Adaptive%20Execution/" title="FreeToken: Efficient Edge-Native MoE Serving with Bandwidth-Adaptive Execution">FreeToken: Efficient Edge-Native MoE Serving with Bandwidth-Adaptive Execution</a><time datetime="2026-09-02T13:27:27.000Z" title="Created 2026-09-02 21:27:27">2026-09-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/09/01/mlsys/LanguageModel/4.inference-time-intervention/" title="4. Inference-Time Intervention (Steering 与 Rollback)">4. Inference-Time Intervention (Steering 与 Rollback)</a><time datetime="2026-09-01T02:00:00.000Z" title="Created 2026-09-01 10:00:00">2026-09-01</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/29/mlsys/InferenceEngine/8.deepseekv2/" title="8.deepseekv2">8.deepseekv2</a><time datetime="2026-07-29T08:43:19.000Z" title="Created 2026-07-29 16:43:19">2026-07-29</time></div></div></div></div><div class="card-widget card-categories"><div class="item-headline">
             <i class="fas fa-folder-open"></i>
             <span>Categories</span>
             
             </div>
             <ul class="card-category-list" id="aside-cat-list">
-            <li class="card-category-list-item "><a class="card-category-list-link" href="/categories/agentsys/"><span class="card-category-list-name">agentsys</span><span class="card-category-list-count">8</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/cs-basic/"><span class="card-category-list-name">cs_basic</span><span class="card-category-list-count">25</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/cybersecurity/"><span class="card-category-list-name">cybersecurity</span><span class="card-category-list-count">12</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/eecs281/"><span class="card-category-list-name">eecs281</span><span class="card-category-list-count">7</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/math/"><span class="card-category-list-name">math</span><span class="card-category-list-count">9</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/mlsys/"><span class="card-category-list-name">mlsys</span><span class="card-category-list-count">4</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/network/"><span class="card-category-list-name">network</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/os/"><span class="card-category-list-name">os</span><span class="card-category-list-count">1</span></a></li>
-            </ul></div><div class="card-widget card-tags"><div class="item-headline"><i class="fas fa-tags"></i><span>Tags</span></div><div class="card-tag-cloud"><a href="/tags/reinforcement-learning/" style="font-size: 1.1em; color: #999">reinforcement_learning</a> <a href="/tags/gc/" style="font-size: 1.1em; color: #999">gc</a> <a href="/tags/mcts/" style="font-size: 1.1em; color: #999">mcts</a> <a href="/tags/search/" style="font-size: 1.1em; color: #999">search</a> <a href="/tags/cyber-security/" style="font-size: 1.35em; color: #99a3b1">cyber_security</a> <a href="/tags/Chubby/" style="font-size: 1.1em; color: #999">Chubby</a> <a href="/tags/ml-training/" style="font-size: 1.1em; color: #999">ml_training</a> <a href="/tags/context-engineering/" style="font-size: 1.1em; color: #999">context_engineering</a> <a href="/tags/go/" style="font-size: 1.1em; color: #999">go</a> <a href="/tags/history/" style="font-size: 1.1em; color: #999">history</a> <a href="/tags/kubernetes/" style="font-size: 1.17em; color: #999ca0">kubernetes</a> <a href="/tags/algorithm/" style="font-size: 1.39em; color: #99a5b5">algorithm</a> <a href="/tags/llm-agent/" style="font-size: 1.1em; color: #999">llm_agent</a> <a href="/tags/agentsys/" style="font-size: 1.32em; color: #99a2ae">agentsys</a> <a href="/tags/mlsys/" style="font-size: 1.25em; color: #999fa7">mlsys</a> <a href="/tags/container/" style="font-size: 1.14em; color: #999a9c">container</a> <a href="/tags/system-failure/" style="font-size: 1.21em; color: #999da3">system_failure</a> <a href="/tags/tool-use/" style="font-size: 1.1em; color: #999">tool_use</a> <a href="/tags/Consensus/" style="font-size: 1.28em; color: #99a0aa">Consensus</a> <a href="/tags/gpu/" style="font-size: 1.14em; color: #999a9c">gpu</a> <a href="/tags/pl/" style="font-size: 1.1em; color: #999">pl</a> <a href="/tags/database/" style="font-size: 1.21em; color: #999da3">database</a> <a href="/tags/prompt-engineering/" style="font-size: 1.1em; color: #999">prompt_engineering</a> <a href="/tags/etcd/" style="font-size: 1.1em; color: #999">etcd</a> <a href="/tags/rca/" style="font-size: 1.14em; color: #999a9c">rca</a> <a href="/tags/structure/" style="font-size: 1.17em; color: #999ca0">structure</a> <a href="/tags/icmp/" style="font-size: 1.1em; color: #999">icmp</a> <a href="/tags/cloud-native/" style="font-size: 1.1em; color: #999">cloud_native</a> <a href="/tags/computer-composition/" style="font-size: 1.43em; color: #99a6b8">computer_composition</a> <a href="/tags/os/" style="font-size: 1.1em; color: #999">os</a> <a href="/tags/distributed-sys/" style="font-size: 1.46em; color: #99a8bc">distributed_sys</a> <a href="/tags/reflection/" style="font-size: 1.1em; color: #999">reflection</a> <a href="/tags/unix/" style="font-size: 1.14em; color: #999a9c">unix</a> <a href="/tags/self-improvement/" style="font-size: 1.1em; color: #999">self_improvement</a> <a href="/tags/chaos-system/" style="font-size: 1.14em; color: #999a9c">chaos_system</a> <a href="/tags/kernel/" style="font-size: 1.35em; color: #99a3b1">kernel</a> <a href="/tags/agentic-search/" style="font-size: 1.1em; color: #999">agentic_search</a> <a href="/tags/operating-system/" style="font-size: 1.5em; color: #99a9bf">operating_system</a> <a href="/tags/docker/" style="font-size: 1.1em; color: #999">docker</a> <a href="/tags/planning/" style="font-size: 1.1em; color: #999">planning</a></div></div><div class="card-widget card-archives"><div class="item-headline"><i class="fas fa-archive"></i><span>Archives</span><a class="card-more-btn" href="/archives/" title="View More">
-    <i class="fas fa-angle-right"></i></a></div><ul class="card-archive-list"><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2026/06/"><span class="card-archive-list-date">June 2026</span><span class="card-archive-list-count">6</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2026/05/"><span class="card-archive-list-date">May 2026</span><span class="card-archive-list-count">12</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2026/04/"><span class="card-archive-list-date">April 2026</span><span class="card-archive-list-count">3</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2026/03/"><span class="card-archive-list-date">March 2026</span><span class="card-archive-list-count">2</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2026/01/"><span class="card-archive-list-date">January 2026</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2025/12/"><span class="card-archive-list-date">December 2025</span><span class="card-archive-list-count">4</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2025/11/"><span class="card-archive-list-date">November 2025</span><span class="card-archive-list-count">3</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2025/10/"><span class="card-archive-list-date">October 2025</span><span class="card-archive-list-count">5</span></a></li></ul></div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>Info</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">Article :</div><div class="item-count">119</div></div><div class="webinfo-item"><div class="item-name">UV :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">PV :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-06-26T07:11:48.615Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2026 By Yuchen You (Wesley)</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">welcome to my blog!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>window.typedJSFn = {
+            <li class="card-category-list-item "><a class="card-category-list-link" href="/categories/notes/"><span class="card-category-list-name">notes</span><span class="card-category-list-count">88</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/papers/"><span class="card-category-list-name">papers</span><span class="card-category-list-count">45</span></a></li>
+            </ul></div><div class="card-widget card-tags"><div class="item-headline"><i class="fas fa-tags"></i><span>Tags</span></div><div class="card-tag-cloud"><a href="/tags/agentic-search/" style="font-size: 1.1em; color: #999">agentic_search</a> <a href="/tags/unix/" style="font-size: 1.14em; color: #999b9d">unix</a> <a href="/tags/jvm/" style="font-size: 1.1em; color: #999">jvm</a> <a href="/tags/acpi/" style="font-size: 1.1em; color: #999">acpi</a> <a href="/tags/os/" style="font-size: 1.1em; color: #999">os</a> <a href="/tags/transformer/" style="font-size: 1.18em; color: #999ca1">transformer</a> <a href="/tags/llm-agent/" style="font-size: 1.1em; color: #999">llm_agent</a> <a href="/tags/llm-inference/" style="font-size: 1.26em; color: #999fa8">llm_inference</a> <a href="/tags/context-engineering/" style="font-size: 1.1em; color: #999">context_engineering</a> <a href="/tags/llm/" style="font-size: 1.3em; color: #99a1ac">llm</a> <a href="/tags/vllm/" style="font-size: 1.1em; color: #999">vllm</a> <a href="/tags/java/" style="font-size: 1.1em; color: #999">java</a> <a href="/tags/rca/" style="font-size: 1.14em; color: #999b9d">rca</a> <a href="/tags/edge-inference/" style="font-size: 1.1em; color: #999">edge_inference</a> <a href="/tags/agentsys/" style="font-size: 1.3em; color: #99a1ac">agentsys</a> <a href="/tags/distributed-sys/" style="font-size: 1.5em; color: #99a9bf">distributed_sys</a> <a href="/tags/log-analysis/" style="font-size: 1.1em; color: #999">log_analysis</a> <a href="/tags/mlsys/" style="font-size: 1.38em; color: #99a4b4">mlsys</a> <a href="/tags/probability/" style="font-size: 1.1em; color: #999">probability</a> <a href="/tags/memory-management/" style="font-size: 1.18em; color: #999ca1">memory_management</a> <a href="/tags/virtual-machine/" style="font-size: 1.22em; color: #999ea4">virtual_machine</a> <a href="/tags/queueing/" style="font-size: 1.1em; color: #999">queueing</a> <a href="/tags/container/" style="font-size: 1.14em; color: #999b9d">container</a> <a href="/tags/cyber-security/" style="font-size: 1.34em; color: #99a3b0">cyber_security</a> <a href="/tags/computer-composition/" style="font-size: 1.46em; color: #99a7bb">computer_composition</a> <a href="/tags/algorithm/" style="font-size: 1.42em; color: #99a6b7">algorithm</a> <a href="/tags/Chubby/" style="font-size: 1.1em; color: #999">Chubby</a> <a href="/tags/hallucination/" style="font-size: 1.1em; color: #999">hallucination</a> <a href="/tags/decoding/" style="font-size: 1.1em; color: #999">decoding</a> <a href="/tags/p-np/" style="font-size: 1.14em; color: #999b9d">p_np</a> <a href="/tags/docker/" style="font-size: 1.1em; color: #999">docker</a> <a href="/tags/safety/" style="font-size: 1.1em; color: #999">safety</a> <a href="/tags/gc/" style="font-size: 1.1em; color: #999">gc</a> <a href="/tags/linear-attention/" style="font-size: 1.1em; color: #999">linear_attention</a> <a href="/tags/icmp/" style="font-size: 1.1em; color: #999">icmp</a> <a href="/tags/reasoning/" style="font-size: 1.14em; color: #999b9d">reasoning</a> <a href="/tags/go/" style="font-size: 1.1em; color: #999">go</a> <a href="/tags/self-improvement/" style="font-size: 1.1em; color: #999">self_improvement</a> <a href="/tags/kvcache/" style="font-size: 1.14em; color: #999b9d">kvcache</a> <a href="/tags/pl/" style="font-size: 1.1em; color: #999">pl</a></div></div><div class="card-widget card-archives"><div class="item-headline"><i class="fas fa-archive"></i><span>Archives</span><a class="card-more-btn" href="/archives/" title="View More">
+    <i class="fas fa-angle-right"></i></a></div><ul class="card-archive-list"><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2026/09/"><span class="card-archive-list-date">September 2026</span><span class="card-archive-list-count">4</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2026/07/"><span class="card-archive-list-date">July 2026</span><span class="card-archive-list-count">11</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2026/06/"><span class="card-archive-list-date">June 2026</span><span class="card-archive-list-count">6</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2026/05/"><span class="card-archive-list-date">May 2026</span><span class="card-archive-list-count">12</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2026/04/"><span class="card-archive-list-date">April 2026</span><span class="card-archive-list-count">3</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2026/03/"><span class="card-archive-list-date">March 2026</span><span class="card-archive-list-count">2</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2026/01/"><span class="card-archive-list-date">January 2026</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2025/12/"><span class="card-archive-list-date">December 2025</span><span class="card-archive-list-count">4</span></a></li></ul></div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>Info</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">Article :</div><div class="item-count">134</div></div><div class="webinfo-item"><div class="item-name">UV :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">PV :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2026-10-19T20:14:42.838Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2026 By Yuchen You (Wesley)</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">welcome to my blog!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>window.typedJSFn = {
   init: (str) => {
     window.typed = new Typed('#subtitle', Object.assign({
       strings: str,

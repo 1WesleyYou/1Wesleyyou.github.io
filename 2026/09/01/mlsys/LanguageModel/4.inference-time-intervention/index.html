@@ -1,0 +1,551 @@
+<!DOCTYPE html><html lang="en-US" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>4. Inference-Time Intervention (Steering 与 Rollback) | Yuchen You</title><meta name="author" content="Yuchen You (Wesley)"><meta name="copyright" content="Yuchen You (Wesley)"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="模型生成到一半被发现越狱了, 或者被发现在编事实。这一刻你能做什么? 这份笔记把&quot;检测之后的动作&quot;整理成八类, 梳理 steering 和 rollback 两条主线的谱系、当前 SOTA 和还没被解决的问题。文献覆盖 2023.06 – 2026.08, 约 60 篇。  分类学是我为回答这个问题归纳的, 不是文献里的既有共识。要写进 related work 的话, 建议把">
+<meta property="og:type" content="article">
+<meta property="og:title" content="4. Inference-Time Intervention (Steering 与 Rollback)">
+<meta property="og:url" content="http://example.com/2026/09/01/mlsys/LanguageModel/4.inference-time-intervention/index.html">
+<meta property="og:site_name" content="Yuchen You">
+<meta property="og:description" content="模型生成到一半被发现越狱了, 或者被发现在编事实。这一刻你能做什么? 这份笔记把&quot;检测之后的动作&quot;整理成八类, 梳理 steering 和 rollback 两条主线的谱系、当前 SOTA 和还没被解决的问题。文献覆盖 2023.06 – 2026.08, 约 60 篇。  分类学是我为回答这个问题归纳的, 不是文献里的既有共识。要写进 related work 的话, 建议把">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/img/me_new.jpeg">
+<meta property="article:published_time" content="2026-09-01T02:00:00.000Z">
+<meta property="article:modified_time" content="2026-09-03T00:47:39.065Z">
+<meta property="article:author" content="Yuchen You (Wesley)">
+<meta property="article:tag" content="llm">
+<meta property="article:tag" content="mlsys">
+<meta property="article:tag" content="safety">
+<meta property="article:tag" content="hallucination">
+<meta property="article:tag" content="steering">
+<meta property="article:tag" content="rollback">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/me_new.jpeg"><link rel="shortcut icon" href="/img/hackerrank.svg"><link rel="canonical" href="http://example.com/2026/09/01/mlsys/LanguageModel/4.inference-time-intervention/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '4. Inference-Time Intervention (Steering 与 Rollback)',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-09-03 08:47:39'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 7.2.0"><link href="https://cdn.bootcss.com/KaTeX/0.11.1/katex.min.css" rel="stylesheet" />
+<style>
+.obsidian-callout { margin: 1em 0; }
+.obsidian-callout blockquote { border-left: none; margin: 0; padding: 0; background: transparent; }
+.obsidian-callout p { margin: 0.4em 0; }
+.obsidian-callout details > summary { list-style: none; }
+.obsidian-callout details > summary::-webkit-details-marker { display: none; }
+</style></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/me_new.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">134</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">78</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">2</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/math_master.jpeg')"><nav id="nav"><span id="blog-info"><a href="/" title="Yuchen You"><img class="site-icon" src="/img/avatar.png"/><span class="site-name">Yuchen You</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> Search</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">4. Inference-Time Intervention (Steering 与 Rollback)</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2026-09-01T02:00:00.000Z" title="Created 2026-09-01 10:00:00">2026-09-01</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-09-03T00:47:39.065Z" title="Updated 2026-09-03 08:47:39">2026-09-03</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/papers/">papers</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="4. Inference-Time Intervention (Steering 与 Rollback)"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p>模型生成到一半被发现越狱了, 或者被发现在编事实。这一刻你能做什么?</p>
+<p>这份笔记把&quot;检测之后的动作&quot;整理成八类, 梳理 steering 和 rollback 两条主线的谱系、当前 SOTA 和还没被解决的问题。文献覆盖 2023.06 – 2026.08, 约 60 篇。</p>
+<blockquote>
+<p>分类学是我为回答这个问题归纳的, 不是文献里的既有共识。要写进 related work 的话, 建议把 A1/A2 合并成 “continuous intervention”, A4/A5/A6 合并成 “generative rollback”, 更接近现有说法。</p>
+</blockquote>
+<h2 id="1-先把术语对齐">1. 先把术语对齐</h2>
+<p>这两个词在文献里各有好几个名字, 而且它们不是并列关系, 是同一个闭环里的两种不同动作。</p>
+<p><strong>Steering</strong> 的正式说法主要有三个:</p>
+<ul>
+<li><em>activation steering</em> / <em>activation addition</em>: 往残差流里加一个方向向量</li>
+<li><em>representation engineering (RepE)</em>: 把这件事当成一个研究纲领</li>
+<li><em>inference-time intervention (ITI)</em>: 特指在选中的 attention head 上做位移</li>
+</ul>
+<p>它们共享同一个假设: 高层概念在激活空间里近似是线性方向, 所以&quot;诚实一点&quot;&quot;少说有害内容&quot;可以写成一个向量加法。它是<strong>连续的、不丢 token 的</strong>干预。</p>
+<p><strong>Rollback</strong> 的正式说法更散: <em>backtracking</em>, <em>rewind</em>, <em>backspace</em>, <em>[RESET] token</em>, <em>self-backtracking</em>, <em>revision</em>。共同点是<strong>离散的、要丢弃已生成 token 的</strong>干预: 承认前面那几个 token 走错了, 把它们扔掉, 从某个点重新解码。</p>
+<p>关键的一点: <strong>这两个词描述的是 action, 不是完整方案。</strong> 任何能上线的系统都是 <code>detect -&gt; decide -&gt; act</code> 三段。绝大多数论文只在其中一段做创新, 然后把另外两段固定成最简单的形式, 这导致文献看起来很碎。按这三段重新摆一遍, 地图就清楚了。</p>
+<h2 id="2-统一框架-三个问题">2. 统一框架: 三个问题</h2>
+<p>读任何一篇这个方向的论文, 只问三件事, 就能定位它在地图上的坐标。</p>
+<h3 id="2-1-在生成的哪个时刻介入">2.1 在生成的哪个时刻介入</h3>
+<p>从早到晚: 输入侧 (prompt 分类器) -&gt; prefill 完成时 (读第一批 hidden state) -&gt; 每个 decode step (逐 token 探针) -&gt; 句子/chunk 边界 (验证一句再放行) -&gt; 完整输出之后 (post-hoc 重写) -&gt; agent 提交动作之前 (发邮件、合 PR、转账那一刻的 gate)。</p>
+<p>越早介入越便宜, 越晚介入信息越全。这条轴决定了你付多少延迟。</p>
+<h3 id="2-2-用什么信号判定-出事了">2.2 用什么信号判定&quot;出事了&quot;</h3>
+<ul>
+<li><strong>输出分布类</strong>: token 熵、logit gap、semantic entropy (Farquhar 等, Nature 2024, 把语义等价的回答聚类后再算熵), semantic entropy probes</li>
+<li><strong>内部表征类</strong>: 线性探针读 hidden state。目前最主流也最便宜 —— refusal 方向 (Arditi 等 2024, 拒答由一个低维子空间中介), 逐 token 幻觉探针 (Obeso, Arditi, Ferrando, Nanda 等 2025, 把幻觉标注到实体级从而对齐到 token, 可流式跑, 扩到 70B)</li>
+<li><strong>注意力类</strong>: Lookback Lens (EMNLP 2024) 只用 attention map, 算&quot;看上下文 vs 看自己刚生成的内容&quot;的比值, 线性分类器就能测出上下文幻觉, 探针能从 7B 直接迁到 13B</li>
+<li><strong>外部裁判类</strong>: Llama Guard 这类 moderation 模型, Anthropic 的 constitutional classifiers, 检索验证, 或者让模型自评</li>
+<li><strong>轨迹类</strong> (2026 年新趋势): 不看单点, 看 hidden state 在时间上的走向。TrajGuard 发现 decode 阶段的 hidden state 会<em>逐步逼近</em>潜空间里的高风险区域, 滑窗聚合比看输入 prompt 稳得多</li>
+</ul>
+<h3 id="2-3-判定之后做什么">2.3 判定之后做什么</h3>
+<p>这才是核心。同一个检测信号, 在同一个时刻触发, 三种动作对 token 流做的事完全不同, 而且<strong>它们对&quot;检测延迟&quot;的容忍度完全不同</strong>。这一点在文献里几乎没被摆到台面上讲, 但它决定了系统能不能落地。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">                             越界发生         探针告警</span><br><span class="line">                                v                v</span><br><span class="line">decode t --&gt;  [ ][ ][ ][ ][ ][ ][x][x][x][ ][ ][ ][ ][ ]</span><br><span class="line">                                |&lt;-- delay d --&gt;|</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">STEER      [ ][ ][ ][ ][ ][ ][x][x][x][S][S][S][S][S]</span><br><span class="line">            \___ 正常 ___/     \_ 越界 _/ \___ 从这里起改写前向计算 ___/</span><br><span class="line">                                   |          一个 token 都不丢</span><br><span class="line">                                   +--&gt; 这几个已经定型, 永久追不回来</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">ROLLBACK   [ ][ ][ ][ ][ ][ ][~][~][~]</span><br><span class="line">                            \__ rewind k, 截断 KV __</span><br><span class="line">                                                    v</span><br><span class="line">                      [ ][R][R][R][R][R][R][R][R][R][R]</span><br><span class="line">                       \___ 越界段被真的抹掉, 代价是重算 ___/</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">BLOCK      [ ][ ][ ][ ][ ][ ][x][x][x] || 停止解码</span><br><span class="line">            \______ 流式下这一整段已经到用户屏幕上了 ______/</span><br><span class="line">                    要真挡住, 必须先缓冲 k &gt;= d 个 token</span><br></pre></td></tr></table></figure>
+<p><code>[ ]</code> 正常 token, <code>[x]</code> 越界 token, <code>[~]</code> 被丢弃, <code>[S]/[R]</code> 干预后重新产出。</p>
+<p>注意最左边那段 <code>detection delay d</code>: 它对 steering 是<strong>永久损失</strong>, 对 rollback 只是<strong>重算开销</strong>, 对 block 则决定了<strong>流式输出必须缓冲多深</strong>。</p>
+<h2 id="3-动作空间-八类-action">3. 动作空间: 八类 action</h2>
+<p>按介入成本从低到高排。族系标记: <code>[S]</code> 连续干预 / <code>[R]</code> 离散回退 / <code>[X]</code> 终止与结构性。</p>
+<h3 id="a1-s-steer-激活空间干预">A1 <code>[S]</code> Steer - 激活空间干预</h3>
+<p>在残差流或某几个 attention head 上加一个方向向量, 不动权重, 不丢 token。</p>
+<ul>
+<li>ITI (Li 等 2023): 在探针精度高的 head 上沿&quot;真实性方向&quot;位移</li>
+<li>CAA (Rimsky 等 2023): 用正负样本的激活均值差直接构造向量</li>
+<li>RepE (Zou 等 2023): 把这套做法系统化</li>
+</ul>
+<p>优点是延迟几乎为零, 可微调强度。缺点是越界的那 d 个 token 追不回来, 而且 (见 §4) 它比大家以为的脆弱得多。</p>
+<h3 id="a2-s-reweight-解码分布重加权">A2 <code>[S]</code> Reweight - 解码分布重加权</h3>
+<p>不碰激活, 只改 next-token 分布。</p>
+<ul>
+<li>SafeDecoding (ACL 2024): 训一个&quot;安全专家&quot;模型, 把安全免责声明类 token 的概率放大、把越狱目标 token 压下去</li>
+<li>DoLa: 用早晚层 logit 对比放大事实性</li>
+<li>TruthX: 在&quot;真实空间&quot;里编辑表征</li>
+<li>ShieldHead: 直接在输出层挂一个 token 级安全头做剪枝</li>
+</ul>
+<p>和 A1 的区别是干预点: A1 改的是算出 logit 的过程, A2 改的是算完之后的分布。工程上 A2 更好挂, 因为只要一个 logits processor。</p>
+<h3 id="a3-s-selective-steer-只在必要时干预">A3 <code>[S]</code> Selective steer - 只在必要时干预</h3>
+<p>A1/A2 的通病是<em>无差别干预</em>: 本来就安全的回答也被改坏了。这一族专门解决它。</p>
+<ul>
+<li>CAST (条件激活干预): 按上下文开关</li>
+<li>AlphaSteer (ICLR 2026): 把变换矩阵约束在良性激活的零空间里, 良性输入上向量近似为零, 恶意输入上才回归出拒答方向</li>
+<li>Value-Filtered Decoding (Gal, Romano 等 2026): 给&quot;误干预概率&quot;一个显式上界, 一个阈值超参就能调 safety 和 helpfulness 的交换率</li>
+</ul>
+<p>这条线是目前最健康的方向: 它承认了 over-intervention 是真实成本, 而不是只报 ASR 下降。</p>
+<h3 id="a4-r-rollback-token-级回退重生成">A4 <code>[R]</code> Rollback - token 级回退重生成</h3>
+<p>核心动作。三个代表:</p>
+<ul>
+<li><strong>RAIN</strong> (ICLR 2024): 完全 training-free, 在前向生成和后向 rewind 之间来回切, 中间插一次自评。LLaMA-30B 无害率 82% -&gt; 97%</li>
+<li><strong>Backtracking</strong> (Zhang 等, ICLR 2025): 训练模型自己吐一个 <code>[RESET]</code> token, 之后重新生成, 返回给用户时把 RESET 之前的全丢掉。但那段不安全前缀<strong>留在 context 里</strong>帮模型知道该避开什么。Llama-3-8B 攻击成功率 6.1% -&gt; 1.5%</li>
+<li><strong>FASB</strong> (NeurIPS 2025): 把 A3 和 A4 缝在一起, 检测到偏离就退回几个 token, 再带着自适应强度的 steering 重新生成</li>
+</ul>
+<p>这一族最关键的洞察来自 FASB 那句话: <em>检测到偏离之后才干预往往已经太晚</em> —— 所以必须能撤回。</p>
+<h3 id="a5-r-verify-and-revise-句子-chunk-级验证重写">A5 <code>[R]</code> Verify-and-revise - 句子/chunk 级验证重写</h3>
+<p>不逐 token, 而是生成一句 (或一个 chunk) 就验一次, 不合格就重写这一句再续。</p>
+<ul>
+<li>EVER: 对付&quot;雪球效应&quot; —— 早期的一个小错会在后文被不断放大, 所以必须当场纠正而不是等全文写完</li>
+<li>Lookback Lens Guided Decoding: 采样多个 chunk 候选, 用注意力探针打分选最不像幻觉的那个。XSum 上把上下文幻觉降了 9.6%</li>
+<li>ABack (ACL 2026 Findings): 在 RAG 里做企业隐私保护, 边生成边前瞻几个 token, 判断马上要泄露就回退改写意图</li>
+</ul>
+<p>相比 A4, 语义边界更自然 (人类也是按句改), 但延迟抖动更大。</p>
+<h3 id="a6-r-search-resample-树搜索与重采样">A6 <code>[R]</code> Search / resample - 树搜索与重采样</h3>
+<p>把回退推广成搜索。</p>
+<ul>
+<li>Self-Backtracking (2025): 让模型学会&quot;何时、何处&quot;回退, 再用基于回退能力的树搜索在推理时探索备选解。Llama3.2-1B 上提了约 40%</li>
+<li>Thought Anchors (ICLR 2026): 反过来用重采样做归因 —— 从某一句重新采样多条轨迹, 看最终答案分布变化多大, 从而找出真正扛事的推理步</li>
+<li>RLVR 相关工作: 证明 RL 比 SFT 更容易学到&quot;高效回退&quot;</li>
+</ul>
+<p>警告: <em>To Backtrack or Not to Backtrack</em> (2025) 发现顺序搜索有时反而<strong>限制</strong>推理表现。回退不是免费的。</p>
+<h3 id="a7-escalate-换一条信息通路">A7 Escalate - 换一条信息通路</h3>
+<p>判定&quot;我不知道&quot;之后, 不是自己硬编, 而是去拿证据。</p>
+<ul>
+<li>FLARE: 监控 token 置信度, 低了就把不确定的部分 mask 掉当查询去检索</li>
+<li>Self-RAG: 训练模型吐 <code>[Retrieve]</code> / <code>[IsSupported]</code> 这类反思 token 自己决定要不要检索</li>
+<li>CRAG: 挂一个轻量检索评估器, 检索质量不够就触发 web search 兜底</li>
+</ul>
+<p>往上还有: 调工具、升级到更强的模型、转人工。这一族在幻觉场景比在越狱场景重要得多, 因为幻觉的根因常常就是缺信息。</p>
+<h3 id="a8-x-halt-abstain-结构性修复">A8 <code>[X]</code> Halt / Abstain / 结构性修复</h3>
+<p>三个层次。</p>
+<p><strong>停</strong>: Anthropic 的 constitutional classifiers 用流式输出分类器, 每个 token 都能判整段输出的潜在危害, 检测到就立刻中断。3000+ 小时红队没找到通用越狱, 代价是过拒率 +0.38%、推理开销 +23.7%。TrajGuard (2026) 的滑窗轨迹检测器把这个开销压到 5.2 ms/token, 误报率 &lt; 1.5%。</p>
+<p><strong>弃权</strong>: 直接说不知道, 或者显式表达不确定性。</p>
+<p><strong>结构性修复</strong>: 不在推理期解决, 而是改权重。Circuit Breakers (Zou 等, NeurIPS 2024) 用 LoRA 把有害表征重路由到与原表征正交的空间; persona vectors (Anthropic 2025) 更狠, 在<em>微调的每一步</em>注入抑制向量做预防性 steering, 从源头挡住人格漂移。</p>
+<p>A8 是唯一能给出硬保证的一族, 也是唯一必然牺牲可用性的一族。</p>
+<h3 id="一句话记住这张表">一句话记住这张表</h3>
+<p>A1–A3 改的是&quot;接下来怎么说&quot;, A4–A6 改的是&quot;刚才说过的话&quot;, A7 改的是&quot;我凭什么说&quot;, A8 改的是&quot;要不要说 / 还能不能说&quot;。</p>
+<p>真实系统一般是 <strong>A3 + A4 + A8</strong> 的组合: 便宜的连续干预兜住大部分, 回退处理漏网的, 分类器做最后一道硬闸。</p>
+<h2 id="4-steering-谱系-以及它比你想的脆">4. Steering 谱系, 以及它比你想的脆</h2>
+<h3 id="4-1-四代方法">4.1 四代方法</h3>
+<table>
+<thead>
+<tr>
+<th>代际</th>
+<th>做法</th>
+<th>代表</th>
+<th>解决的问题</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G1 静态</td>
+<td>正负样本激活均值差, 固定强度全程加</td>
+<td>ITI, CAA, RepE</td>
+<td>证明&quot;概念是线性方向&quot;可用</td>
+</tr>
+<tr>
+<td>G2 条件</td>
+<td>按输入/上下文决定开不开、加多强</td>
+<td>CAST, SADI, 动态 steering vector</td>
+<td>无差别干预伤害良性输入</td>
+</tr>
+<tr>
+<td>G3 学习</td>
+<td>把 steering 当成有约束的学习问题</td>
+<td>AlphaSteer (零空间约束), Value-Filtered Decoding (误干预上界)</td>
+<td>安全和效用的交换率没有理论保证</td>
+</tr>
+<tr>
+<td>G4 稀疏</td>
+<td>在 SAE 特征空间而非稠密激活空间干预</td>
+<td>CC-Delta, REINS, GSAE</td>
+<td>稠密方向纠缠了太多无关概念</td>
+</tr>
+</tbody>
+</table>
+<p>两条正交支线:</p>
+<ul>
+<li><strong>时机维度</strong>: persona vectors 做的是<em>训练期</em>预防性 steering, 不是推理期</li>
+<li><strong>控制维度</strong>: COMPASS (2025) 干脆把注意力调制写成一个 PID 控制器; Chain of Risk (2026) 给每条安全原则学一个 unsafe-&gt;safe 方向, 只激活当前隐状态更靠近 unsafe 质心的那几个</li>
+</ul>
+<p>控制论的语言正在渗进来。</p>
+<h3 id="4-2-四个已证实的失效模式">4.2 四个已证实的失效模式</h3>
+<p><strong>1. 随机方向就能越狱。</strong> The Rogue Scalpel (2025) 发现往随机方向 steer 能把有害顺从率从 0% 推到 2–27%; 从 SAE 里取的 1000 个<em>良性</em>特征里有 817 个具备越狱能力; 把 20 个能攻破单条 prompt 的随机向量组合起来就成了对未见请求也有效的通用攻击。作者结论很尖锐: 对模型内部的精确控制, 并不等于对模型行为的精确控制。</p>
+<p><strong>2. 干预可以被&quot;恢复&quot;。</strong> SAE Interventions are Unreliable (2026) 把这件事形式化成一个残差空间优化问题: 从干预后的状态出发, 在保持被 clamp 特征取值不变的前提下扰动残差, 就能把被压住的行为找回来。在拒答 steering 这个安全关键场景上, 恢复成功率 <strong>95.8%</strong>。clamp 挡住的只是&quot;一条可见的路&quot;, 不是行为本身。</p>
+<p><strong>3. 探针可以被绕过。</strong> Obfuscated Activations (ICLR 2026) 对着 harmfulness 探针优化, 把 monitor 的 recall 从 100% 打到 <strong>0%</strong>, 同时保持 90% 的越狱成功率, SAE、表征探针、潜空间 OOD 检测全中招。唯一好消息是有&quot;混淆税&quot;: 在写 SQL 这种复杂任务上, 躲监控会让模型变笨; 而且基于生成过程的探针比基于输入的探针更难骗。</p>
+<p><strong>4. 副作用普遍存在但可以提前预测。</strong> SAE steering 的副作用可以沿两个轴刻画 —— 效果稳定性 (跨上下文一致吗) 和附带扩散 (扰动了多少无关特征)。2026 年的工作显示这些副作用能从干预前的特征统计量预测出来, 但预测得准的那个轴随模型而变, 还不是能直接用的工程结论。</p>
+<h2 id="5-rollback-谱系-以及没人算过的账">5. Rollback 谱系, 以及没人算过的账</h2>
+<h3 id="5-1-按粒度和触发方式分">5.1 按粒度和触发方式分</h3>
+<table>
+<thead>
+<tr>
+<th>粒度</th>
+<th>怎么触发</th>
+<th>代表</th>
+<th>典型收益</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>整段重启</td>
+<td>模型自己发 <code>[RESET]</code> (需训练)</td>
+<td>Backtracking, ICLR 2025</td>
+<td>ASR 6.1% -&gt; 1.5%</td>
+</tr>
+<tr>
+<td>token 组</td>
+<td>自评打分后 rewind (training-free)</td>
+<td>RAIN, ICLR 2024</td>
+<td>无害率 82% -&gt; 97%</td>
+</tr>
+<tr>
+<td>k 个 token</td>
+<td>逐 token 探针检测到偏离</td>
+<td>FASB, NeurIPS 2025</td>
+<td>TruthfulQA 超基线</td>
+</tr>
+<tr>
+<td>句子</td>
+<td>生成一句就验证一句</td>
+<td>EVER</td>
+<td>抑制雪球效应</td>
+</tr>
+<tr>
+<td>chunk</td>
+<td>采样多候选, 探针选优</td>
+<td>Lookback Lens</td>
+<td>XSum 幻觉 -9.6%</td>
+</tr>
+<tr>
+<td>实体前瞻</td>
+<td>命中敏感实体后前瞻几步</td>
+<td>ABack, ACL 2026</td>
+<td>综合分 +15%</td>
+</tr>
+<tr>
+<td>推理步</td>
+<td>学到的 backtrack token + 树搜索</td>
+<td>Self-Backtracking</td>
+<td>1B 模型 +40%</td>
+</tr>
+</tbody>
+</table>
+<h3 id="5-2-训练-vs-免训练-是这一族的主要分岔">5.2 训练 vs 免训练, 是这一族的主要分岔</h3>
+<p>免训练路线 (RAIN, EVER, ABack, Lookback Lens) 的好处是能套在任何 checkpoint 上, 坏处是要么依赖模型自评 —— 而<strong>自评本身是不可靠的</strong> —— 要么依赖外部验证器, 延迟不可控。</p>
+<p>Huang 等 (ICLR 2024) 那篇经典结果值得反复引用: 在没有 oracle 反馈的条件下, GPT-3.5 只改对了 7.6% 的错误回答, 同时把 8.8% 本来对的改错了。<strong>净负。</strong></p>
+<p>所以任何把 A4/A5 建在&quot;让模型自己检查一遍&quot;上的方案, 都要先证明它的检测器比模型的自我判断强。</p>
+<p>训练路线 (<code>[RESET]</code> token, self-backtracking) 把回退变成模型的原生能力, 检测和动作合一, 延迟最低。代价是要重新训, 而且回退能力会不会被后续微调洗掉, 目前没人系统研究过。</p>
+<h3 id="5-3-被系统性忽略的一笔账-回退到底多贵">5.3 被系统性忽略的一笔账: 回退到底多贵</h3>
+<p>几乎所有 rollback 论文报的都是 accuracy / ASR, 没有一篇报 TTFT 退化或吞吐损失。</p>
+<p>但从 serving 角度看, 回退 k 个 token 意味着: 截断 KV cache 的尾部 (这一步本身便宜), 但如果回退点跨了 chunk 边界或触发了重新 prefill, 成本就跳一个量级; 而在连续批处理的调度器里, 一个请求的回退会挤掉别人的 slot。已有的抢占研究说明这类&quot;丢弃已生成 token 再重算&quot;的开销是实打实的。</p>
+<p><strong>这是 safety 社区和 systems 社区之间一条没人走的桥。</strong></p>
+<h2 id="6-jailbreak-和-hallucination-看起来同构-其实不是">6. Jailbreak 和 Hallucination: 看起来同构, 其实不是</h2>
+<p>它们共享同一套 detect-decide-act 骨架, 但底下的假设差别很大, 直接照搬方案会踩坑。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Safety / jailbreak</th>
+<th>Hallucination</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>对手模型</td>
+<td>有主动对抗方, 会针对你的探针优化</td>
+<td>无对手, 是模型的能力/知识边界问题</td>
+</tr>
+<tr>
+<td>ground truth</td>
+<td>相对清晰 (策略 + 红队标注)</td>
+<td>昂贵且常常不可判定, 要靠检索或人工核对</td>
+</tr>
+<tr>
+<td>最好用的信号</td>
+<td>hidden state / refusal 方向, decode 轨迹</td>
+<td>语义熵、注意力回看比、实体级探针</td>
+</tr>
+<tr>
+<td>主导动作</td>
+<td>A8 停 + A3 选择性 steer</td>
+<td>A5 验证重写 + A7 检索 + 弃权</td>
+</tr>
+<tr>
+<td>误报的代价</td>
+<td>过度拒答, 用户体验受损但可接受</td>
+<td>不必要地打断/重写, 直接伤害流畅性和风格</td>
+</tr>
+<tr>
+<td>漏报的代价</td>
+<td>可能是灾难性且不可逆的</td>
+<td>通常可通过后续澄清补救</td>
+</tr>
+<tr>
+<td>因此的取舍</td>
+<td>宁可多拦 (但见下面的反例)</td>
+<td>宁可少打断, 干预必须&quot;选择性&quot;</td>
+</tr>
+</tbody>
+</table>
+<p>反直觉的一点: 在 <strong>agent</strong> 场景里, &quot;宁可多拦&quot;这个直觉是错的。</p>
+<p>SteerBench-Work (2026, 106 个源自真实事故的场景, 30 个模型配置) 测的是 agent 提交动作前的 gate 决策, 结果几乎单向: 模型<strong>错误拦下已被证据澄清的合法工作占 28.1%, 而错误放行不安全动作只占 1.0%</strong>。最难的恰恰是&quot;风险已被签名证据解除&quot;的提交。</p>
+<p>更有意思的是, 模型在著名事故本身上得分 98.5%, 但在证据被反转的镜像版本上只有 63.8% —— 说明它在<em>认模式</em>而不是<em>读证据</em>。</p>
+<h2 id="7-前沿在哪-2025-下半-2026">7. 前沿在哪 (2025 下半 – 2026)</h2>
+<p>如果只跟五条线, 跟这五条。</p>
+<p><strong>1. 从&quot;要不要干预&quot;到&quot;干预多少, 且误干预概率有上界&quot;</strong><br>
+AlphaSteer 用零空间约束保证良性输入上的干预近似为零; Value-Filtered Decoding 给出显式的 false-intervention 概率界。这是这个领域第一次有<strong>可证明的取舍旋钮</strong>, 而不是调超参看曲线。</p>
+<p><strong>2. 从&quot;点检测&quot;到&quot;轨迹检测&quot;, 以及延迟被正式当成指标</strong><br>
+TrajGuard 把 decode 期的 hidden state 序列当轨迹看, 滑窗累积风险, 12 种攻击平均防御率 95%, 5.2 ms/token。</p>
+<p>更根本的一步是 Quickest Detection of Hallucination Onset (2026): 它指出 <strong>token 级检测器一直被当分类器用 AUC 评, 但流式监控真正的指标是反应延迟</strong> —— 从幻觉开始到告警之间漏出去多少个 token。这篇把它形式化成变点检测, 给出 Lorden 下界约 <strong>1.3 个 token</strong> (误报率 0.01), 而现实中最好的学习型检测器要 <strong>11–13 个 token</strong>, 线性逐 token 基线要 <strong>31 个</strong>。</p>
+<p>这个数量级的 gap 就是 §2.3 那张图里的 <code>d</code>。</p>
+<p><strong>3. 干预的对偶性: 防御方的工具就是攻击方的工具</strong><br>
+Rogue Scalpel、Obfuscated Activations、SAE 恢复攻击这三篇放在一起看, 讲的是同一件事: 这套动作空间是双向的。任何&quot;我能在推理期改变模型行为&quot;的能力, 都同时是攻击面。2026 年开始有人正面研究这个对偶性 (包括&quot;检测自己是否正在被 steer&quot;这种题目), 但还很早期。</p>
+<p><strong>4. 推理模型改变了时间轴</strong><br>
+Chain of Risk (2026) 在 41K prompt × 15 个开源/API 推理模型上发现两类高危分阶段失效: <em>leak</em> (推理过程不安全但最终答案看起来安全) 和 <em>escape</em> (推理看起来良性但最终答案不安全)。只看最终答案是不够的。</p>
+<p>但在 thinking 段做干预有两个新代价: 一是可能伤推理能力 (顺序搜索有时反而更差), 二是会破坏 CoT 的<strong>可监控性</strong> —— 而 CoT monitorability 本身被认为是一个&quot;新的且脆弱的&quot;安全机会。</p>
+<p><strong>5. 干预层从 token 上移到 agent 的动作边界</strong><br>
+AgentSpec 这类工作把运行时约束形式化成可定制的策略; AgentTrust 在工具调用边界做 allow/warn/block 裁决并把 block 反馈回去让 agent 改计划; 也有工作开始讨论 AI 组件的生命周期兼容性检查与回滚。这一层的动作语义和 token 层完全不同, 见 G6。</p>
+<h2 id="8-缺口">8. 缺口</h2>
+<p>按我的判断排序, 上面的更值得做。</p>
+<h3 id="g1-没有人研究-动作选择-本身">G1 没有人研究&quot;动作选择&quot;本身</h3>
+<p>现在的范式是: 一篇论文挑一个动作 (steer / rollback / block), 然后在自己的 benchmark 上打榜。但真实系统面对的问题是 —— 给定检测器的置信度、剩余延迟预算、已输出的 token 数、任务类型, <strong>应该选哪个动作</strong>?</p>
+<p>这是一个成本敏感的策略问题, 目前完全空白。没有统一的 action cost model, 没有 action-selection policy, 甚至没有一个把多个动作放在同一坐标系里比较的框架。这是我认为最大也最容易切入的口子。</p>
+<h3 id="g2-检测器的-ood-泛化是整条链的天花板-但被严重高估">G2 检测器的 OOD 泛化是整条链的天花板, 但被严重高估</h3>
+<p>representation-based 的幻觉检测器在 RAGTruth 上的 SOTA 表现<strong>主要由一个和数据的伪相关驱动</strong>; 控制掉这个效应之后, 它们并不比一个有监督线性探针强, 而所有方法的 OOD 表现都接近随机 (Samsung AI Warsaw, 2025)。</p>
+<p>同时 obfuscated activations 说明面对主动对抗时探针可以被打到 recall 0。所有 action 都建在 detect 上, 而 detect 的鲁棒性评估几乎全是 in-distribution 的。</p>
+<h3 id="g3-延迟这个维度刚刚才有人认真对待">G3 延迟这个维度刚刚才有人认真对待</h3>
+<p>Quickest-detection 那篇把它形式化了, 但只是一篇单作者预印本, 而且只覆盖幻觉。整个领域仍然用 AUC / ASR 报结果, 没有标准做法去报&quot;从越界到动作生效漏了多少 token&quot;。</p>
+<p>而这个数字恰恰决定了哪些动作可用: <code>d</code> 大的时候 steering 基本没意义, 只能用 rollback 或缓冲式 block。</p>
+<h3 id="g4-回退的系统开销没有被建模">G4 回退的系统开销没有被建模</h3>
+<p>没有一篇 rollback 论文报 KV cache 截断成本、重新 prefill 的概率、连续批处理下的调度影响, 或者端到端 TTFT/TPOT 退化。Safety 社区在 HuggingFace <code>generate()</code> 里做实验, systems 社区在 vLLM/SGLang 里做实验, 两边没有交集。</p>
+<p><strong>做一个 rollback-aware 的推理引擎, 或者哪怕只是把现有 rollback 方法在真实 serving stack 上量一遍, 就是一篇扎实的 MLSys 论文。</strong></p>
+<h3 id="g5-过度干预是主导失效模式-却按次要指标处理">G5 过度干预是主导失效模式, 却按次要指标处理</h3>
+<p>SteerBench 的 28.1% vs 1.0% 说明在 agent 场景里, 假阳性比假阴性高一个数量级还多。但绝大多数论文的主指标仍是 ASR 下降, over-refusal 顶多在附录里放个 XSTest 数字。Value-Filtered Decoding 那种&quot;给误干预概率上界&quot;的思路应该成为标配而不是亮点。</p>
+<h3 id="g6-agent-层的-回滚-根本没有语义">G6 Agent 层的&quot;回滚&quot;根本没有语义</h3>
+<p>Token 级回滚的语义是干净的: 丢 KV, 重算。但 agent 已经把邮件发出去、把 PR 合了、把钱转了之后, &quot;回滚&quot;意味着<strong>补偿事务</strong>, 而不是撤销。</p>
+<p>分布式系统里这套东西 (saga, compensating transaction, 幂等键) 已经很成熟了, 但没人把它和 LLM 的 backtracking 接起来。现在的 agent guardrail 全是 pre-commit 的 gate, 因为 post-commit 根本无法处理。</p>
+<h3 id="g7-评测碎片化到无法横向比较">G7 评测碎片化到无法横向比较</h3>
+<p>没有任何一个 benchmark 同时测: 检测质量 + 动作质量 + 延迟 + 过度干预率 + 计算开销。结果是 steering 的论文和 rollback 的论文根本不在同一张表上出现过, 尽管它们解决的是同一个问题。</p>
+<h2 id="9-映射回-dmi-的-action-层">9. 映射回 DMI 的 Action 层</h2>
+<p>DMI 现在是 HookPoint + Ring² 的<strong>异步</strong>观测底座, 性能红利来自 decoupling, 下一步要做干预层。这份文献直接给出一个约束条件, 值得在动手之前就定下来。</p>
+<p><strong>核心张力</strong>: 异步换来了性能, 但也换掉了&quot;及时行动&quot;的能力。当 ring buffer 的消费端看到风险信号时, 前向计算已经往前跑了 <code>d</code> 个 token。而 §2.3 那张图说明, <code>d &gt; 0</code> 对三类动作的杀伤力完全不同。</p>
+<table>
+<thead>
+<tr>
+<th>动作族</th>
+<th>对 d 的容忍度</th>
+<th>异步底座能不能支持</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A1–A3 steer</td>
+<td>几乎为零, 必须和前向同步</td>
+<td><strong>不能</strong>。要支持就得在 HookPoint 里放同步旁路, 那正好抵消掉 decoupling 的收益</td>
+</tr>
+<tr>
+<td>A4–A6 rollback</td>
+<td>高。只要还没交付, d 大只是多丢几个 token</td>
+<td><strong>天然契合</strong>。异步检测 + 回退是这套架构的自然落点</td>
+</tr>
+<tr>
+<td>A8 halt</td>
+<td>取决于输出缓冲深度</td>
+<td><strong>能, 但需要输出侧缓冲 k &gt;= d 个 token</strong> (constitutional classifiers 的流式输出分类器就是这么做的)</td>
+</tr>
+</tbody>
+</table>
+<p>所以如果我来设计 DMI 的 action 层, 顺序会是: <strong>先做 A8 (带 k-token 输出缓冲的 halt), 再做 A4 (rollback), 最后才考虑要不要为 A3 开一条同步通道</strong>。理由是前两个能吃到 Ring² 的架构红利, 第三个会和它打架。</p>
+<p>另外有一个现成的、可以直接拿来当卖点的指标: 把 quickest-detection 那套 CUSUM 框架搬到 ring buffer 消费端, 就能<strong>把 d 变成一个可测量、可优化的系统指标</strong>, 而不是一个隐藏假设。目前没有任何一个观测框架报这个数。这既是 DMI 的差异化, 也正好命中 G3 和 G4。</p>
+<h2 id="10-读法建议">10. 读法建议</h2>
+<h3 id="只读-5-篇-半天">只读 5 篇 (半天)</h3>
+<table>
+<thead>
+<tr>
+<th>论文</th>
+<th>为什么读</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2306.03341">ITI (2306.03341)</a></td>
+<td>steering 的原型, 读它建立直觉</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2409.14586">Backtracking Improves Generation Safety (2409.14586)</a></td>
+<td>rollback 最干净的一篇</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2508.17621">FASB (2508.17621)</a></td>
+<td>唯一把两者缝在一起的, 也是这个问题的直接答案</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2509.22067">The Rogue Scalpel (2509.22067)</a></td>
+<td>读完会对 steering 保持清醒</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2606.12476">Quickest Detection of Hallucination Onset (2606.12476)</a></td>
+<td>把延迟这个维度立起来</td>
+</tr>
+</tbody>
+</table>
+<h3 id="再加-6-篇补齐版图">再加 6 篇补齐版图</h3>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2309.07124">RAIN (2309.07124)</a> 免训练回退</li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2407.07071">Lookback Lens (2407.07071)</a> 注意力探针 + chunk 重采样</li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2506.07022">AlphaSteer (2506.07022)</a> 有约束的 steering</li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2412.09565">Obfuscated Activations (2412.09565)</a> 探针被绕过</li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2501.18837">Constitutional Classifiers (2501.18837)</a> 生产级流式拦截</li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2310.01798">LLMs Cannot Self-Correct Reasoning Yet (2310.01798)</a> 自评不可靠</li>
+</ul>
+<h3 id="综述类底座">综述类底座</h3>
+<ul>
+<li>Representation Engineering 两篇 survey: <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2502.17601">2502.17601</a>, <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2502.19649">2502.19649</a> —— 覆盖 steering 侧</li>
+<li>Training-free alignment survey (EMNLP 2025 Findings) —— 按 pre-decoding / in-decoding / post-decoding 分类, 和本文框架可互相印证</li>
+<li>幻觉侧 lifecycle-based survey: <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2608.26168">2608.26168</a></li>
+</ul>
+<hr>
+<p>覆盖到 2026 年 8 月的公开预印本。2026 年的论文大多尚未同行评议, 数字按原文引用, 未独立复现。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">Yuchen You (Wesley)</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2026/09/01/mlsys/LanguageModel/4.inference-time-intervention/">http://example.com/2026/09/01/mlsys/LanguageModel/4.inference-time-intervention/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/llm/">llm</a><a class="post-meta__tags" href="/tags/mlsys/">mlsys</a><a class="post-meta__tags" href="/tags/safety/">safety</a><a class="post-meta__tags" href="/tags/hallucination/">hallucination</a><a class="post-meta__tags" href="/tags/steering/">steering</a><a class="post-meta__tags" href="/tags/rollback/">rollback</a></div><div class="post_share"><div class="social-share" data-image="/img/me_new.jpeg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2026/09/02/mlsys/Paper/FreeToken%20-%20Efficient%20Edge-Native%20MoE%20Serving%20with%20Bandwidth-Adaptive%20Execution/" title="FreeToken: Efficient Edge-Native MoE Serving with Bandwidth-Adaptive Execution"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Previous</div><div class="prev_info">FreeToken: Efficient Edge-Native MoE Serving with Bandwidth-Adaptive Execution</div></div></a></div><div class="next-post pull-right"><a href="/2026/07/29/mlsys/InferenceEngine/8.deepseekv2/" title="8.deepseekv2"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Next</div><div class="next_info">8.deepseekv2</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2026/09/02/mlsys/LanguageModel/10.kimi-linear/" title="Kimi Linear: An Expressive, Efficient Attention Architecture"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-09-02</div><div class="title">Kimi Linear: An Expressive, Efficient Attention Architecture</div></div></a></div><div><a href="/2026/07/12/mlsys/LanguageModel/0.%20transformer%20%E6%9E%B6%E6%9E%84/" title="0. transformer 架构"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-07-12</div><div class="title">0. transformer 架构</div></div></a></div><div><a href="/2026/07/14/mlsys/LanguageModel/1.moe/" title="1. MoE 架构"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-07-14</div><div class="title">1. MoE 架构</div></div></a></div><div><a href="/2026/05/20/agentsys/rca/rcacopilot/" title="RCACopilot - Automatic Root Cause Analysis via Large Language Models for Cloud Incidents"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-20</div><div class="title">RCACopilot - Automatic Root Cause Analysis via Large Language Models for Cloud Incidents</div></div></a></div><div><a href="/2026/07/23/mlsys/LanguageModel/3.speculativedecoding/" title="3. Speculative Decoding"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-07-23</div><div class="title">3. Speculative Decoding</div></div></a></div><div><a href="/2026/07/15/mlsys/LanguageModel/2.flashattention/" title="2. FlashAttention"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-07-15</div><div class="title">2. FlashAttention</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/me_new.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Yuchen You (Wesley)</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">134</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">78</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">2</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/1WesleyYou"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/1Wesleyyou" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yuchenxr@umich.edu" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://www.linkedin.com/in/yuchen-you-a74940314/?locale=en_US" target="_blank" title="LinkedIn"><i class="fab fa-linkedin" style="color: #4a4dbe;"></i></a><a class="social-icon" href="/Yuchen_CV.pdf" target="_blank" title="CV"><i class="fas fa-address-card" style="color: #251456;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%85%88%E6%8A%8A%E6%9C%AF%E8%AF%AD%E5%AF%B9%E9%BD%90"><span class="toc-number">1.</span> <span class="toc-text">1. 先把术语对齐</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E7%BB%9F%E4%B8%80%E6%A1%86%E6%9E%B6-%E4%B8%89%E4%B8%AA%E9%97%AE%E9%A2%98"><span class="toc-number">2.</span> <span class="toc-text">2. 统一框架: 三个问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E5%9C%A8%E7%94%9F%E6%88%90%E7%9A%84%E5%93%AA%E4%B8%AA%E6%97%B6%E5%88%BB%E4%BB%8B%E5%85%A5"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 在生成的哪个时刻介入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E7%94%A8%E4%BB%80%E4%B9%88%E4%BF%A1%E5%8F%B7%E5%88%A4%E5%AE%9A-%E5%87%BA%E4%BA%8B%E4%BA%86"><span class="toc-number">2.2.</span> <span class="toc-text">2.2 用什么信号判定&quot;出事了&quot;</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-%E5%88%A4%E5%AE%9A%E4%B9%8B%E5%90%8E%E5%81%9A%E4%BB%80%E4%B9%88"><span class="toc-number">2.3.</span> <span class="toc-text">2.3 判定之后做什么</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E5%8A%A8%E4%BD%9C%E7%A9%BA%E9%97%B4-%E5%85%AB%E7%B1%BB-action"><span class="toc-number">3.</span> <span class="toc-text">3. 动作空间: 八类 action</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#a1-s-steer-%E6%BF%80%E6%B4%BB%E7%A9%BA%E9%97%B4%E5%B9%B2%E9%A2%84"><span class="toc-number">3.1.</span> <span class="toc-text">A1 [S] Steer - 激活空间干预</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#a2-s-reweight-%E8%A7%A3%E7%A0%81%E5%88%86%E5%B8%83%E9%87%8D%E5%8A%A0%E6%9D%83"><span class="toc-number">3.2.</span> <span class="toc-text">A2 [S] Reweight - 解码分布重加权</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#a3-s-selective-steer-%E5%8F%AA%E5%9C%A8%E5%BF%85%E8%A6%81%E6%97%B6%E5%B9%B2%E9%A2%84"><span class="toc-number">3.3.</span> <span class="toc-text">A3 [S] Selective steer - 只在必要时干预</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#a4-r-rollback-token-%E7%BA%A7%E5%9B%9E%E9%80%80%E9%87%8D%E7%94%9F%E6%88%90"><span class="toc-number">3.4.</span> <span class="toc-text">A4 [R] Rollback - token 级回退重生成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#a5-r-verify-and-revise-%E5%8F%A5%E5%AD%90-chunk-%E7%BA%A7%E9%AA%8C%E8%AF%81%E9%87%8D%E5%86%99"><span class="toc-number">3.5.</span> <span class="toc-text">A5 [R] Verify-and-revise - 句子&#x2F;chunk 级验证重写</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#a6-r-search-resample-%E6%A0%91%E6%90%9C%E7%B4%A2%E4%B8%8E%E9%87%8D%E9%87%87%E6%A0%B7"><span class="toc-number">3.6.</span> <span class="toc-text">A6 [R] Search &#x2F; resample - 树搜索与重采样</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#a7-escalate-%E6%8D%A2%E4%B8%80%E6%9D%A1%E4%BF%A1%E6%81%AF%E9%80%9A%E8%B7%AF"><span class="toc-number">3.7.</span> <span class="toc-text">A7 Escalate - 换一条信息通路</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#a8-x-halt-abstain-%E7%BB%93%E6%9E%84%E6%80%A7%E4%BF%AE%E5%A4%8D"><span class="toc-number">3.8.</span> <span class="toc-text">A8 [X] Halt &#x2F; Abstain &#x2F; 结构性修复</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E5%8F%A5%E8%AF%9D%E8%AE%B0%E4%BD%8F%E8%BF%99%E5%BC%A0%E8%A1%A8"><span class="toc-number">3.9.</span> <span class="toc-text">一句话记住这张表</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-steering-%E8%B0%B1%E7%B3%BB-%E4%BB%A5%E5%8F%8A%E5%AE%83%E6%AF%94%E4%BD%A0%E6%83%B3%E7%9A%84%E8%84%86"><span class="toc-number">4.</span> <span class="toc-text">4. Steering 谱系, 以及它比你想的脆</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E5%9B%9B%E4%BB%A3%E6%96%B9%E6%B3%95"><span class="toc-number">4.1.</span> <span class="toc-text">4.1 四代方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E5%9B%9B%E4%B8%AA%E5%B7%B2%E8%AF%81%E5%AE%9E%E7%9A%84%E5%A4%B1%E6%95%88%E6%A8%A1%E5%BC%8F"><span class="toc-number">4.2.</span> <span class="toc-text">4.2 四个已证实的失效模式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-rollback-%E8%B0%B1%E7%B3%BB-%E4%BB%A5%E5%8F%8A%E6%B2%A1%E4%BA%BA%E7%AE%97%E8%BF%87%E7%9A%84%E8%B4%A6"><span class="toc-number">5.</span> <span class="toc-text">5. Rollback 谱系, 以及没人算过的账</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E6%8C%89%E7%B2%92%E5%BA%A6%E5%92%8C%E8%A7%A6%E5%8F%91%E6%96%B9%E5%BC%8F%E5%88%86"><span class="toc-number">5.1.</span> <span class="toc-text">5.1 按粒度和触发方式分</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-%E8%AE%AD%E7%BB%83-vs-%E5%85%8D%E8%AE%AD%E7%BB%83-%E6%98%AF%E8%BF%99%E4%B8%80%E6%97%8F%E7%9A%84%E4%B8%BB%E8%A6%81%E5%88%86%E5%B2%94"><span class="toc-number">5.2.</span> <span class="toc-text">5.2 训练 vs 免训练, 是这一族的主要分岔</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-%E8%A2%AB%E7%B3%BB%E7%BB%9F%E6%80%A7%E5%BF%BD%E7%95%A5%E7%9A%84%E4%B8%80%E7%AC%94%E8%B4%A6-%E5%9B%9E%E9%80%80%E5%88%B0%E5%BA%95%E5%A4%9A%E8%B4%B5"><span class="toc-number">5.3.</span> <span class="toc-text">5.3 被系统性忽略的一笔账: 回退到底多贵</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-jailbreak-%E5%92%8C-hallucination-%E7%9C%8B%E8%B5%B7%E6%9D%A5%E5%90%8C%E6%9E%84-%E5%85%B6%E5%AE%9E%E4%B8%8D%E6%98%AF"><span class="toc-number">6.</span> <span class="toc-text">6. Jailbreak 和 Hallucination: 看起来同构, 其实不是</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E5%89%8D%E6%B2%BF%E5%9C%A8%E5%93%AA-2025-%E4%B8%8B%E5%8D%8A-2026"><span class="toc-number">7.</span> <span class="toc-text">7. 前沿在哪 (2025 下半 – 2026)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E7%BC%BA%E5%8F%A3"><span class="toc-number">8.</span> <span class="toc-text">8. 缺口</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#g1-%E6%B2%A1%E6%9C%89%E4%BA%BA%E7%A0%94%E7%A9%B6-%E5%8A%A8%E4%BD%9C%E9%80%89%E6%8B%A9-%E6%9C%AC%E8%BA%AB"><span class="toc-number">8.1.</span> <span class="toc-text">G1 没有人研究&quot;动作选择&quot;本身</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#g2-%E6%A3%80%E6%B5%8B%E5%99%A8%E7%9A%84-ood-%E6%B3%9B%E5%8C%96%E6%98%AF%E6%95%B4%E6%9D%A1%E9%93%BE%E7%9A%84%E5%A4%A9%E8%8A%B1%E6%9D%BF-%E4%BD%86%E8%A2%AB%E4%B8%A5%E9%87%8D%E9%AB%98%E4%BC%B0"><span class="toc-number">8.2.</span> <span class="toc-text">G2 检测器的 OOD 泛化是整条链的天花板, 但被严重高估</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#g3-%E5%BB%B6%E8%BF%9F%E8%BF%99%E4%B8%AA%E7%BB%B4%E5%BA%A6%E5%88%9A%E5%88%9A%E6%89%8D%E6%9C%89%E4%BA%BA%E8%AE%A4%E7%9C%9F%E5%AF%B9%E5%BE%85"><span class="toc-number">8.3.</span> <span class="toc-text">G3 延迟这个维度刚刚才有人认真对待</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#g4-%E5%9B%9E%E9%80%80%E7%9A%84%E7%B3%BB%E7%BB%9F%E5%BC%80%E9%94%80%E6%B2%A1%E6%9C%89%E8%A2%AB%E5%BB%BA%E6%A8%A1"><span class="toc-number">8.4.</span> <span class="toc-text">G4 回退的系统开销没有被建模</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#g5-%E8%BF%87%E5%BA%A6%E5%B9%B2%E9%A2%84%E6%98%AF%E4%B8%BB%E5%AF%BC%E5%A4%B1%E6%95%88%E6%A8%A1%E5%BC%8F-%E5%8D%B4%E6%8C%89%E6%AC%A1%E8%A6%81%E6%8C%87%E6%A0%87%E5%A4%84%E7%90%86"><span class="toc-number">8.5.</span> <span class="toc-text">G5 过度干预是主导失效模式, 却按次要指标处理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#g6-agent-%E5%B1%82%E7%9A%84-%E5%9B%9E%E6%BB%9A-%E6%A0%B9%E6%9C%AC%E6%B2%A1%E6%9C%89%E8%AF%AD%E4%B9%89"><span class="toc-number">8.6.</span> <span class="toc-text">G6 Agent 层的&quot;回滚&quot;根本没有语义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#g7-%E8%AF%84%E6%B5%8B%E7%A2%8E%E7%89%87%E5%8C%96%E5%88%B0%E6%97%A0%E6%B3%95%E6%A8%AA%E5%90%91%E6%AF%94%E8%BE%83"><span class="toc-number">8.7.</span> <span class="toc-text">G7 评测碎片化到无法横向比较</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E6%98%A0%E5%B0%84%E5%9B%9E-dmi-%E7%9A%84-action-%E5%B1%82"><span class="toc-number">9.</span> <span class="toc-text">9. 映射回 DMI 的 Action 层</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-%E8%AF%BB%E6%B3%95%E5%BB%BA%E8%AE%AE"><span class="toc-number">10.</span> <span class="toc-text">10. 读法建议</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%AA%E8%AF%BB-5-%E7%AF%87-%E5%8D%8A%E5%A4%A9"><span class="toc-number">10.1.</span> <span class="toc-text">只读 5 篇 (半天)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%8D%E5%8A%A0-6-%E7%AF%87%E8%A1%A5%E9%BD%90%E7%89%88%E5%9B%BE"><span class="toc-number">10.2.</span> <span class="toc-text">再加 6 篇补齐版图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%BC%E8%BF%B0%E7%B1%BB%E5%BA%95%E5%BA%A7"><span class="toc-number">10.3.</span> <span class="toc-text">综述类底座</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/09/21/notes/network/nccl/prims_simple.h/" title="prims_simple.h">prims_simple.h</a><time datetime="2026-09-21T13:12:56.000Z" title="Created 2026-09-21 21:12:56">2026-09-21</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/09/02/mlsys/LanguageModel/10.kimi-linear/" title="Kimi Linear: An Expressive, Efficient Attention Architecture">Kimi Linear: An Expressive, Efficient Attention Architecture</a><time datetime="2026-09-02T15:43:10.000Z" title="Created 2026-09-02 23:43:10">2026-09-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/09/02/mlsys/Paper/FreeToken%20-%20Efficient%20Edge-Native%20MoE%20Serving%20with%20Bandwidth-Adaptive%20Execution/" title="FreeToken: Efficient Edge-Native MoE Serving with Bandwidth-Adaptive Execution">FreeToken: Efficient Edge-Native MoE Serving with Bandwidth-Adaptive Execution</a><time datetime="2026-09-02T13:27:27.000Z" title="Created 2026-09-02 21:27:27">2026-09-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/09/01/mlsys/LanguageModel/4.inference-time-intervention/" title="4. Inference-Time Intervention (Steering 与 Rollback)">4. Inference-Time Intervention (Steering 与 Rollback)</a><time datetime="2026-09-01T02:00:00.000Z" title="Created 2026-09-01 10:00:00">2026-09-01</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/29/mlsys/InferenceEngine/8.deepseekv2/" title="8.deepseekv2">8.deepseekv2</a><time datetime="2026-07-29T08:43:19.000Z" title="Created 2026-07-29 16:43:19">2026-07-29</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2026 By Yuchen You (Wesley)</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">welcome to my blog!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/fireworks.min.js"></script><script defer="defer" id="fluttering_ribbon" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/canvas-fluttering-ribbon.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading the Database</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="Search for Posts" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=4.13.0"></script></div></div></body></html>
