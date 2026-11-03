@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="650" viewBox="0 0 1280 650" role="img" aria-labelledby="title desc">
+<title id="title">RoCEv2: ECN → CNP → sender rate control</title><desc id="desc">A 100 Gbps ingress feeds a 25 Gbps egress. The switch queue absorbs the temporary rate difference.</desc>
+<defs><marker id="ink" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto-start-reverse"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#18334c" stroke-width="1.6"/></marker><marker id="muted" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto-start-reverse"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#526b80" stroke-width="1.6"/></marker><marker id="blue" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto-start-reverse"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#3267ac" stroke-width="1.6"/></marker><marker id="teal" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto-start-reverse"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#147d78" stroke-width="1.6"/></marker><marker id="amber" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto-start-reverse"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#ad6221" stroke-width="1.6"/></marker><marker id="line" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto-start-reverse"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#cbd7e1" stroke-width="1.6"/></marker></defs>
+<rect width="100%" height="100%" fill="#fbfcfe"/>
+<style>text {font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif; fill:#18334c;} .mono {font-family: 'SFMono-Regular', Menlo, monospace;}</style>
+<text x="46" y="56" font-size="30" font-weight="700" text-anchor="start" class="" style="fill:#18334c">RoCEv2: ECN → CNP → sender rate control</text>
+<text x="46" y="89" font-size="17" font-weight="400" text-anchor="start" class="" style="fill:#526b80">A 100 Gbps ingress feeds a 25 Gbps egress. The switch queue absorbs the temporary rate difference.</text>
+<rect x="50" y="192" width="240" height="120" rx="15" fill="#edf3fc" stroke="#3267ac" stroke-width="2"/><text x="170.0" y="248.0" font-size="22" font-weight="600" text-anchor="middle" class="" style="fill:#3267ac">Sender A</text><text x="170.0" y="276.0" font-size="16" font-weight="400" text-anchor="middle" class="" style="fill:#526b80">RNIC / reaction point</text>
+<rect x="455" y="163" width="370" height="220" rx="15" fill="#ffffff" stroke="#ad6221" stroke-width="2"/>
+<text x="640" y="202" font-size="25" font-weight="600" text-anchor="middle" class="" style="fill:#ad6221">Switch</text>
+<text x="640" y="232" font-size="18" font-weight="400" text-anchor="middle" class="" style="fill:#526b80">Congested egress queue</text>
+<rect x="990" y="192" width="240" height="120" rx="15" fill="#edf3fc" stroke="#3267ac" stroke-width="2"/><text x="1110.0" y="248.0" font-size="22" font-weight="600" text-anchor="middle" class="" style="fill:#3267ac">Receiver B</text><text x="1110.0" y="276.0" font-size="16" font-weight="400" text-anchor="middle" class="" style="fill:#526b80">RNIC / notification point</text>
+<polyline points="290,245 455,245" fill="none" stroke="#3267ac" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#blue)"/>
+<text x="372" y="222" font-size="21" font-weight="600" text-anchor="middle" class="" style="fill:#3267ac">100 Gbps</text>
+<polyline points="825,245 990,245" fill="none" stroke="#3267ac" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#blue)"/>
+<text x="907" y="222" font-size="21" font-weight="600" text-anchor="middle" class="" style="fill:#3267ac">25 Gbps</text>
+<rect x="482" y="264" width="29" height="40" rx="4" fill="#f5c480" stroke="#ad6221" stroke-width="2"/>
+<rect x="520" y="264" width="29" height="40" rx="4" fill="#f5c480" stroke="#ad6221" stroke-width="2"/>
+<rect x="558" y="264" width="29" height="40" rx="4" fill="#f5c480" stroke="#ad6221" stroke-width="2"/>
+<rect x="596" y="264" width="29" height="40" rx="4" fill="#f5c480" stroke="#ad6221" stroke-width="2"/>
+<rect x="634" y="264" width="29" height="40" rx="4" fill="#f5c480" stroke="#ad6221" stroke-width="2"/>
+<rect x="672" y="264" width="29" height="40" rx="4" fill="#f5c480" stroke="#ad6221" stroke-width="2"/>
+<rect x="710" y="264" width="29" height="40" rx="4" fill="#f5c480" stroke="#ad6221" stroke-width="2"/>
+<rect x="748" y="264" width="29" height="40" rx="4" fill="#f5c480" stroke="#ad6221" stroke-width="2"/>
+<text x="640" y="343" font-size="18" font-weight="400" text-anchor="middle" class="" style="fill:#ad6221">1. Mark ECN on data packets</text>
+<polyline points="1108,312 1108,438 170,438 170,312" fill="none" stroke="#147d78" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#teal)"/>
+<text x="640" y="424" font-size="20" font-weight="600" text-anchor="middle" class="" style="fill:#147d78">2. Receiver RNIC sends CNP back to the sender</text>
+<text x="170" y="481" font-size="18" font-weight="600" text-anchor="middle" class="" style="fill:#3267ac">3. Sender RNIC</text>
+<text x="170" y="508" font-size="18" font-weight="600" text-anchor="middle" class="" style="fill:#3267ac">reduces rate</text>
+<text x="640" y="545" font-size="21" font-weight="600" text-anchor="middle" class="" style="fill:#18334c">DCQCN controls reduction and recovery of the sending rate.</text>
+<text x="640" y="581" font-size="18" font-weight="400" text-anchor="middle" class="" style="fill:#526b80">This feedback path does not wait for the receiving application to poll its CQ.</text>
+<text x="46" y="627" font-size="16" font-weight="400" text-anchor="start" class="" style="fill:#526b80">Switch egress congestion is separate from an empty receive queue (RNR).</text>
+</svg>

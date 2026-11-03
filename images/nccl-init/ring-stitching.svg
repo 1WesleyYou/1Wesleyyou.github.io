@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="830" viewBox="0 0 1280 830" role="img" aria-labelledby="title desc">
+<title id="title">From local graph fragments to a global Ring</title><desc id="desc">Illustrative channel 0: two nodes, two ranks per node. The rank numbering comes from the application.</desc>
+<defs><marker id="ink" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto-start-reverse"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#18334c" stroke-width="1.6"/></marker><marker id="muted" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto-start-reverse"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#526b80" stroke-width="1.6"/></marker><marker id="blue" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto-start-reverse"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#3267ac" stroke-width="1.6"/></marker><marker id="teal" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto-start-reverse"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#147d78" stroke-width="1.6"/></marker><marker id="amber" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto-start-reverse"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#ad6221" stroke-width="1.6"/></marker><marker id="line" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto-start-reverse"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#cbd7e1" stroke-width="1.6"/></marker></defs>
+<rect width="100%" height="100%" fill="#fbfcfe"/>
+<style>text {font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif; fill:#18334c;} .mono {font-family: 'SFMono-Regular', Menlo, monospace;}</style>
+<text x="46" y="56" font-size="30" font-weight="700" text-anchor="start" class="" style="fill:#18334c">From local graph fragments to a global Ring</text>
+<text x="46" y="89" font-size="17" font-weight="400" text-anchor="start" class="" style="fill:#526b80">Illustrative channel 0: two nodes, two ranks per node. The rank numbering comes from the application.</text>
+<text x="52" y="143" font-size="22" font-weight="600" text-anchor="start" class="" style="fill:#18334c">PRESET: local order and open boundaries</text>
+<rect x="50" y="170" width="565" height="215" rx="15" fill="#f3f6fb" stroke="#cbd7e1" stroke-width="2"/>
+<text x="74" y="207" font-size="23" font-weight="600" text-anchor="start" class="" style="fill:#3267ac">Node A: graph.intra = [0, 1]</text>
+<rect x="130" y="238" width="145" height="70" rx="15" fill="#edf3fc" stroke="#3267ac" stroke-width="2"/><text x="202.5" y="280.0" font-size="22" font-weight="600" text-anchor="middle" class="" style="fill:#3267ac">rank 0</text>
+<rect x="390" y="238" width="145" height="70" rx="15" fill="#edf3fc" stroke="#3267ac" stroke-width="2"/><text x="462.5" y="280.0" font-size="22" font-weight="600" text-anchor="middle" class="" style="fill:#3267ac">rank 1</text>
+<polyline points="275,273 390,273" fill="none" stroke="#3267ac" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#blue)"/>
+<text x="332" y="345" font-size="19" font-weight="400" text-anchor="middle" class="" style="fill:#526b80">ringRecv = 0 | ringSend = 1</text>
+<rect x="665" y="170" width="565" height="215" rx="15" fill="#f3f6fb" stroke="#cbd7e1" stroke-width="2"/>
+<text x="689" y="207" font-size="23" font-weight="600" text-anchor="start" class="" style="fill:#3267ac">Node B: graph.intra = [2, 3]</text>
+<rect x="745" y="238" width="145" height="70" rx="15" fill="#edf3fc" stroke="#3267ac" stroke-width="2"/><text x="817.5" y="280.0" font-size="22" font-weight="600" text-anchor="middle" class="" style="fill:#3267ac">rank 2</text>
+<rect x="1005" y="238" width="145" height="70" rx="15" fill="#edf3fc" stroke="#3267ac" stroke-width="2"/><text x="1077.5" y="280.0" font-size="22" font-weight="600" text-anchor="middle" class="" style="fill:#3267ac">rank 3</text>
+<polyline points="890,273 1005,273" fill="none" stroke="#3267ac" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#blue)"/>
+<text x="947" y="345" font-size="19" font-weight="400" text-anchor="middle" class="" style="fill:#526b80">ringRecv = 2 | ringSend = 3</text>
+<polyline points="640,393 640,443" fill="none" stroke="#147d78" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#teal)"/>
+<text x="665" y="420" font-size="20" font-weight="400" text-anchor="start" class="" style="fill:#147d78">exchange topoRanks + Postset</text>
+<text x="52" y="481" font-size="22" font-weight="600" text-anchor="start" class="" style="fill:#18334c">POSTSET: join the boundary ranks</text>
+<rect x="58" y="510" width="561" height="112" rx="15" fill="#f3f6fb" stroke="#cbd7e1" stroke-width="2"/>
+<rect x="659" y="510" width="561" height="112" rx="15" fill="#f3f6fb" stroke="#cbd7e1" stroke-width="2"/>
+<text x="80" y="536" font-size="17" font-weight="400" text-anchor="start" class="" style="fill:#526b80">Node A</text>
+<text x="681" y="536" font-size="17" font-weight="400" text-anchor="start" class="" style="fill:#526b80">Node B</text>
+<rect x="100" y="550" width="150" height="66" rx="15" fill="#edf3fc" stroke="#3267ac" stroke-width="2"/><text x="175.0" y="590.0" font-size="22" font-weight="600" text-anchor="middle" class="" style="fill:#3267ac">rank 0</text>
+<rect x="400" y="550" width="150" height="66" rx="15" fill="#edf3fc" stroke="#3267ac" stroke-width="2"/><text x="475.0" y="590.0" font-size="22" font-weight="600" text-anchor="middle" class="" style="fill:#3267ac">rank 1</text>
+<rect x="700" y="550" width="150" height="66" rx="15" fill="#edf3fc" stroke="#3267ac" stroke-width="2"/><text x="775.0" y="590.0" font-size="22" font-weight="600" text-anchor="middle" class="" style="fill:#3267ac">rank 2</text>
+<rect x="1000" y="550" width="150" height="66" rx="15" fill="#edf3fc" stroke="#3267ac" stroke-width="2"/><text x="1075.0" y="590.0" font-size="22" font-weight="600" text-anchor="middle" class="" style="fill:#3267ac">rank 3</text>
+<polyline points="250,583 400,583" fill="none" stroke="#3267ac" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#blue)"/>
+<polyline points="550,583 700,583" fill="none" stroke="#147d78" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#teal)"/>
+<polyline points="850,583 1000,583" fill="none" stroke="#3267ac" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#blue)"/>
+<text x="640" y="568" font-size="16" font-weight="400" text-anchor="middle" class="" style="fill:#147d78">new edge</text>
+<polyline points="1075,616 1075,680 175,680 175,616" fill="none" stroke="#147d78" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#teal)"/>
+<text x="640" y="668" font-size="19" font-weight="400" text-anchor="middle" class="" style="fill:#147d78">new inter-node edge: 3 → 0</text>
+<text x="640" y="744" font-size="24" font-weight="600" text-anchor="middle" class="" style="fill:#18334c">rank 1: ring.prev = 0, ring.next = 2</text>
+<text x="640" y="792" font-size="18" font-weight="400" text-anchor="middle" class="" style="fill:#526b80">Logical adjacency is now complete. Transport setup still has to make the peer edges usable.</text>
+</svg>

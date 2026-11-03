@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="880" viewBox="0 0 1280 880" role="img" aria-labelledby="title desc">
+<title id="title">NCCL: topology → graph → channel → connection</title><desc id="desc">Pinned source: v2.32.3-1 / 12df1a1. A plan becomes usable through several distinct state transitions.</desc>
+<defs><marker id="ink" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto-start-reverse"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#18334c" stroke-width="1.6"/></marker><marker id="muted" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto-start-reverse"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#526b80" stroke-width="1.6"/></marker><marker id="blue" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto-start-reverse"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#3267ac" stroke-width="1.6"/></marker><marker id="teal" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto-start-reverse"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#147d78" stroke-width="1.6"/></marker><marker id="amber" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto-start-reverse"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#ad6221" stroke-width="1.6"/></marker><marker id="line" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto-start-reverse"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#cbd7e1" stroke-width="1.6"/></marker></defs>
+<rect width="100%" height="100%" fill="#fbfcfe"/>
+<style>text {font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif; fill:#18334c;} .mono {font-family: 'SFMono-Regular', Menlo, monospace;}</style>
+<text x="46" y="56" font-size="30" font-weight="700" text-anchor="start" class="" style="fill:#18334c">NCCL: topology → graph → channel → connection</text>
+<text x="46" y="89" font-size="17" font-weight="400" text-anchor="start" class="" style="fill:#526b80">Pinned source: v2.32.3-1 / 12df1a1. A plan becomes usable through several distinct state transitions.</text>
+<rect x="48" y="135" width="260" height="128" rx="15" fill="#edf3fc" stroke="#3267ac" stroke-width="2"/><text x="178.0" y="195.0" font-size="22" font-weight="600" text-anchor="middle" class="" style="fill:#3267ac">1. TOPO</text><text x="178.0" y="223.0" font-size="16" font-weight="400" text-anchor="middle" class="" style="fill:#526b80">Available hardware paths</text>
+<polyline points="308,199 371,199" fill="none" stroke="#3267ac" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#blue)"/>
+<rect x="374" y="135" width="858" height="128" rx="15" fill="#ffffff" stroke="#3267ac" stroke-width="2"/>
+<text x="398" y="171" font-size="21" font-weight="600" text-anchor="start" class="mono" style="fill:#3267ac">comm-&gt;topo</text>
+<text x="398" y="209" font-size="20" font-weight="400" text-anchor="start" class="" style="fill:#18334c">GPU / PCIe / NVLink / CPU / NET</text>
+<text x="398" y="243" font-size="17" font-weight="400" text-anchor="start" class="" style="fill:#526b80">links: direct edges | paths: precomputed routes</text>
+<polyline points="178,263 178,296" fill="none" stroke="#526b80" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#muted)"/>
+<rect x="48" y="302" width="260" height="128" rx="15" fill="#e9f6f1" stroke="#147d78" stroke-width="2"/><text x="178.0" y="362.0" font-size="22" font-weight="600" text-anchor="middle" class="" style="fill:#147d78">2. GRAPH</text><text x="178.0" y="390.0" font-size="16" font-weight="400" text-anchor="middle" class="" style="fill:#526b80">Algorithm-specific plan</text>
+<polyline points="308,366 371,366" fill="none" stroke="#147d78" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#teal)"/>
+<rect x="374" y="302" width="858" height="128" rx="15" fill="#ffffff" stroke="#147d78" stroke-width="2"/>
+<text x="398" y="338" font-size="21" font-weight="600" text-anchor="start" class="mono" style="fill:#147d78">comm-&gt;graphs[NCCL_ALGO_RING]</text>
+<text x="398" y="376" font-size="20" font-weight="400" text-anchor="start" class="" style="fill:#18334c">intra: local GPU order | inter: NET endpoints</text>
+<text x="398" y="410" font-size="17" font-weight="400" text-anchor="start" class="" style="fill:#526b80">nChannels / bwIntra / bwInter / pattern</text>
+<polyline points="178,430 178,463" fill="none" stroke="#526b80" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#muted)"/>
+<rect x="48" y="469" width="260" height="128" rx="15" fill="#fff4e6" stroke="#ad6221" stroke-width="2"/><text x="178.0" y="529.0" font-size="22" font-weight="600" text-anchor="middle" class="" style="fill:#ad6221">3. CHANNEL</text><text x="178.0" y="557.0" font-size="16" font-weight="400" text-anchor="middle" class="" style="fill:#526b80">Local logical role</text>
+<polyline points="308,533 371,533" fill="none" stroke="#ad6221" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#amber)"/>
+<rect x="374" y="469" width="858" height="128" rx="15" fill="#ffffff" stroke="#ad6221" stroke-width="2"/>
+<text x="398" y="505" font-size="21" font-weight="600" text-anchor="start" class="mono" style="fill:#ad6221">comm-&gt;channels[c].ring</text>
+<text x="398" y="543" font-size="20" font-weight="400" text-anchor="start" class="" style="fill:#18334c">prev = receive peer | next = send peer</text>
+<text x="398" y="577" font-size="17" font-weight="400" text-anchor="start" class="" style="fill:#526b80">Preset + summary exchange + Postset join local fragments</text>
+<polyline points="178,597 178,630" fill="none" stroke="#526b80" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#muted)"/>
+<rect x="48" y="636" width="260" height="128" rx="15" fill="#edf3fc" stroke="#3267ac" stroke-width="2"/><text x="178.0" y="696.0" font-size="22" font-weight="600" text-anchor="middle" class="" style="fill:#3267ac">4. CONNECTION</text><text x="178.0" y="724.0" font-size="16" font-weight="400" text-anchor="middle" class="" style="fill:#526b80">Resources for each peer edge</text>
+<polyline points="308,700 371,700" fill="none" stroke="#3267ac" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#blue)"/>
+<rect x="374" y="636" width="858" height="128" rx="15" fill="#ffffff" stroke="#3267ac" stroke-width="2"/>
+<text x="398" y="672" font-size="21" font-weight="600" text-anchor="start" class="mono" style="fill:#3267ac">channel-&gt;peers[peer]-&gt;send/recv[idx]</text>
+<text x="398" y="710" font-size="20" font-weight="400" text-anchor="start" class="" style="fill:#18334c">P2P / SHM / NET / algorithm-specific CollNet</text>
+<text x="398" y="744" font-size="17" font-weight="400" text-anchor="start" class="" style="fill:#526b80">connector.connected + ncclConnInfo published to device</text>
+<text x="50" y="844" font-size="18" font-weight="400" text-anchor="start" class="" style="fill:#526b80">A logical Ring neighbor is a rank. A transport connector is not necessarily one NIC or one RDMA QP.</text>
+</svg>

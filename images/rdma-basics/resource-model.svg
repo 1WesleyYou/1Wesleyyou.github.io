@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="770" viewBox="0 0 1280 770" role="img" aria-labelledby="title desc">
+<title id="title">RDMA resource model</title><desc id="desc">One local device context. PD membership and CQ association are different relationships.</desc>
+<defs><marker id="ink" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto-start-reverse"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#18334c" stroke-width="1.6"/></marker><marker id="muted" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto-start-reverse"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#526b80" stroke-width="1.6"/></marker><marker id="blue" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto-start-reverse"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#3267ac" stroke-width="1.6"/></marker><marker id="teal" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto-start-reverse"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#147d78" stroke-width="1.6"/></marker><marker id="amber" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto-start-reverse"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#ad6221" stroke-width="1.6"/></marker><marker id="line" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto-start-reverse"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#cbd7e1" stroke-width="1.6"/></marker></defs>
+<rect width="100%" height="100%" fill="#fbfcfe"/>
+<style>text {font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif; fill:#18334c;} .mono {font-family: 'SFMono-Regular', Menlo, monospace;}</style>
+<text x="46" y="56" font-size="30" font-weight="700" text-anchor="start" class="" style="fill:#18334c">RDMA resource model</text>
+<text x="46" y="89" font-size="17" font-weight="400" text-anchor="start" class="" style="fill:#526b80">One local device context. PD membership and CQ association are different relationships.</text>
+<rect x="32" y="120" width="1216" height="600" rx="15" fill="#f4f7fb" stroke="#cbd7e1" stroke-width="2"/>
+<text x="57" y="157" font-size="22" font-weight="600" text-anchor="start" class="" style="fill:#18334c">Device context</text>
+<text x="57" y="185" font-size="16" font-weight="400" text-anchor="start" class="mono" style="fill:#526b80">ibv_open_device()</text>
+<rect x="62" y="213" width="414" height="286" rx="15" fill="#ffffff" stroke="#147d78" stroke-width="2" stroke-dasharray="7 6"/>
+<text x="84" y="246" font-size="23" font-weight="600" text-anchor="start" class="" style="fill:#147d78">PD1</text>
+<rect x="84" y="267" width="176" height="101" rx="15" fill="#edf3fc" stroke="#3267ac" stroke-width="2"/>
+<text x="172" y="299" font-size="22" font-weight="600" text-anchor="middle" class="" style="fill:#3267ac">QP1</text>
+<rect x="97" y="316" width="68" height="36" rx="15" fill="#edf3fc" stroke="#3267ac" stroke-width="2"/><text x="131.0" y="341.0" font-size="22" font-weight="600" text-anchor="middle" class="" style="fill:#3267ac">SQ</text>
+<rect x="179" y="316" width="68" height="36" rx="15" fill="#edf3fc" stroke="#3267ac" stroke-width="2"/><text x="213.0" y="341.0" font-size="22" font-weight="600" text-anchor="middle" class="" style="fill:#3267ac">RQ</text>
+<rect x="278" y="267" width="176" height="101" rx="15" fill="#edf3fc" stroke="#3267ac" stroke-width="2"/>
+<text x="366" y="299" font-size="22" font-weight="600" text-anchor="middle" class="" style="fill:#3267ac">QP2</text>
+<rect x="291" y="316" width="68" height="36" rx="15" fill="#edf3fc" stroke="#3267ac" stroke-width="2"/><text x="325.0" y="341.0" font-size="22" font-weight="600" text-anchor="middle" class="" style="fill:#3267ac">SQ</text>
+<rect x="373" y="316" width="68" height="36" rx="15" fill="#edf3fc" stroke="#3267ac" stroke-width="2"/><text x="407.0" y="341.0" font-size="22" font-weight="600" text-anchor="middle" class="" style="fill:#3267ac">RQ</text>
+<rect x="84" y="410" width="370" height="62" rx="15" fill="#e9f6f1" stroke="#147d78" stroke-width="2"/><text x="269.0" y="448.0" font-size="22" font-weight="600" text-anchor="middle" class="" style="fill:#147d78">MR1</text>
+<text x="269" y="490" font-size="15" font-weight="400" text-anchor="middle" class="" style="fill:#526b80">Registered address range + access keys</text>
+<rect x="510" y="213" width="414" height="286" rx="15" fill="#ffffff" stroke="#147d78" stroke-width="2" stroke-dasharray="7 6"/>
+<text x="532" y="246" font-size="23" font-weight="600" text-anchor="start" class="" style="fill:#147d78">PD2</text>
+<rect x="532" y="267" width="176" height="101" rx="15" fill="#edf3fc" stroke="#3267ac" stroke-width="2"/>
+<text x="620" y="299" font-size="22" font-weight="600" text-anchor="middle" class="" style="fill:#3267ac">QP3</text>
+<rect x="545" y="316" width="68" height="36" rx="15" fill="#edf3fc" stroke="#3267ac" stroke-width="2"/><text x="579.0" y="341.0" font-size="22" font-weight="600" text-anchor="middle" class="" style="fill:#3267ac">SQ</text>
+<rect x="627" y="316" width="68" height="36" rx="15" fill="#edf3fc" stroke="#3267ac" stroke-width="2"/><text x="661.0" y="341.0" font-size="22" font-weight="600" text-anchor="middle" class="" style="fill:#3267ac">RQ</text>
+<rect x="726" y="267" width="176" height="101" rx="15" fill="#edf3fc" stroke="#3267ac" stroke-width="2"/>
+<text x="814" y="299" font-size="22" font-weight="600" text-anchor="middle" class="" style="fill:#3267ac">QP4</text>
+<rect x="739" y="316" width="68" height="36" rx="15" fill="#edf3fc" stroke="#3267ac" stroke-width="2"/><text x="773.0" y="341.0" font-size="22" font-weight="600" text-anchor="middle" class="" style="fill:#3267ac">SQ</text>
+<rect x="821" y="316" width="68" height="36" rx="15" fill="#edf3fc" stroke="#3267ac" stroke-width="2"/><text x="855.0" y="341.0" font-size="22" font-weight="600" text-anchor="middle" class="" style="fill:#3267ac">RQ</text>
+<rect x="532" y="410" width="370" height="62" rx="15" fill="#e9f6f1" stroke="#147d78" stroke-width="2"/><text x="717.0" y="448.0" font-size="22" font-weight="600" text-anchor="middle" class="" style="fill:#147d78">MR2</text>
+<text x="717" y="490" font-size="15" font-weight="400" text-anchor="middle" class="" style="fill:#526b80">Registered address range + access keys</text>
+<rect x="972" y="267" width="246" height="101" rx="15" fill="#edf3fc" stroke="#3267ac" stroke-width="2"/><text x="1095.0" y="313.5" font-size="22" font-weight="600" text-anchor="middle" class="" style="fill:#3267ac">Application</text><text x="1095.0" y="341.5" font-size="16" font-weight="400" text-anchor="middle" class="" style="fill:#526b80">posts work requests</text>
+<polyline points="972,319 934,319" fill="none" stroke="#3267ac" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#blue)"/>
+<text x="1095" y="423" font-size="16" font-weight="400" text-anchor="middle" class="" style="fill:#147d78">PD1: QP1, QP2, MR1</text>
+<text x="1095" y="451" font-size="16" font-weight="400" text-anchor="middle" class="" style="fill:#147d78">PD2: QP3, QP4, MR2</text>
+<rect x="312" y="560" width="360" height="80" rx="15" fill="#fff4e6" stroke="#ad6221" stroke-width="2"/><text x="492.0" y="596.0" font-size="22" font-weight="600" text-anchor="middle" class="" style="fill:#ad6221">Shared CQ</text><text x="492.0" y="624.0" font-size="16" font-weight="400" text-anchor="middle" class="" style="fill:#526b80">created under device context</text>
+<polyline points="172,368 172,390 72,390 72,535 352,535 352,560" fill="none" stroke="#ad6221" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#amber)"/>
+<polyline points="620,368 620,390 520,390 520,523 632,523 632,560" fill="none" stroke="#ad6221" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#amber)"/>
+<text x="742" y="580" font-size="18" font-weight="400" text-anchor="start" class="" style="fill:#526b80">QP send_cq / recv_cq select a CQ.</text>
+<text x="742" y="610" font-size="18" font-weight="400" text-anchor="start" class="" style="fill:#526b80">CQ sharing can cross PD boundaries.</text>
+<text x="62" y="687" font-size="19" font-weight="400" text-anchor="start" class="" style="fill:#526b80">PD protects QP / MR use. It does not allocate the application buffer.</text>
+<text x="46" y="750" font-size="15" font-weight="400" text-anchor="start" class="" style="fill:#526b80">Conceptual relationships; not a diagram of physical memory placement.</text>
+</svg>

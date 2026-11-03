@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="760" viewBox="0 0 1280 760" role="img" aria-labelledby="title desc">
+<title id="title">Send proxy progress: done ≤ transmitted ≤ posted</title><desc id="desc">Example: nsteps = 20, done = 4, transmitted = 8, posted = 12. Units are steps, not SQ work entries.</desc>
+<defs><marker id="ink" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto-start-reverse"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#18334c" stroke-width="1.6"/></marker><marker id="muted" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto-start-reverse"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#526b80" stroke-width="1.6"/></marker><marker id="blue" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto-start-reverse"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#3267ac" stroke-width="1.6"/></marker><marker id="teal" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto-start-reverse"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#147d78" stroke-width="1.6"/></marker><marker id="amber" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto-start-reverse"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#ad6221" stroke-width="1.6"/></marker><marker id="line" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto-start-reverse"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#cbd7e1" stroke-width="1.6"/></marker></defs>
+<rect width="100%" height="100%" fill="#fbfcfe"/>
+<style>text {font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif; fill:#18334c;} .mono {font-family: 'SFMono-Regular', Menlo, monospace;}</style>
+<text x="46" y="56" font-size="30" font-weight="700" text-anchor="start" class="" style="fill:#18334c">Send proxy progress: done ≤ transmitted ≤ posted</text>
+<text x="46" y="89" font-size="17" font-weight="400" text-anchor="start" class="" style="fill:#526b80">Example: nsteps = 20, done = 4, transmitted = 8, posted = 12. Units are steps, not SQ work entries.</text>
+<text x="80" y="152" font-size="19" font-weight="400" text-anchor="start" class="" style="fill:#526b80">0</text>
+<text x="1200" y="152" font-size="19" font-weight="400" text-anchor="middle" class="" style="fill:#526b80">20</text>
+<rect x="80" y="175" width="56" height="76" rx="0" fill="#dce9fa" stroke="#3267ac" stroke-width="2"/>
+<rect x="136" y="175" width="56" height="76" rx="0" fill="#dce9fa" stroke="#3267ac" stroke-width="2"/>
+<rect x="192" y="175" width="56" height="76" rx="0" fill="#dce9fa" stroke="#3267ac" stroke-width="2"/>
+<rect x="248" y="175" width="56" height="76" rx="0" fill="#dce9fa" stroke="#3267ac" stroke-width="2"/>
+<rect x="304" y="175" width="56" height="76" rx="0" fill="#d6eee7" stroke="#147d78" stroke-width="2"/>
+<rect x="360" y="175" width="56" height="76" rx="0" fill="#d6eee7" stroke="#147d78" stroke-width="2"/>
+<rect x="416" y="175" width="56" height="76" rx="0" fill="#d6eee7" stroke="#147d78" stroke-width="2"/>
+<rect x="472" y="175" width="56" height="76" rx="0" fill="#d6eee7" stroke="#147d78" stroke-width="2"/>
+<rect x="528" y="175" width="56" height="76" rx="0" fill="#ffe6c4" stroke="#ad6221" stroke-width="2"/>
+<rect x="584" y="175" width="56" height="76" rx="0" fill="#ffe6c4" stroke="#ad6221" stroke-width="2"/>
+<rect x="640" y="175" width="56" height="76" rx="0" fill="#ffe6c4" stroke="#ad6221" stroke-width="2"/>
+<rect x="696" y="175" width="56" height="76" rx="0" fill="#ffe6c4" stroke="#ad6221" stroke-width="2"/>
+<rect x="752" y="175" width="56" height="76" rx="0" fill="#edf0f4" stroke="#cbd7e1" stroke-width="2"/>
+<rect x="808" y="175" width="56" height="76" rx="0" fill="#edf0f4" stroke="#cbd7e1" stroke-width="2"/>
+<rect x="864" y="175" width="56" height="76" rx="0" fill="#edf0f4" stroke="#cbd7e1" stroke-width="2"/>
+<rect x="920" y="175" width="56" height="76" rx="0" fill="#edf0f4" stroke="#cbd7e1" stroke-width="2"/>
+<rect x="976" y="175" width="56" height="76" rx="0" fill="#edf0f4" stroke="#cbd7e1" stroke-width="2"/>
+<rect x="1032" y="175" width="56" height="76" rx="0" fill="#edf0f4" stroke="#cbd7e1" stroke-width="2"/>
+<rect x="1088" y="175" width="56" height="76" rx="0" fill="#edf0f4" stroke="#cbd7e1" stroke-width="2"/>
+<rect x="1144" y="175" width="56" height="76" rx="0" fill="#edf0f4" stroke="#cbd7e1" stroke-width="2"/>
+<polyline points="304,294 304,253" fill="none" stroke="#3267ac" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#blue)"/>
+<text x="304" y="322" font-size="20" font-weight="600" text-anchor="middle" class="" style="fill:#3267ac">done = 4</text>
+<polyline points="528,294 528,253" fill="none" stroke="#147d78" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#teal)"/>
+<text x="528" y="322" font-size="20" font-weight="600" text-anchor="middle" class="" style="fill:#147d78">transmitted = 8</text>
+<polyline points="752,294 752,253" fill="none" stroke="#ad6221" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#amber)"/>
+<text x="752" y="322" font-size="20" font-weight="600" text-anchor="middle" class="" style="fill:#ad6221">posted = 12</text>
+<rect x="82" y="186" width="220" height="53" rx="0" fill="#dce9fa" stroke="#dce9fa" stroke-width="2"/>
+<rect x="306" y="186" width="220" height="53" rx="0" fill="#d6eee7" stroke="#d6eee7" stroke-width="2"/>
+<rect x="530" y="186" width="220" height="53" rx="0" fill="#ffe6c4" stroke="#ffe6c4" stroke-width="2"/>
+<rect x="754" y="186" width="444" height="53" rx="0" fill="#edf0f4" stroke="#edf0f4" stroke-width="2"/>
+<text x="192" y="214" font-size="17" font-weight="600" text-anchor="middle" class="" style="fill:#3267ac">complete</text>
+<text x="416" y="214" font-size="17" font-weight="600" text-anchor="middle" class="" style="fill:#147d78">in flight</text>
+<text x="640" y="214" font-size="17" font-weight="600" text-anchor="middle" class="" style="fill:#ad6221">GPU window</text>
+<text x="976" y="214" font-size="19" font-weight="400" text-anchor="middle" class="" style="fill:#526b80">not opened</text>
+<text x="640" y="379" font-size="22" font-weight="600" text-anchor="middle" class="" style="fill:#18334c">[done, posted): 8 steps opened and not yet completed</text>
+<rect x="60" y="442" width="300" height="104" rx="15" fill="#fff4e6" stroke="#ad6221" stroke-width="2"/><text x="210.0" y="490.0" font-size="22" font-weight="600" text-anchor="middle" class="" style="fill:#ad6221">GPU produces data</text><text x="210.0" y="518.0" font-size="16" font-weight="400" text-anchor="middle" class="" style="fill:#526b80">FIFO size + tail</text>
+<rect x="490" y="442" width="300" height="104" rx="15" fill="#e9f6f1" stroke="#147d78" stroke-width="2"/><text x="640.0" y="490.0" font-size="22" font-weight="600" text-anchor="middle" class="" style="fill:#147d78">Backend isend</text><text x="640.0" y="518.0" font-size="16" font-weight="400" text-anchor="middle" class="" style="fill:#526b80">non-NULL request</text>
+<rect x="920" y="442" width="300" height="104" rx="15" fill="#edf3fc" stroke="#3267ac" stroke-width="2"/><text x="1070.0" y="490.0" font-size="22" font-weight="600" text-anchor="middle" class="" style="fill:#3267ac">Backend test</text><text x="1070.0" y="518.0" font-size="16" font-weight="400" text-anchor="middle" class="" style="fill:#526b80">CQE → request complete</text>
+<polyline points="360,494 490,494" fill="none" stroke="#147d78" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#teal)"/>
+<polyline points="790,494 920,494" fill="none" stroke="#3267ac" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#blue)"/>
+<text x="640" y="601" font-size="18" font-weight="400" text-anchor="middle" class="" style="fill:#526b80">posted: window admission | transmitted: backend acceptance | done: backend completion</text>
+<text x="640" y="660" font-size="21" font-weight="600" text-anchor="middle" class="" style="fill:#18334c">isend returning success with a NULL request does not advance transmitted.</text>
+<text x="640" y="711" font-size="19" font-weight="400" text-anchor="middle" class="" style="fill:#526b80">A local send completion does not mean the remote GPU has consumed the data.</text>
+</svg>

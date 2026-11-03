@@ -1,0 +1,564 @@
+<!DOCTYPE html><html lang="en-US" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>NCCL 初始化与连接建立 | Yuchen You</title><meta name="author" content="Yuchen You (Wesley)"><meta name="copyright" content="Yuchen You (Wesley)"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="先区分 topo, graph, channel 和 connection NCCL 建立连接的主线可以记成 发现硬件 → 搜索通信图 → 拼出各 channel 的逻辑邻居 → 为邻居建立 transport 连接. 建立好之后, collective kernel 和 proxy 才沿着这些连接推进数据. 例如两台机器各有两个 rank. NCCL 先知道 GPU 和 NIC 如何连接, 再为">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NCCL 初始化与连接建立">
+<meta property="og:url" content="http://example.com/2026/10/19/computer_system_basics/network/nccl-init-connections/index.html">
+<meta property="og:site_name" content="Yuchen You">
+<meta property="og:description" content="先区分 topo, graph, channel 和 connection NCCL 建立连接的主线可以记成 发现硬件 → 搜索通信图 → 拼出各 channel 的逻辑邻居 → 为邻居建立 transport 连接. 建立好之后, collective kernel 和 proxy 才沿着这些连接推进数据. 例如两台机器各有两个 rank. NCCL 先知道 GPU 和 NIC 如何连接, 再为">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/img/me_new.jpeg">
+<meta property="article:published_time" content="2026-10-19T12:10:00.000Z">
+<meta property="article:modified_time" content="2026-10-20T00:13:33.863Z">
+<meta property="article:author" content="Yuchen You (Wesley)">
+<meta property="article:tag" content="network">
+<meta property="article:tag" content="nccl">
+<meta property="article:tag" content="rdma">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/me_new.jpeg"><link rel="shortcut icon" href="/img/hackerrank.svg"><link rel="canonical" href="http://example.com/2026/10/19/computer_system_basics/network/nccl-init-connections/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'NCCL 初始化与连接建立',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-10-20 08:13:33'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 7.2.0"><link href="https://cdn.bootcss.com/KaTeX/0.11.1/katex.min.css" rel="stylesheet" />
+<style>
+.obsidian-callout { margin: 1em 0; }
+.obsidian-callout blockquote { border-left: none; margin: 0; padding: 0; background: transparent; }
+.obsidian-callout p { margin: 0.4em 0; }
+.obsidian-callout details > summary { list-style: none; }
+.obsidian-callout details > summary::-webkit-details-marker { display: none; }
+</style></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/me_new.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">137</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">82</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">2</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/math_master.jpeg')"><nav id="nav"><span id="blog-info"><a href="/" title="Yuchen You"><img class="site-icon" src="/img/avatar.png"/><span class="site-name">Yuchen You</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> Search</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">NCCL 初始化与连接建立</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2026-10-19T12:10:00.000Z" title="Created 2026-10-19 20:10:00">2026-10-19</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-10-20T00:13:33.863Z" title="Updated 2026-10-20 08:13:33">2026-10-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/notes/">notes</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="NCCL 初始化与连接建立"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="先区分-topo-graph-channel-和-connection">先区分 topo, graph, channel 和 connection</h2>
+<p>NCCL 建立连接的主线可以记成 <strong>发现硬件 → 搜索通信图 → 拼出各 channel 的逻辑邻居 → 为邻居建立 transport 连接</strong>. 建立好之后, collective kernel 和 proxy 才沿着这些连接推进数据.</p>
+<p>例如两台机器各有两个 rank. NCCL 先知道 GPU 和 NIC 如何连接, 再为某个 channel 选出节点内顺序 <code>[0, 1]</code> 和 <code>[2, 3]</code>, 将两段拼成 <code>0 → 1 → 2 → 3 → 0</code>. 此时 rank 1 知道自己的 <code>prev = 0</code>, <code>next = 2</code>. 随后再分别为这两条边准备本地 GPU 通路或跨机网络通路.</p>
+<p><img src="/images/nccl-init/abstraction-layers.svg" alt="NCCL 从硬件拓扑到 graph, channel 和 transport 的层次"></p>
+<table>
+<thead>
+<tr>
+<th>抽象</th>
+<th>回答的问题</th>
+<th>典型数据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Topo system</td>
+<td>硬件有哪些, 两个资源之间能怎么走</td>
+<td><code>comm-&gt;topo</code>, <code>ncclTopoNode</code>, <code>links</code>, <code>paths</code></td>
+</tr>
+<tr>
+<td>Algorithm graph</td>
+<td>为某种算法选哪些 GPU 顺序, 网络端点和 channel 数</td>
+<td><code>comm-&gt;graphs[]</code>, <code>intra</code>, <code>inter</code>, <code>nChannels</code></td>
+</tr>
+<tr>
+<td>Channel</td>
+<td>当前 rank 在这条并行通信通道中和谁收发</td>
+<td><code>comm-&gt;channels[c]</code>, <code>ring.prev/next</code>, <code>tree.up/down</code></td>
+</tr>
+<tr>
+<td>Transport connection</td>
+<td>这条 peer 边通过什么资源实际搬数据</td>
+<td><code>peers[peer]-&gt;send/recv</code>, <code>ncclConnector</code>, <code>ncclConnInfo</code></td>
+</tr>
+</tbody>
+</table>
+<p>这里的 graph 指拓扑搜索产生的算法通信图, 与 CUDA Graph 是两个概念. 一个 channel 可以包含 Ring, Tree 等算法的逻辑信息; 它也不是一个固定大小的数据块, 更不能直接等同于一个 NIC 或一个 RDMA QP.</p>
+<p>本文固定对照 <strong>NCCL v2.32.3-1, commit <code>12df1a1</code></strong>, 以普通跨节点 Ring, SIMPLE 协议和 CPU proxy 驱动的 NET/IB 路径为主. NVLS, CollNet 等分支只在需要区分概念时提及. 文中尺寸来自该版本的默认值, 图中的 rank 顺序是说明流程的例子. <a target="_blank" rel="noopener" href="https://github.com/NVIDIA/nccl/tree/12df1a1">源码版本</a>.</p>
+<h2 id="初始化的执行顺序">初始化的执行顺序</h2>
+<p>应用或启动器提供相同的 <code>ncclUniqueId</code>, 每个参与者自己的 <code>rank</code>, 以及统一的 <code>nranks</code>. NCCL 再交换信息, 计算连接方案. 因而 <strong>应用指定的 rank 编号</strong>和<strong>NCCL 搜索出的 Ring 顺序</strong>需要分开.</p>
+<p>省略参数检查, 内存管理和部分特殊硬件分支后, 主要调用关系如下:</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">ncclCommInitRank</span><br><span class="line">  → ncclCommInitRankDev</span><br><span class="line">    → ncclCommInitRankFunc</span><br><span class="line">      → commAlloc</span><br><span class="line">      → bootstrapInit</span><br><span class="line">      → initTransportsRank</span><br><span class="line">          交换 peerInfo</span><br><span class="line">          ncclTopoGetSystem</span><br><span class="line">          ncclTopoComputePaths</span><br><span class="line">          ncclTopoCompute: 搜索各算法 graph</span><br><span class="line">          ncclTopoPreset</span><br><span class="line">          bootstrapAllGather: 交换 graphInfo 和 topoRanks</span><br><span class="line">          ncclTopoPostset</span><br><span class="line">          setupChannel</span><br><span class="line">          根据 runtimeConn 决定何时建立数据连接</span><br><span class="line">      → devCommSetup</span><br></pre></td></tr></table></figure>
+<p><code>bootstrap</code> 提供初始化期间的信息交换通路. 搜索和连接过程中, NCCL 还会使用它交换拓扑摘要和连接描述. Bootstrap Ring 与最终搬运 collective 数据的 Ring 不必相同. <a target="_blank" rel="noopener" href="https://github.com/NVIDIA/nccl/blob/12df1a1/src/init.cc#L1163">初始化主流程</a>.</p>
+<h2 id="topo-system-保存硬件和路径">Topo system 保存硬件和路径</h2>
+<p><code>ncclTopoGetSystem()</code> 生成 <code>comm-&gt;topo</code>, 类型为 <code>ncclTopoSystem*</code>. 对普通多机系统, 可以先把它理解成当前计算域内的硬件视图: GPU, PCIe switch, CPU/NUMA, NVLink/NVSwitch, NIC 和网络设备等资源如何相连.</p>
+<p>其中几个结构需要分开:</p>
+<table>
+<thead>
+<tr>
+<th>结构或字段</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ncclTopoSystem::nodes[type]</code></td>
+<td>按资源类型组织的节点集合</td>
+</tr>
+<tr>
+<td><code>ncclTopoNode::type</code>, <code>id</code></td>
+<td>节点的类型和拓扑标识, <code>id</code> 不一定是 communicator rank</td>
+</tr>
+<tr>
+<td><code>ncclTopoNode</code> 中的 union</td>
+<td>GPU, NET, CPU 等类型各自的属性, 如 <code>gpu.rank</code>, <code>net.dev</code>, <code>net.port</code></td>
+</tr>
+<tr>
+<td><code>ncclTopoNode::links[]</code></td>
+<td>从该节点直接连接出去的硬件边</td>
+</tr>
+<tr>
+<td><code>ncclTopoLink</code></td>
+<td>一条直连边的 <code>type</code>, <code>bw</code>, <code>remNode</code></td>
+</tr>
+<tr>
+<td><code>ncclTopoNode::paths[type]</code></td>
+<td>预计算的到目标资源的路径表</td>
+</tr>
+<tr>
+<td><code>ncclTopoLinkList</code></td>
+<td>某条路径的链路列表, 跳数 <code>count</code>, 瓶颈带宽 <code>bw</code>, 路径类型 <code>type</code></td>
+</tr>
+<tr>
+<td><code>ncclTopoSystem::maxBw</code>, <code>totalBw</code></td>
+<td>graph 搜索使用的带宽上界与预算信息</td>
+</tr>
+</tbody>
+</table>
+<p><code>NIC</code> 节点和 <code>NET</code> 节点也不宜混为一谈. 可以先将前者看作物理网卡相关的拓扑位置, 后者看作网络后端暴露的可用网络设备或端口; graph 里的 <code>inter[]</code> 记录的是 NET 拓扑 ID. <a target="_blank" rel="noopener" href="https://github.com/NVIDIA/nccl/blob/12df1a1/src/graph/topo.h#L110">拓扑结构</a>.</p>
+<h3 id="links-是直连边-paths-是组合路径">links 是直连边, paths 是组合路径</h3>
+<p>假设 GPU0 到 NIC0 需要经过一个 PCIe switch. <code>links</code> 描述每一段直接连接, <code>paths</code> 则保存从 GPU0 走到 NET0 的整条路径及其属性.</p>
+<p><code>ncclTopoComputePaths()</code> 会计算这些可复用路径, 并结合 P2P, GDR 等能力处理可用性. 这里不能只理解成普通最短路: 该版本的路径更新首先比较路径类型, 同类型再偏好较高带宽, 类型和带宽相同再偏好较少跳数. 路径带宽取沿途链路带宽的最小值. <a target="_blank" rel="noopener" href="https://github.com/NVIDIA/nccl/blob/12df1a1/src/graph/paths.cc#L52">路径计算与比较</a>.</p>
+<p>源码中常见的 <code>PATH_NVL</code>, <code>PATH_PIX</code>, <code>PATH_PXB</code>, <code>PATH_PHB</code>, <code>PATH_SYS</code>, <code>PATH_PXN</code> 等, 用于区分 NVLink, PCIe switch, host bridge, NUMA/系统互连或经中间 GPU 到 NIC 等路径类别. 它们描述资源之间的通路, 还没有决定整个 collective 的 rank 顺序.</p>
+<h2 id="graph-把硬件路径变成算法方案">Graph 把硬件路径变成算法方案</h2>
+<p><code>ncclTopoCompute(comm-&gt;topo, graph)</code> 接收拓扑和搜索约束, 产出某种算法可用的通信方案. 初始化阶段会为 Ring, Tree 等分别准备 graph.</p>
+<p>以 <code>ringGraph</code> 为例, 经典字段如下:</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>在这里如何理解</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>graph 自己的标识, 不等同于 <code>NCCL_ALGO_*</code> 枚举值</td>
+</tr>
+<tr>
+<td><code>pattern</code></td>
+<td>搜索形状, 如 <code>NCCL_TOPO_PATTERN_RING</code></td>
+</tr>
+<tr>
+<td><code>minChannels</code>, <code>maxChannels</code></td>
+<td>输入的 channel 数约束</td>
+</tr>
+<tr>
+<td><code>nChannels</code></td>
+<td>graph 搜索得到的 channel 数</td>
+</tr>
+<tr>
+<td><code>intra[c * ngpus + i]</code></td>
+<td>channel c 在当前拓扑域中的第 i 个 GPU rank</td>
+</tr>
+<tr>
+<td><code>inter[2*c]</code>, <code>inter[2*c+1]</code></td>
+<td>channel c 选择的两端 NET 拓扑 ID</td>
+</tr>
+<tr>
+<td><code>bwIntra</code>, <code>bwInter</code></td>
+<td>搜索方案的节点内与跨节点带宽参数, 单位为 GB/s</td>
+</tr>
+<tr>
+<td><code>typeIntra</code>, <code>typeInter</code></td>
+<td>搜索方案使用的路径类别</td>
+</tr>
+<tr>
+<td><code>sameChannels</code></td>
+<td>是否约束多个 channel 使用相同的路径安排</td>
+</tr>
+<tr>
+<td><code>crossNic</code></td>
+<td>是否允许或尝试跨不同 NIC/rail 的安排</td>
+</tr>
+<tr>
+<td><code>nHops</code></td>
+<td>比较候选方案时使用的跳数统计</td>
+</tr>
+</tbody>
+</table>
+<p>这些字段在该版本叫 <code>bwIntra/bwInter</code>, 阅读旧版本时可能遇到 <code>speedIntra/speedInter</code>. <code>comm-&gt;graphs[NCCL_ALGO_RING]</code> 按算法枚举索引, 而初始化中 Ring graph 的 <code>id</code> 设为 0; 两者不能互换. <a target="_blank" rel="noopener" href="https://github.com/NVIDIA/nccl/blob/12df1a1/src/include/graph.h#L174">Graph 定义</a>, <a target="_blank" rel="noopener" href="https://github.com/NVIDIA/nccl/blob/12df1a1/src/init.cc#L1423">Ring graph 初始化</a>.</p>
+<p>对于跨机 Ring, 一条 graph 路径可以先想成:</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">入口 NET → 本节点 GPU rank 顺序 → 出口 NET</span><br></pre></td></tr></table></figure>
+<p>它已经选择了本地网络端点, 但尚未保存一个覆盖全世界 rank 的完整 Ring, 也没有创建这些边对应的全部 QP 和 transport 资源.</p>
+<h3 id="nccltopocompute-在搜索什么">ncclTopoCompute 在搜索什么</h3>
+<p>搜索会尝试 GPU 顺序, NIC 选择, channel 安排以及带宽和路径类别约束. 递归过程中检查路径能否承载当前方案, 分配相应带宽预算, 失败时回退, 再尝试其他安排.</p>
+<p><code>search:</code> 和 <code>done:</code> 是这套控制流程中的标签. 找不到足够好的方案时, 会改变 <code>sameChannels</code>, 路径约束, <code>crossNic</code>, 或从 <code>speedArray</code> 中降低尝试的带宽档位. 得到方案后, 还可能复制 channel 或继续尝试提高带宽.</p>
+<p>候选比较会考虑 channel 数与带宽的组合, 再考虑跳数等条件. 搜索受时间预算和启发式限制, <code>bwIntra/bwInter</code> 是规划参数, 不能当作实际运行的带宽测量. <a target="_blank" rel="noopener" href="https://github.com/NVIDIA/nccl/blob/12df1a1/src/graph/search.cc#L1151">搜索入口</a>, <a target="_blank" rel="noopener" href="https://github.com/NVIDIA/nccl/blob/12df1a1/src/graph/search.cc#L446">候选比较</a>.</p>
+<h2 id="preset-和-postset-拼出全局逻辑环">Preset 和 Postset 拼出全局逻辑环</h2>
+<h3 id="preset-提取节点内邻居和边界">Preset 提取节点内邻居和边界</h3>
+<p><code>ncclTopoPreset()</code> 读取 graph 的 <code>intra[]</code>, 为每个 rank 整理节点内的前后关系, 并填充 <code>ncclTopoRanks</code>:</p>
+<ul>
+<li><code>ringRecv[c]</code>: 本节点这一段 Ring 的入口 rank.</li>
+<li><code>ringSend[c]</code>: 本节点这一段 Ring 的出口 rank.</li>
+<li><code>ringPrev[c]</code>, <code>ringNext[c]</code>: 当前 rank 的节点内前驱和后继; 在本地片段边界处先记为 -1.</li>
+<li><code>treeToParent/Child0/Child1</code>: Tree 拼接需要的边界 rank 信息.</li>
+</ul>
+<p>随后 <code>topoRanks</code> 与各算法的 <code>graphInfo</code> 一起放入 <code>allGather3Data</code>, 通过 <code>bootstrapAllGather()</code> 交换. 交换的是这些摘要和连接所需信息, 不是简单地 AllGather 整个 <code>ncclTopoSystem</code>. <a target="_blank" rel="noopener" href="https://github.com/NVIDIA/nccl/blob/12df1a1/src/graph/connect.cc#L20">Preset</a>, <a target="_blank" rel="noopener" href="https://github.com/NVIDIA/nccl/blob/12df1a1/src/init.cc#L1505">摘要交换</a>.</p>
+<p>各节点的硬件能力和搜索结果可能不同. 初始化代码会根据交换结果收紧方案, 例如对 graph 的 <code>nChannels</code>, <code>bwIntra</code>, <code>bwInter</code> 取较小值, 对 <code>typeIntra/typeInter</code> 取较大的路径类别值, 再进入 Postset. 因而最后使用的配置还要满足各参与者共同的约束. <a target="_blank" rel="noopener" href="https://github.com/NVIDIA/nccl/blob/12df1a1/src/init.cc#L1691">Graph 参数对齐</a>.</p>
+<h3 id="postset-连接各节点的片段">Postset 连接各节点的片段</h3>
+<p>仍以一个 channel, 两台机器, 每机两个 rank 为例:</p>
+<p><img src="/images/nccl-init/ring-stitching.svg" alt="Preset 的节点内片段如何经 Postset 拼成全局 Ring"></p>
+<p>节点 A 的 graph 给出 <code>[0, 1]</code>, 节点 B 给出 <code>[2, 3]</code>. Preset 后得到:</p>
+<table>
+<thead>
+<tr>
+<th>Rank</th>
+<th>本地 prev</th>
+<th>本地 next</th>
+<th>所在节点的入口和出口</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>-1</td>
+<td>1</td>
+<td>入口 0, 出口 1</td>
+</tr>
+<tr>
+<td>1</td>
+<td>0</td>
+<td>-1</td>
+<td>入口 0, 出口 1</td>
+</tr>
+<tr>
+<td>2</td>
+<td>-1</td>
+<td>3</td>
+<td>入口 2, 出口 3</td>
+</tr>
+<tr>
+<td>3</td>
+<td>2</td>
+<td>-1</td>
+<td>入口 2, 出口 3</td>
+</tr>
+</tbody>
+</table>
+<p><code>ncclTopoPostset()</code> 中的 <code>connectRings()</code> 将前一节点的出口接到本节点入口, 将本节点出口接到下一节点入口. 在这个例子中补上 <code>1 → 2</code> 和 <code>3 → 0</code>, 得到:</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">rank 0: prev = 3, next = 1</span><br><span class="line">rank 1: prev = 0, next = 2</span><br><span class="line">rank 2: prev = 1, next = 3</span><br><span class="line">rank 3: prev = 2, next = 0</span><br></pre></td></tr></table></figure>
+<p>最终结果写进各 rank 的 <code>comm-&gt;channels[c].ring.prev/next</code>. 这里的 connect 是<strong>拼接逻辑邻接关系</strong>, 尚不是建立 IB QP. Postset 还处理 Tree, channel 复制及数量限制等, 所以最初 graph 的 <code>nChannels</code> 与最终 <code>comm-&gt;nChannels</code> 也不一定完全相同. <a target="_blank" rel="noopener" href="https://github.com/NVIDIA/nccl/blob/12df1a1/src/graph/connect.cc#L95">逻辑 Ring 拼接</a>, <a target="_blank" rel="noopener" href="https://github.com/NVIDIA/nccl/blob/12df1a1/src/graph/connect.cc#L380">Postset</a>.</p>
+<h2 id="channel-记录逻辑顺序和-peer-连接">Channel 记录逻辑顺序和 peer 连接</h2>
+<p><code>comm-&gt;channels[c]</code> 中的 <code>ring</code> 保存 Ring 信息, <code>tree</code> 保存 Tree 信息, <code>peers[peer]</code> 则提供与对应 peer 的发送和接收 connector.</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>comm-&gt;rank</code>, <code>comm-&gt;nRanks</code></td>
+<td>当前 communicator 的全局 rank 与 rank 总数</td>
+</tr>
+<tr>
+<td><code>comm-&gt;localRank</code>, <code>comm-&gt;localRanks</code></td>
+<td>当前节点内的 rank 编号与数量</td>
+</tr>
+<tr>
+<td><code>comm-&gt;node</code>, <code>comm-&gt;nNodes</code></td>
+<td>当前节点编号与节点总数</td>
+</tr>
+<tr>
+<td><code>comm-&gt;nChannels</code></td>
+<td>初始化整理出的 channel 数</td>
+</tr>
+<tr>
+<td><code>comm-&gt;p2pnChannels</code></td>
+<td>Send/Recv 点对点调度使用的 channel 数, 需与 collective channel 概念分开</td>
+</tr>
+<tr>
+<td><code>channel-&gt;ring.prev/next</code></td>
+<td>当前 channel 的逻辑前驱与后继</td>
+</tr>
+<tr>
+<td><code>channel-&gt;ring.userRanks[]</code></td>
+<td>从当前 rank 开始排列的 Ring 顺序, 元素仍是用户 rank</td>
+</tr>
+<tr>
+<td><code>channel-&gt;ring.rankToIndex[]</code></td>
+<td><code>userRanks[]</code> 的逆映射</td>
+</tr>
+<tr>
+<td><code>channel-&gt;ring.index</code></td>
+<td>当前 rank 在以 rank 0 为基准的 Ring 中的位置</td>
+</tr>
+<tr>
+<td><code>channel-&gt;tree.up/down[]</code></td>
+<td>Tree 的父节点和子节点</td>
+</tr>
+<tr>
+<td><code>channel-&gt;peers[peer]-&gt;send/recv[connIndex]</code></td>
+<td>该 channel 与 peer 的某个发送或接收 connector</td>
+</tr>
+</tbody>
+</table>
+<p><code>setupChannel()</code> 会将完整 Ring 数组旋转成从本 rank 开始的 <code>userRanks[]</code>. 例如全局顺序为 <code>[0,1,2,3]</code> 时, rank 2 的 <code>userRanks</code> 为 <code>[2,3,0,1]</code>, <code>ring.index = 2</code>. 旋转表示顺序, 不会改变应用提供的 rank 编号. <a target="_blank" rel="noopener" href="https://github.com/NVIDIA/nccl/blob/12df1a1/src/include/comm.h#L169">Channel 结构</a>, <a target="_blank" rel="noopener" href="https://github.com/NVIDIA/nccl/blob/12df1a1/src/include/device.h#L178">Ring 结构</a>, <a target="_blank" rel="noopener" href="https://github.com/NVIDIA/nccl/blob/12df1a1/src/init.cc#L984">setupChannel</a>.</p>
+<h2 id="transport-将逻辑边落实为可用连接">Transport 将逻辑边落实为可用连接</h2>
+<h3 id="p2pconnect-标记-p2psetup-建立">P2pConnect 标记, P2pSetup 建立</h3>
+<p><code>ncclTransportRingConnect()</code> 遍历 channel, 对 <code>ring.prev</code> 标记接收连接, 对 <code>ring.next</code> 标记发送连接, 然后调用 <code>ncclTransportP2pSetup()</code>.</p>
+<p><code>ncclTransportP2pConnect()</code> 主要更新两个待连接位图:</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">comm-&gt;connectSend[peer] 的第 c 位 = channel c 需要向这个 peer 建立发送连接</span><br><span class="line">comm-&gt;connectRecv[peer] 的第 c 位 = channel c 需要从这个 peer 建立接收连接</span><br></pre></td></tr></table></figure>
+<p>例如 channel 0 和 channel 2 都需要向 rank 2 发送, <code>connectSend[2]</code> 中相应两位为 1, 即二进制 <code>0101</code>. 位图里的位表示 channel, 不是 QP, chunk 或 NIC 编号.</p>
+<p><code>ncclTransportP2pSetup()</code> 再完成以下工作:</p>
+<ol>
+<li>对待连接边调用 <code>selectTransport()</code>.</li>
+<li>调用所选 transport 的 <code>setup()</code> 准备本地资源和 <code>ncclConnect</code> 连接描述.</li>
+<li>通过 bootstrap 与对端交换连接描述.</li>
+<li>调用 transport 的 <code>connect()</code>, 直到这条边完成连接.</li>
+<li>设置 <code>connector-&gt;connected = 1</code>, 将 <code>ncclConnInfo</code> 复制到 GPU 可见的 peer 结构.</li>
+</ol>
+<p>这里函数名里的 P2p 是 peer 连接管理的含义. 它不表示每条边都必然采用 CUDA P2P transport. <a target="_blank" rel="noopener" href="https://github.com/NVIDIA/nccl/blob/12df1a1/src/transport/generic.cc#L14">Ring 连接入口</a>, <a target="_blank" rel="noopener" href="https://github.com/NVIDIA/nccl/blob/12df1a1/src/transport.cc#L46">连接位图与 setup</a>.</p>
+<h3 id="transport-选择与-gdr">Transport 选择与 GDR</h3>
+<p>该版本的普通选择逻辑按 <code>P2P → SHM → NET → CollNet</code> 的顺序调用 <code>canConnect()</code>, 选择第一个满足条件的 transport. 这描述的是源码的能力检查顺序, 并非每种 collective 都依次尝试四条数据路径.</p>
+<table>
+<thead>
+<tr>
+<th>Transport</th>
+<th>主要作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P2P</td>
+<td>通过 CUDA peer access, IPC 等机制访问 peer GPU, 底层可能走 NVLink 或 PCIe</td>
+</tr>
+<tr>
+<td>SHM</td>
+<td>使用主机共享内存完成本机进程之间的数据传递</td>
+</tr>
+<tr>
+<td>NET</td>
+<td>使用网络后端, 如内置 IB/RoCE 后端或 Socket 后端</td>
+</tr>
+<tr>
+<td>CollNet</td>
+<td>面向支持集合通信能力的网络后端, 由相应算法路径使用</td>
+</tr>
+</tbody>
+</table>
+<p>因此 P2P transport 不应直接解释成 GPUDirect RDMA, NET 也不必然是 RDMA. <strong>GPUDirect RDMA 描述的是 NIC 直接访问 GPU 内存的能力.</strong> 在本文的 CPU proxy 路径中, CPU 仍通过网络后端提交工作; GPU 写数据和发布进度, NIC 可以直接读取 GPU buffer. 是否经过 host staging, 取决于实际 transport, GDR 支持和注册路径. <a target="_blank" rel="noopener" href="https://github.com/NVIDIA/nccl/blob/12df1a1/src/transport.cc#L15">Transport 选择</a>.</p>
+<h3 id="connector-和-conninfo">Connector 和 ConnInfo</h3>
+<p><code>ncclConnector</code> 保存主机侧的 <code>connected</code>, <code>transportComm</code>, <code>transportResources</code>, <code>proxyConn</code> 等信息. 其中嵌入的 <code>conn</code>, 类型为 <code>ncclConnInfo</code>, 提供 GPU 通信原语需要的状态:</p>
+<ul>
+<li><code>buffs[protocol]</code>: 各协议使用的 buffer.</li>
+<li><code>head</code>, <code>tail</code>: 生产消费进度与可复用空间的同步位置.</li>
+<li><code>step</code>, <code>stepSize</code>: 当前进度和 SIMPLE buffer 的 step 大小.</li>
+<li><code>connFifo</code>: GPU 与 proxy 交换 size, offset 等信息的 FIFO.</li>
+<li><code>flags</code>, <code>ptrExchange</code>: 直接访问能力和指针交换等信息.</li>
+</ul>
+<p>一个 connector 是 NCCL 的逻辑连接对象, 不能直接当作一个 RDMA QP. 后端可能共享资源, 也可能使用多个 QP 或设备完成一次请求. <a target="_blank" rel="noopener" href="https://github.com/NVIDIA/nccl/blob/12df1a1/src/include/device.h#L136">Connector 与 ConnInfo</a>.</p>
+<h3 id="初始化结束时-哪些连接已经建好">初始化结束时, 哪些连接已经建好</h3>
+<p>该版本使用 <code>comm-&gt;runtimeConn = comm-&gt;cuMemSupport &amp;&amp; ncclParamRuntimeConnect()</code> 判断运行时连接路径. 满足条件且 <code>NCCL_RUNTIME_CONNECT=1</code> 时, 部分算法数据连接会推迟到首次需要时建立. 非运行时连接分支则在初始化阶段调用 Ring, Tree 等连接函数.</p>
+<p>因此测量时要区分初始化, 首次算法连接, warmup 和稳态通信. 图和 channel 已经确定, 不意味着所有后续 collective 用到的数据边都已完成连接. <a target="_blank" rel="noopener" href="https://github.com/NVIDIA/nccl/blob/12df1a1/src/init.cc#L1811">初始化分支</a>, <a target="_blank" rel="noopener" href="https://github.com/NVIDIA/nccl/blob/12df1a1/src/group.cc#L232">首次使用时的连接</a>.</p>
+<h2 id="buffer-step-slice-和-chunk-的大小">Buffer, step, slice 和 chunk 的大小</h2>
+<p>连接建立后, 数据沿 channel 被分段和流水处理. 以下只看默认 Ring AllReduce + SIMPLE 的基础尺寸, 不将注册 buffer, 共享 buffer 和调优后的所有路径都套进同一个大小.</p>
+<p><img src="/images/nccl-init/buffer-units.svg" alt="默认 SIMPLE 的 4 MiB buffer, 8 个 step, slice 和 chunk 的关系"></p>
+<p>该版本的默认值为:</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">comm-&gt;buffSizes[NCCL_PROTO_SIMPLE] = 4 MiB</span><br><span class="line">NCCL_STEPS = 8</span><br><span class="line">stepSize = bufferSize / NCCL_STEPS = 512 KiB</span><br><span class="line"></span><br><span class="line">ALLREDUCE_SLICESTEPS = NCCL_STEPS / 4 = 2</span><br><span class="line">ALLREDUCE_CHUNKSTEPS = NCCL_STEPS / 2 = 4</span><br><span class="line"></span><br><span class="line">基础 slice 大小 = 2 × 512 KiB = 1 MiB</span><br><span class="line">基础 chunk 大小 = 4 × 512 KiB = 2 MiB</span><br></pre></td></tr></table></figure>
+<p>所以这里的 <strong>4 MiB 是整个可复用 SIMPLE buffer 的默认容量</strong>, 不是一个 chunk 的固定大小. 实际 chunk/slice 还会受消息大小, planner, tuner, 对齐和尾部处理影响.</p>
+<p><code>step</code> 是 buffer 槽位和流水进度的计数单位. 在简单环形 buffer 模型中, 通过 <code>(base + progress) % NCCL_STEPS</code> 找到复用的槽位. 一个 slice 可以覆盖多个 step, 也可以对应一个网络 request; NIC 还会按网络 MTU 等条件分包, 因而一个 step 或 slice 都不是一个固定的线上的 packet.</p>
+<p>Channel 是并行处理的数据通道, 可以重复处理多个 chunk 和多轮任务. 不能用 <code>总数据量 / 4 MiB</code> 直接推出 channel 数. <a target="_blank" rel="noopener" href="https://github.com/NVIDIA/nccl/blob/12df1a1/src/init.cc#L1006">默认 buffer</a>, <a target="_blank" rel="noopener" href="https://github.com/NVIDIA/nccl/blob/12df1a1/src/include/device.h#L26">step 常量</a>, <a target="_blank" rel="noopener" href="https://github.com/NVIDIA/nccl/blob/12df1a1/src/include/collectives.h#L19">collective 分片常量</a>, <a target="_blank" rel="noopener" href="https://github.com/NVIDIA/nccl/blob/12df1a1/src/enqueue/enqueue.cc#L2268">实际 chunk 计算</a>.</p>
+<h2 id="proxy-的-posted-transmitted-和-done">Proxy 的 posted, transmitted 和 done</h2>
+<p>在 CPU proxy 驱动的 NET 发送路径中, <code>sendProxyProgress()</code> 反复推进请求. <code>ncclProxyArgs</code> 可以包含多个 <code>subs[]</code>, <code>nsubs</code> 表示子操作数量. 每个 <code>sub</code> 有自己的连接, <code>channelId</code>, <code>nsteps</code>, 进度和 request 数组; <code>nsubs</code> 不是 slice 数, 也不必然等于 channel 数.</p>
+<p><img src="/images/nccl-init/proxy-progress.svg" alt="发送 proxy 中 done, transmitted 和 posted 的进度边界"></p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>代表的进度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sub-&gt;nsteps</code></td>
+<td>这个子操作总共需要推进多少 step</td>
+</tr>
+<tr>
+<td><code>sub-&gt;base</code></td>
+<td>本次操作在连接的累计 step 序列中的起点</td>
+</tr>
+<tr>
+<td><code>sub-&gt;posted</code></td>
+<td>已纳入发送窗口, 准备让 GPU 生产数据的进度</td>
+</tr>
+<tr>
+<td><code>sub-&gt;transmitted</code></td>
+<td>网络后端 <code>isend</code> 已接受并返回 request 的进度</td>
+</tr>
+<tr>
+<td><code>sub-&gt;done</code></td>
+<td>后端 <code>test</code> 已确认请求完成的进度</td>
+</tr>
+<tr>
+<td><code>sub-&gt;requests[slot]</code></td>
+<td>某个槽位对应的后端异步 request</td>
+</tr>
+<tr>
+<td><code>args-&gt;sliceSteps</code></td>
+<td>每次 slice 推进的 step 数</td>
+</tr>
+<tr>
+<td><code>maxDepth</code></td>
+<td>当前可开放窗口深度, 受 <code>NCCL_STEPS</code> 和共享资源限制</td>
+</tr>
+</tbody>
+</table>
+<p>在这条发送路径中, 可以按 <code>done &lt;= transmitted &lt;= posted &lt;= nsteps</code> 理解进度. 例如 <code>nsteps = 20</code>, 当前 <code>done = 4</code>, <code>transmitted = 8</code>, <code>posted = 12</code>, 表示:</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[0, 4)    后端已经确认完成</span><br><span class="line">[4, 8)    已有异步发送 request, 等待完成</span><br><span class="line">[8, 12)   已开放给 GPU 生产, 尚未被后端接受</span><br><span class="line">[12, 20)  尚未开放</span><br></pre></td></tr></table></figure>
+<p>这里 <code>nsteps = 20</code> 是总工作量; <code>posted - done = 8</code> 才是此时已开放但尚未完成的范围. 不能将 <code>nsteps</code> 当作窗口大小, 也不能把 proxy 的 <code>posted</code> 理解成已经向 NIC SQ 提交的 WQE 数.</p>
+<p>SIMPLE 发送大致经历三段:</p>
+<ol>
+<li>在窗口允许时推进 <code>posted</code>. 共享 buffer 路径还会发布 buffer offset 和相应进度.</li>
+<li>检查 GPU 发布的 <code>connFifo[slot].size</code> 和 <code>tail</code>, 确认数据可用后调用 <code>ncclNet-&gt;isend()</code>. 只有得到非空 request 才推进 <code>transmitted</code>; 返回成功但 request 为 NULL 表示本次尚未接受请求.</li>
+<li>调用 <code>ncclNet-&gt;test(request, ...)</code>. 请求完成后清理 FIFO size, 推进 <code>done</code>, 并按该 buffer 路径的规则发布可复用进度.</li>
+</ol>
+<p><code>sendProxyProgress()</code> 一次返回 <code>ncclSuccess</code> 只表示本次推进未报错. 当所有 sub 完成, <code>args-&gt;state</code> 才会变为 <code>ncclProxyOpNone</code>. <a target="_blank" rel="noopener" href="https://github.com/NVIDIA/nccl/blob/12df1a1/src/transport/net.cc#L1324">Proxy 状态推进</a>, <a target="_blank" rel="noopener" href="https://github.com/NVIDIA/nccl/blob/12df1a1/src/include/proxy.h#L129">Proxy 参数结构</a>.</p>
+<h2 id="net-ib-的-isend-最终如何使用-rdma">NET/IB 的 isend 最终如何使用 RDMA</h2>
+<p><code>isend</code> 是 <code>ncclNet_t</code> 网络后端接口中的函数指针. 选择内置 IB/RoCE 后端时, 它绑定到 <code>ncclIbIsend</code>, <code>test</code> 绑定到 <code>ncclIbTest</code>.</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">发送:</span><br><span class="line">sendProxyProgress</span><br><span class="line">  → ncclNet-&gt;isend</span><br><span class="line">    → ncclIbIsend</span><br><span class="line">      → ncclIbMultiSend</span><br><span class="line">        → wrap_ibv_post_send</span><br><span class="line">          → ibv_post_send</span><br><span class="line"></span><br><span class="line">完成检查:</span><br><span class="line">ncclNet-&gt;test</span><br><span class="line">  → ncclIbTest</span><br><span class="line">    → wrap_ibv_poll_cq</span><br><span class="line">      → 处理 CQE, 更新 request 的完成计数</span><br><span class="line">        → request 完成, proxy 推进 done</span><br></pre></td></tr></table></figure>
+<h3 id="isend-这个名字不表示底层一定使用-send-opcode">isend 这个名字不表示底层一定使用 SEND opcode</h3>
+<p>接收端先通过 CTS FIFO 发布可接收的地址, rkey, size, tag 等信息. <code>ncclIbIsend()</code> 检查匹配的接收信息是否就绪; 尚未就绪时可以返回 NULL request, 后续再试.</p>
+<p>随后 <code>ncclIbMultiSend()</code> 构造 RDMA WRITE 工作请求, 将 payload 写入接收端发布的地址. 最后的 WR 使用 <code>IBV_WR_RDMA_WRITE_WITH_IMM</code> 和 <code>IBV_SEND_SIGNALED</code>; 批量请求或特定路由条件下, 会将前面的数据 WRITE 与最后的通知 WR 分开. 因而不能将 NCCL 的 <code>isend</code> 接口名直接翻译成 verbs 的 SEND 操作. <a target="_blank" rel="noopener" href="https://github.com/NVIDIA/nccl/blob/12df1a1/src/transport/net_ib/common.cc#L244">后端接口绑定</a>, <a target="_blank" rel="noopener" href="https://github.com/NVIDIA/nccl/blob/12df1a1/src/transport/net_ib/p2p.cc#L275">CTS 检查</a>, <a target="_blank" rel="noopener" href="https://github.com/NVIDIA/nccl/blob/12df1a1/src/transport/net_ib/p2p.cc#L83">WRITE 与 immediate 通知</a>.</p>
+<h3 id="rc-的可靠完成和软件调用返回是两回事">RC 的可靠完成和软件调用返回是两回事</h3>
+<p>本文 NET/IB 主数据路径创建 RC QP. <code>ibv_post_send()</code> 返回成功, 表示工作请求被接受, 并不等待传输完成. RC 通过网卡的可靠传输与确认机制推进; NCCL 后续通过 CQ completion 检查请求是否完成. 所以不能把 RC/UC 的区别记成&quot;RC 的 isend 等 CQE 才返回, UC 提交后就返回&quot;. <a target="_blank" rel="noopener" href="https://github.com/NVIDIA/nccl/blob/12df1a1/src/transport/net_ib/connect.cc#L1196">QP 创建</a>, <a target="_blank" rel="noopener" href="https://github.com/NVIDIA/nccl/blob/12df1a1/src/transport/net_ib/p2p.cc#L924">完成轮询</a>, <a target="_blank" rel="noopener" href="https://man7.org/linux/man-pages/man3/ibv_post_send.3.html">verbs 提交接口</a>.</p>
+<p>普通 RDMA WRITE 不需要为 payload 消费接收端 RQ WQE; WRITE WITH IMM 需要接收 WQE 来承接完成通知. 如果没有合适的接收 WQE, RC 可能遇到 RNR 及重试. 这与交换机出口拥塞是不同问题, 也不代表网卡从 RQ 中取出 payload 的目标地址: WRITE 的目标地址来自 WR 中的远程地址和 rkey. 基础对象与完成通知可结合 <a href="/2026/10/19/computer_system_basics/network/rdma-basics/">RDMA 基础</a> 阅读.</p>
+<p>发送 request 完成后, 本地发送 buffer 可以按该请求的完成约定进入复用流程. 但这不说明远端 GPU 已经消费数据. 接收端还需要处理接收完成, 必要的 GPU 可见性/flush, 以及消费进度和 buffer 复用. <strong>本地提交, NIC 完成, 远端 GPU 消费, collective 完成</strong>, 分属不同层次.</p>
+<p>到这里, 源码的层次就可以连起来: <code>topo</code> 描述可走的硬件路径, <code>graph</code> 选择算法安排, <code>channel</code> 保存本 rank 的逻辑角色, <code>transport</code> 建立可用的 peer 连接, GPU 和 proxy 沿这些连接推进数据. 更底层的 RoCE 封装, ECN/PFC/DCQCN 和重传机制, 还要继续看 provider, NIC 固件和网络设备. 以上是固定版本的源码笔记, 不包含实际集群运行或性能测量.</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">Yuchen You (Wesley)</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2026/10/19/computer_system_basics/network/nccl-init-connections/">http://example.com/2026/10/19/computer_system_basics/network/nccl-init-connections/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/network/">network</a><a class="post-meta__tags" href="/tags/nccl/">nccl</a><a class="post-meta__tags" href="/tags/rdma/">rdma</a></div><div class="post_share"><div class="social-share" data-image="/img/me_new.jpeg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2026/11/02/mlsys/lora-qlora/" title="LoRA 与 QLoRA: 从低秩更新到 4-bit 微调"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Previous</div><div class="prev_info">LoRA 与 QLoRA: 从低秩更新到 4-bit 微调</div></div></a></div><div class="next-post pull-right"><a href="/2026/10/19/computer_system_basics/network/rdma-basics/" title="RDMA 基础"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Next</div><div class="next_info">RDMA 基础</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2026/10/19/computer_system_basics/network/rdma-basics/" title="RDMA 基础"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-19</div><div class="title">RDMA 基础</div></div></a></div><div><a href="/2025/01/13/computer_system_basics/network/1.%20OSI%20%E6%A6%82%E8%BF%B0%E4%B8%8E%E5%BA%94%E7%94%A8%E5%B1%82/" title="1. OSI 概述与应用层"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-01-13</div><div class="title">1. OSI 概述与应用层</div></div></a></div><div><a href="/2025/02/13/computer_system_basics/network/2.%20%E4%BC%A0%E8%BE%93%E5%B1%82/" title="2. 传输层"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-13</div><div class="title">2. 传输层</div></div></a></div><div><a href="/2025/03/11/computer_system_basics/network/3.%20%E7%BD%91%E7%BB%9C%E5%B1%82/" title="3. 网络层"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-03-11</div><div class="title">3. 网络层</div></div></a></div><div><a href="/2026/04/24/computer_system_basics/network/5.%20Docker%20%E7%BD%91%E7%BB%9C%E6%A0%88%E5%8D%8F%E8%AE%AE/" title="5. Docker 网络栈协议"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-04-24</div><div class="title">5. Docker 网络栈协议</div></div></a></div><div><a href="/2025/04/02/computer_system_basics/network/4.%20%E6%95%B0%E6%8D%AE%E9%93%BE%E8%B7%AF%E5%B1%82/" title="4. 数据链路层"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-04-02</div><div class="title">4. 数据链路层</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/me_new.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Yuchen You (Wesley)</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">137</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">82</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">2</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/1WesleyYou"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/1Wesleyyou" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yuchenxr@umich.edu" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://www.linkedin.com/in/yuchen-you-a74940314/?locale=en_US" target="_blank" title="LinkedIn"><i class="fab fa-linkedin" style="color: #4a4dbe;"></i></a><a class="social-icon" href="/Yuchen_CV.pdf" target="_blank" title="CV"><i class="fas fa-address-card" style="color: #251456;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%88%E5%8C%BA%E5%88%86-topo-graph-channel-%E5%92%8C-connection"><span class="toc-number">1.</span> <span class="toc-text">先区分 topo, graph, channel 和 connection</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96%E7%9A%84%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F"><span class="toc-number">2.</span> <span class="toc-text">初始化的执行顺序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#topo-system-%E4%BF%9D%E5%AD%98%E7%A1%AC%E4%BB%B6%E5%92%8C%E8%B7%AF%E5%BE%84"><span class="toc-number">3.</span> <span class="toc-text">Topo system 保存硬件和路径</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#links-%E6%98%AF%E7%9B%B4%E8%BF%9E%E8%BE%B9-paths-%E6%98%AF%E7%BB%84%E5%90%88%E8%B7%AF%E5%BE%84"><span class="toc-number">3.1.</span> <span class="toc-text">links 是直连边, paths 是组合路径</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#graph-%E6%8A%8A%E7%A1%AC%E4%BB%B6%E8%B7%AF%E5%BE%84%E5%8F%98%E6%88%90%E7%AE%97%E6%B3%95%E6%96%B9%E6%A1%88"><span class="toc-number">4.</span> <span class="toc-text">Graph 把硬件路径变成算法方案</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#nccltopocompute-%E5%9C%A8%E6%90%9C%E7%B4%A2%E4%BB%80%E4%B9%88"><span class="toc-number">4.1.</span> <span class="toc-text">ncclTopoCompute 在搜索什么</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#preset-%E5%92%8C-postset-%E6%8B%BC%E5%87%BA%E5%85%A8%E5%B1%80%E9%80%BB%E8%BE%91%E7%8E%AF"><span class="toc-number">5.</span> <span class="toc-text">Preset 和 Postset 拼出全局逻辑环</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#preset-%E6%8F%90%E5%8F%96%E8%8A%82%E7%82%B9%E5%86%85%E9%82%BB%E5%B1%85%E5%92%8C%E8%BE%B9%E7%95%8C"><span class="toc-number">5.1.</span> <span class="toc-text">Preset 提取节点内邻居和边界</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#postset-%E8%BF%9E%E6%8E%A5%E5%90%84%E8%8A%82%E7%82%B9%E7%9A%84%E7%89%87%E6%AE%B5"><span class="toc-number">5.2.</span> <span class="toc-text">Postset 连接各节点的片段</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#channel-%E8%AE%B0%E5%BD%95%E9%80%BB%E8%BE%91%E9%A1%BA%E5%BA%8F%E5%92%8C-peer-%E8%BF%9E%E6%8E%A5"><span class="toc-number">6.</span> <span class="toc-text">Channel 记录逻辑顺序和 peer 连接</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#transport-%E5%B0%86%E9%80%BB%E8%BE%91%E8%BE%B9%E8%90%BD%E5%AE%9E%E4%B8%BA%E5%8F%AF%E7%94%A8%E8%BF%9E%E6%8E%A5"><span class="toc-number">7.</span> <span class="toc-text">Transport 将逻辑边落实为可用连接</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#p2pconnect-%E6%A0%87%E8%AE%B0-p2psetup-%E5%BB%BA%E7%AB%8B"><span class="toc-number">7.1.</span> <span class="toc-text">P2pConnect 标记, P2pSetup 建立</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#transport-%E9%80%89%E6%8B%A9%E4%B8%8E-gdr"><span class="toc-number">7.2.</span> <span class="toc-text">Transport 选择与 GDR</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#connector-%E5%92%8C-conninfo"><span class="toc-number">7.3.</span> <span class="toc-text">Connector 和 ConnInfo</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96%E7%BB%93%E6%9D%9F%E6%97%B6-%E5%93%AA%E4%BA%9B%E8%BF%9E%E6%8E%A5%E5%B7%B2%E7%BB%8F%E5%BB%BA%E5%A5%BD"><span class="toc-number">7.4.</span> <span class="toc-text">初始化结束时, 哪些连接已经建好</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#buffer-step-slice-%E5%92%8C-chunk-%E7%9A%84%E5%A4%A7%E5%B0%8F"><span class="toc-number">8.</span> <span class="toc-text">Buffer, step, slice 和 chunk 的大小</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#proxy-%E7%9A%84-posted-transmitted-%E5%92%8C-done"><span class="toc-number">9.</span> <span class="toc-text">Proxy 的 posted, transmitted 和 done</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#net-ib-%E7%9A%84-isend-%E6%9C%80%E7%BB%88%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8-rdma"><span class="toc-number">10.</span> <span class="toc-text">NET&#x2F;IB 的 isend 最终如何使用 RDMA</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#isend-%E8%BF%99%E4%B8%AA%E5%90%8D%E5%AD%97%E4%B8%8D%E8%A1%A8%E7%A4%BA%E5%BA%95%E5%B1%82%E4%B8%80%E5%AE%9A%E4%BD%BF%E7%94%A8-send-opcode"><span class="toc-number">10.1.</span> <span class="toc-text">isend 这个名字不表示底层一定使用 SEND opcode</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#rc-%E7%9A%84%E5%8F%AF%E9%9D%A0%E5%AE%8C%E6%88%90%E5%92%8C%E8%BD%AF%E4%BB%B6%E8%B0%83%E7%94%A8%E8%BF%94%E5%9B%9E%E6%98%AF%E4%B8%A4%E5%9B%9E%E4%BA%8B"><span class="toc-number">10.2.</span> <span class="toc-text">RC 的可靠完成和软件调用返回是两回事</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/02/mlsys/lora-qlora/" title="LoRA 与 QLoRA: 从低秩更新到 4-bit 微调">LoRA 与 QLoRA: 从低秩更新到 4-bit 微调</a><time datetime="2026-11-01T16:00:00.000Z" title="Created 2026-11-02 00:00:00">2026-11-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/10/19/computer_system_basics/network/nccl-init-connections/" title="NCCL 初始化与连接建立">NCCL 初始化与连接建立</a><time datetime="2026-10-19T12:10:00.000Z" title="Created 2026-10-19 20:10:00">2026-10-19</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/10/19/computer_system_basics/network/rdma-basics/" title="RDMA 基础">RDMA 基础</a><time datetime="2026-10-19T08:00:00.000Z" title="Created 2026-10-19 16:00:00">2026-10-19</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/09/21/notes/network/nccl/prims_simple.h/" title="prims_simple.h">prims_simple.h</a><time datetime="2026-09-21T13:12:56.000Z" title="Created 2026-09-21 21:12:56">2026-09-21</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/09/02/mlsys/LanguageModel/10.kimi-linear/" title="Kimi Linear: An Expressive, Efficient Attention Architecture">Kimi Linear: An Expressive, Efficient Attention Architecture</a><time datetime="2026-09-02T15:43:10.000Z" title="Created 2026-09-02 23:43:10">2026-09-02</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2026 By Yuchen You (Wesley)</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">welcome to my blog!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/fireworks.min.js"></script><script defer="defer" id="fluttering_ribbon" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/canvas-fluttering-ribbon.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading the Database</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="Search for Posts" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=4.13.0"></script></div></div></body></html>
