@@ -4,6 +4,35 @@
   
     
     <entry>
+      <title>Theseus</title>
+      <link href="//2026/11/04/mlsys/theseus/"/>
+      <url>//2026/11/04/mlsys/theseus/</url>
+      
+        <content type="html"><![CDATA[<h2 id="motivation-与-method">Motivation 与 Method</h2><p>Motivation → Limitation → Gaps of SOTA → ideal → Solution;</p><p>只能在 init phase 定义, 选择 schedule, 而 runtime condition 在 evolving:</p><ul><li>workload characteristic;</li><li>hw health status;</li></ul><p>Method: schedule level adapter;</p><span id="more"></span><h2 id="4-个-challenge">4 个 Challenge</h2><ol><li>Flexible (可变 / 增改), Informed (观测层): 基于一个 cluster-wide runtime;</li><li>Schedule Consistency: 分布一致, 要求快收敛;</li><li>资源管理: GPU 显存;</li><li>Seamlessly 切换调度: 低时间性能 overhead;</li></ol><p>前两个对应 Dynamic Selection, 后两个对应 Hot Swapping;</p><h2 id="schedule-特征">Schedule 特征</h2><h3 id="4-层-schedule-分类">4 层 schedule 分类</h3><p>Global (Cluster) → GPU → TB → OP;</p><p>原稿在 Global 上标了 communicator, 在 TB 上标了 buffer;</p><h3 id="资源与-op">资源与 OP</h3><ul><li>Scratch Buffer;</li><li>Channels: MSCCL++ 核心抽象, RDMA 资源; PortChannel 旁标了 QP, MR;</li><li>Semaphore;</li></ul><p>4 类 OP: Local OP, Remote OP, Sync, Fusion;</p><h2 id="4-个问题场景">4 个问题场景</h2><ol><li>Shifting Load: MoE training AlltoAll;</li><li>Fail-slow ↔ OptCC;</li><li>Slow Synthesis:<ul><li>Scalability 问题: 大集群求解复杂度太大;</li><li>Comm Demands change frequently;</li></ul></li><li>Suboptimal: 即使用 α-β 估测, 仍局限于 off-the-shelf 估测而非实际, 有偏差效果;</li></ol><p>旁注: TECCL vs NCCL, 32 GPU; MILP vs α-β model tuning; 13 h;</p><h2 id="接口">接口</h2><table><thead><tr><th>接口</th><th>原稿写法</th></tr></thead><tbody><tr><td>endo attr</td><td><code>NewAttr(·)</code></td></tr><tr><td>exo attr</td><td><code>SetExo(·)</code></td></tr><tr><td>New Schedule</td><td><code>NewSched(·)</code></td></tr></tbody></table><p>New Schedule 要能支持:</p><ul><li>usability: 用 0-1 快速 Filter 一些不可用方案;</li><li>score;</li><li>replacement: 轻量级更换 → 可试错 / 逐步进步;</li></ul><p>Persistent: Replicate Log;</p><h2 id="context-consistency">Context Consistency</h2><h3 id="strawman-方法">Strawman 方法</h3><ul><li>Global Barrier: overhead 太大了;</li><li>Paxos / Raft: 多 stage 来收敛;</li><li>Centralized: hotspot, per rank tracking progress;</li></ul><h3 id="allreduce-与-agreement">AllReduce 与 Agreement</h3><p>利用 AllReduce 做集合操作 (原稿写 “并集”, 符号记为 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>∩</mo></mrow><annotation encoding="application/x-tex">\cap</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.55556em;vertical-align:0em;"></span><span class="mord">∩</span></span></span></span>), 以及 min 版本;</p><p>要求只达成 Agreement, 不要求最新版, 且是 Read Only. 因此确实需要 log 来 persist 所有版本;</p><p>同时仍采用 RSM 对称实现 → 没有相对热点;</p><ul><li>可以接受 Fail-Slow;</li><li>不可接受 Fail-Stop → 要额外支持;</li></ul><h2 id="materialization-与资源树">Materialization 与资源树</h2><p>Materialization: JSON() → 建连 + 发包 + 计算;</p><p>资源树: L0 Communicator → L1 Schedule → L2 Buffer → L3 Range;</p><table><thead><tr><th>层级</th><th>资源与原稿说明</th></tr></thead><tbody><tr><td>L0 Communicator</td><td>Scratch Buffer: 例如存中间结果用于 Reduce 的, 不同 schedule 可以共享之; FIFO queue: 指 NCCL 中 host 侧 proxy / progress 线程;</td></tr><tr><td>L1 Schedule</td><td>Sync primitive (semaphore): 同步原语对调度中 “谁来解锁” 完全且强烈依赖;</td></tr><tr><td>L2 Buffer</td><td>Buffer handle; Comm Channel: 主要指远端节点 Buffer, 如 <code>next-&gt;buf</code>; 更换连接;</td></tr><tr><td>L3 Range</td><td>Low level OP: 数据分段, 如 0-1 MiB, 1-2 MiB;</td></tr></tbody></table><h2 id="delta-migration-与-lazy-migration">Delta Migration 与 Lazy Migration</h2><p>Delta Migration: <strong>假设 (无验证)</strong> 新旧 schedule 之间很相似, 有资源可以复用;</p><p>Lazy Migration: 对于 RecTree 采用只改 path + tag 的方式, 不影响子树其余分支;</p><ul><li>path: 范围小很多 → efficiency;</li><li>tag: 低层级要知道上层换了而去更新 → correctness;</li></ul><p>例如 buffer handle: schedule 换了, peer 已不同 → remote buffer 要更新;</p><h2 id="tree-maintenance">Tree Maintenance</h2><p>实际遍历 tree + 复用资源;</p><table><thead><tr><th>状态</th><th>action</th></tr></thead><tbody><tr><td>Hit</td><td>资源都有, 按节点映射即可;</td></tr><tr><td>Miss</td><td>从缺失处新建分支;</td></tr><tr><td>tag 过期</td><td>迁移资源, 更新 tag (Delta Migration);</td></tr><tr><td>L0 变了</td><td>scratch 扩容;</td></tr></tbody></table><p>有 4 个状态, 且各自有 action → FSM 即可, 即 L0 → L1 → L2 → L3 traversal;</p><p>额外加一层 tag / scratch 检查 → 查找, 建立 kernel (填写 template) → 执行 kernel;</p><h2 id="eval">Eval</h2><p>2 MB 跑 PoC: 太小, 处于 α-β 性能边界;</p><p>Metrics: Init Time (IT), 初始资源的 Materialization 步骤推到 Runtime;</p><p>旁注: 对比的 NCCL v2.19 不支持 Runtime 扩张, 且从 s 级到 ms 级区别不会太大, 就只跑一次而已;</p><h2 id="手写原稿扫描版">手写原稿扫描版</h2><p><a href="/attachments/theseus_notes_scan.pdf">下载两页合并 PDF</a></p><h3 id="第-1-页">第 1 页</h3><p><img src="/images/theseus_notes_page_1.jpg" alt="theseus_notes_page_1.jpg"></p><h3 id="第-2-页">第 2 页</h3><p><img src="/images/theseus_notes_page_2.jpg" alt="theseus_notes_page_2.jpg"></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> papers </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> mlsys </tag>
+            
+            <tag> collective_communication </tag>
+            
+            <tag> runtime </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>LoRA 与 QLoRA</title>
       <link href="//2026/11/02/mlsys/lora-qlora/"/>
       <url>//2026/11/02/mlsys/lora-qlora/</url>
