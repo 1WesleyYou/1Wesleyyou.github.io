@@ -1,0 +1,302 @@
+<!DOCTYPE html><html lang="en-US" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>DPDK 和 dpu_shaper | Yuchen You</title><meta name="author" content="Yuchen You (Wesley)"><meta name="copyright" content="Yuchen You (Wesley)"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="这篇记录 10 月中下旬折腾的一个小东西: 在 BlueField-2 的 Arm 上用 DPDK 写一个逐帧严格限速的整形器 dpu_shaper, 让一张 100G 的网卡老老实实地扮演一根 10G &#x2F; 25G 的网线. 代码一共 800 来行 C, 但前后修了五个大 bug, 每个 bug 背后都是同一句话: 把限速从网卡里搬出来以后, 发送方就看不见它了. 前半篇讲为什么要做这件事以及 D">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DPDK 和 dpu_shaper">
+<meta property="og:url" content="http://example.com/2026/11/05/computer_system_basics/network/dpdk-dpu-shaper/index.html">
+<meta property="og:site_name" content="Yuchen You">
+<meta property="og:description" content="这篇记录 10 月中下旬折腾的一个小东西: 在 BlueField-2 的 Arm 上用 DPDK 写一个逐帧严格限速的整形器 dpu_shaper, 让一张 100G 的网卡老老实实地扮演一根 10G &#x2F; 25G 的网线. 代码一共 800 来行 C, 但前后修了五个大 bug, 每个 bug 背后都是同一句话: 把限速从网卡里搬出来以后, 发送方就看不见它了. 前半篇讲为什么要做这件事以及 D">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/img/me_new.jpeg">
+<meta property="article:published_time" content="2026-11-05T12:00:00.000Z">
+<meta property="article:modified_time" content="2026-11-05T20:17:38.233Z">
+<meta property="article:author" content="Yuchen You (Wesley)">
+<meta property="article:tag" content="network">
+<meta property="article:tag" content="dpdk">
+<meta property="article:tag" content="rdma">
+<meta property="article:tag" content="bluefield">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/me_new.jpeg"><link rel="shortcut icon" href="/img/hackerrank.svg"><link rel="canonical" href="http://example.com/2026/11/05/computer_system_basics/network/dpdk-dpu-shaper/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'DPDK 和 dpu_shaper',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-11-06 04:17:38'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 7.2.0"><link href="https://cdn.bootcss.com/KaTeX/0.11.1/katex.min.css" rel="stylesheet" />
+<style>
+.obsidian-callout { margin: 1em 0; }
+.obsidian-callout blockquote { border-left: none; margin: 0; padding: 0; background: transparent; }
+.obsidian-callout p { margin: 0.4em 0; }
+.obsidian-callout details > summary { list-style: none; }
+.obsidian-callout details > summary::-webkit-details-marker { display: none; }
+</style></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/me_new.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">140</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">87</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">2</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/math_master.jpeg')"><nav id="nav"><span id="blog-info"><a href="/" title="Yuchen You"><img class="site-icon" src="/img/avatar.png"/><span class="site-name">Yuchen You</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> Search</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">DPDK 和 dpu_shaper</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2026-11-05T12:00:00.000Z" title="Created 2026-11-05 20:00:00">2026-11-05</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2026-11-05T20:17:38.233Z" title="Updated 2026-11-06 04:17:38">2026-11-06</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/notes/">notes</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="DPDK 和 dpu_shaper"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p>这篇记录 10 月中下旬折腾的一个小东西: 在 BlueField-2 的 Arm 上用 DPDK 写一个逐帧严格限速的整形器 <code>dpu_shaper</code>, 让一张 100G 的网卡老老实实地扮演一根 10G / 25G 的网线. 代码一共 800 来行 C, 但前后修了五个大 bug, 每个 bug 背后都是同一句话: <strong>把限速从网卡里搬出来以后, 发送方就看不见它了</strong>.</p>
+<p>前半篇讲为什么要做这件事以及 DPDK 是什么, 后半篇按时间顺序讲每个 bug 怎么发现, 怎么修.</p>
+<h2 id="起因-vf-限速是个假的-25g">起因: VF 限速是个假的 25G</h2>
+<p>我们的实验需要模拟 “某个节点网卡变慢了” 的场景 (straggler). 最省事的做法是给这个节点的 VF 设 <code>max_tx_rate</code>, 比如 25G. 长期平均看, 它确实是 25G.</p>
+<p>问题出在短时间尺度. VF 的限速器是一个 token bucket: 额度按 cap 的速度补充, 这一点很正常; 离谱的是两件事:</p>
+<ul>
+<li><strong>桶很深.</strong> 6.25G 下空闲 100 ms 能攒 60-110 MiB 的额度.</li>
+<li><strong>冲的速度不设上限.</strong> 有额度时, VF 以网卡内部的速度 (约 98G) 把数据整块冲出去.</li>
+</ul>
+<p>NCCL 的每一步之间恰好有几百微秒的空档. 25G 下空 356 µs 就攒出约 1 MB, 正好够下一个 1 MiB 的 step 整块冲出去. 于是 “25G 的慢节点” 每一步都在用 98G 发, <s>这 straggler 比健康节点还快</s>.</p>
+<p><img src="/images/dpu-shaper-bucket.png" alt="dpu-shaper-bucket.png"></p>
+<p>一开始想的是绕过去: 在同一个 VF 上挂一条背景填充流, 把空档填满, 让桶攒不下额度. 实测下来, 1G 的常驻小流几乎没用 (攒额度的速度只慢了 4%); 要压住 burst, 填充流必须在 NCCL 不发的时候顶满速, 再把 cap 调高来补偿. 调到最好也只能把 burst 压到 1.1-1.6 倍, 做不到逐包严格.</p>
+<p>所以结论很简单: 真实的 25G 网线物理上就不可能超过 25G, 要模拟它, 限速只能挪到网卡外面去做, 而且要逐帧做.</p>
+<h2 id="dpdk-是什么">DPDK 是什么</h2>
+<p>正好 BF2 不只是网卡, 它是一张 DPU: 卡上自带 8 个 Cortex-A72 核, 能跑完整的 Linux. 切到 DPU 模式以后, 主机上每个 VF 在 Arm 这边都有一个代表端口 (representor), VF 发出来的帧可以被引到 Arm 上, 由 Arm 决定什么时候放上线. 在 Arm 上做转发, 有两条路:</p>
+<ul>
+<li>内核 <code>tc</code> (htb + 队列): 不用写代码, 但 A72 的内核转发大概率扛不住几十 G 的 RoCE.</li>
+<li>DPDK: 自己写一个用户态转发程序.</li>
+</ul>
+<p>我们选了 DPDK. 那 DPDK 到底是什么?</p>
+<p>一句话: <strong>DPDK 把网卡驱动搬到用户态, 用一个独占的 CPU 核死循环轮询网卡, 绕开整个内核协议栈.</strong> 内核收一个包要经过中断, 分配 <code>sk_buff</code>, 协议栈, 拷贝, 系统调用, 包小速率高的时候 CPU 先被这些开销吃满了. DPDK 的路径短得多: 网卡 DMA 直接把帧写进用户态的内存池, 应用拿到的是指针.</p>
+<p><img src="/images/dpu-shaper-dpdk.png" alt="dpu-shaper-dpdk.png"></p>
+<p>写 DPDK 程序会碰到的几个概念:</p>
+<table>
+<thead>
+<tr>
+<th>概念</th>
+<th>是什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EAL (<code>rte_eal_init</code>)</td>
+<td>环境抽象层. 程序第一件事就是调它, 它负责解析 <code>-l 0-5</code> 这类参数, 绑核, 映射大页, 探测网卡</td>
+</tr>
+<tr>
+<td>lcore</td>
+<td>DPDK 的 “逻辑核”, 一个 lcore 对应一个被钉死的线程. 和 <code>taskset</code> 的区别是 EAL 会把线程直接创建在指定核上, 并且约定这个核不干别的</td>
+</tr>
+<tr>
+<td>hugepage</td>
+<td>2 MB / 1 GB 的大页. mbuf 内存池放在这里, TLB miss 少, 物理地址连续, 网卡能直接 DMA</td>
+</tr>
+<tr>
+<td><code>rte_mbuf</code> / mempool</td>
+<td>每个帧一个 mbuf, 由 <code>rte_pktmbuf_pool_create</code> 预先分配好, 收发时只在池子里借还, 不 malloc</td>
+</tr>
+<tr>
+<td>PMD</td>
+<td>Poll Mode Driver, 用户态驱动. Mellanox 的是 mlx5, 它比较特殊, 是和内核驱动共存的 (bifurcated), 不需要把网卡从内核解绑</td>
+</tr>
+<tr>
+<td><code>rte_eth_rx_burst</code> / <code>tx_burst</code></td>
+<td>一次收发一批帧 (我们用 32). 所有 DPDK 程序的主循环都长这个样</td>
+</tr>
+<tr>
+<td><code>rte_flow</code></td>
+<td>往网卡硬件里写匹配规则. 我们用它让 RX 方向的帧在 eSwitch 里直接送到 VF, 不进 Arm</td>
+</tr>
+<tr>
+<td>representor</td>
+<td>DPU 模式下, Arm 侧代表某个主机 VF 的端口. 用 <code>-a &lt;PCI&gt;,representor=vf[0-4]</code> 打开</td>
+</tr>
+</tbody>
+</table>
+<p>DPDK 本身只管 “把包高效地搬进搬出”, 不带 TCP/IP 协议栈. 学术界那一串内核旁路的工作 (IX, Arrakis, 再到 Shenango, Shinjuku 这些调度系统) 大多是站在 DPDK 或类似机制上往上搭的. 另外, DPDK 官方没有 Rust 接口 (截至写这篇时只有一个 RFC), 所以老老实实写 C.</p>
+<h2 id="dpu-shaper-的设计">dpu_shaper 的设计</h2>
+<p>整体结构如下: 主机上每个 rank 一个容器, 一个 VF. TX 方向的每一帧都先绕进 Arm 内存, 在 Arm 上按一根虚拟网线的时钟出队, 再上线; RX 方向不整形, 用 eSwitch 的 transfer rule 按目的 MAC 直接送到 VF, 不碰 Arm CPU.</p>
+<p><img src="/images/dpu-shaper-arch.png" alt="dpu-shaper-arch.png"></p>
+<p>整形的核心是一根 “虚拟网线”: 每个 VF 维护 <code>next_free_ps</code>, 也就是这根线下一次空闲的时刻. 每帧占用 <code>(len + 24 B) x 8 / rate</code> 的线时间 (24 B = FCS + 前导码 + 帧间隙). 帧的出发时刻 = max(线空闲时刻, 帧到达时刻). 这和 token bucket 的本质区别是: 线空着的时候什么也攒不下.</p>
+<p>整形逻辑 <code>shaper.c</code> 不依赖 DPDK, 帧对它来说只是不透明指针, 可以单独写单测. 主循环每次 poll 做三件事:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">uint16_t</span> n = rte_eth_rx_burst(p-&gt;cfg.port, <span class="number">0</span>, pkts, want);  <span class="comment">// want = 队列剩余空间</span></span><br><span class="line"><span class="type">uint64_t</span> now = now_ps();                                     <span class="comment">// rx 返回后才读时钟</span></span><br><span class="line"><span class="keyword">for</span> (<span class="type">uint16_t</span> i = <span class="number">0</span>; i &lt; n; i++)</span><br><span class="line">  shaper_enqueue(&amp;p-&gt;sh, pkts[i], rte_pktmbuf_pkt_len(pkts[i]),</span><br><span class="line">                 flow_of(pkts[i]), now);                     <span class="comment">// flow = RoCE dst QP</span></span><br><span class="line"><span class="type">uint32_t</span> k = shaper_peek_due(&amp;p-&gt;sh, now, due, BURST);       <span class="comment">// 只看, 不动时钟</span></span><br><span class="line"><span class="type">uint16_t</span> sent = send_in_order(due, k, p-&gt;cfg.egress, txq);</span><br><span class="line">shaper_commit(&amp;p-&gt;sh, now, sent);                            <span class="comment">// 网卡收了几个才提交几个</span></span><br></pre></td></tr></table></figure>
+<p>peek / commit 拆开是因为 <code>tx_burst</code> 可能只收下一部分. 网卡没收的帧留在队头, 时钟只为真正发出去的帧前进, 顺序和时钟都不会乱. 队列满了就不收 (<code>want</code> 变小), 积压留在网卡的 RX ring 里, 整形器自己从不主动丢包.</p>
+<h3 id="先在没有-bf-的机器上验证-10-16">先在没有 BF 的机器上验证 (10-16)</h3>
+<p>BF2 的预约要等到 10-20, 先在 CloudLab 一台 CX-5 的 r7525 上验证整形逻辑. 没有 Arm, 就在 x86 上跑 shaper, 用 4 个 VF 拼一个 “bump in the wire”: 发送方的帧先被引到 shaper 占着的 VF, 整形以后再转给接收方.</p>
+<p>这里先踩了两个小坑:</p>
+<ul>
+<li>switchdev 模式下, 这块 CX-5 上 VF 发的帧到不了 representor 的收队列, 连内核 bridge 都不通, 只好退回 legacy 模式手搭.</li>
+<li>shaper 占着的 VF 要用 devlink 关掉 RoCE (<code>enable_roce=false</code>), 否则网卡把 UDP 4791 直接交给 RDMA 引擎, DPDK 根本收不到.</li>
+</ul>
+<p>结果是: shaper 限 25G 时, 空闲任意久之后发 1 MiB 都稳定在 22.6 Gb/s, 同条件下 VF cap 冲到 98 Gb/s; 限 10G 时所有点都在 9.2-9.3 Gb/s. 另外队列 8192 帧在大流量下会丢, 默认改成了 32768. 逻辑是对的, 剩下就是上真机.</p>
+<h2 id="bug-1-上了-bf2-nccl-直接冻住">Bug 1: 上了 BF2, NCCL 直接冻住</h2>
+<p>10-20 上了真 BF2, 切 DPU 模式, perftest 跑整形一切完美. 然后换 NCCL, 64 KiB 的 AllReduce 要 137.6 ms, 基本等于死了.</p>
+<p><img src="/images/dpu-shaper-bug1.png" alt="dpu-shaper-bug1.png"></p>
+<p>查下来是三个根因叠在一起, 按影响大小排:</p>
+<ol>
+<li><strong>ECE.</strong> NCCL 会和对端协商 ECE, 协商成功后 QP 用上固件基于 RTT 的拥塞控制. RTT 探测包也要绕 Arm 的软件队列, 测出来的 RTT 虚高, 固件以为网络堵死了, 把每个 QP 压到最低速. perftest 不协商 ECE, 所以它测不出来. <code>NCCL_IB_ECE_ENABLE=0</code> 以后, 137.6 ms 变成 0.26 ms.</li>
+<li><strong>一个 VF 一条 FIFO.</strong> VF 会把所有 QP 贴上来的数据一口气倒进 Arm, 一个几十字节的 ACK 或者 NCCL 的 CTS 排在别的 QP 几 MB 数据后面, 时延从 5.6 µs 变成 1187 µs. 真网卡是按 QP 仲裁的, 所以 shaper 也照做: 每个 VF 下 64 个子队列, 按 RoCE 目的 QP 分流, 逐帧轮转, 总速率仍然是一根线的时钟. ACK 回到 7.2 µs.</li>
+<li><strong>RX ring 太小.</strong> 1024 帧, VF 一波 burst 就溢出, 丢包触发 RoCE 重传, NCCL 卡在重传超时上. 加到 8192, 最后加到网卡上限 32768.</li>
+</ol>
+<p>修完以后对称 ring 跑 640 MiB, 抖动只有 0.2%. 不过 Arm 的软件转发总共只能扛约 40 Gb/s, 一个节点上 3 个 rank, 所以每个 rank 只能降到 10G 跑.</p>
+<h2 id="bug-2-两块-arm-前后脚宕机">Bug 2: 两块 Arm 前后脚宕机</h2>
+<p>同一天下午, 两块 Arm 前后脚失联, 主机之间的网络也跟着断了 (DPU 模式下 eSwitch 归 Arm 管, Arm 死了大家一起死). 我当时正好在 Arm 上编一个诊断版本, 第一反应是 “诊断版本把 Arm 搞崩了”. 翻了 <code>journalctl -b -1</code> 才发现冤枉它了: 崩的时候诊断版本根本没在跑.</p>
+<p><img src="/images/dpu-shaper-bug2.png" alt="dpu-shaper-bug2.png"></p>
+<p>日志里是 BFB 自带的 OVS (开着 hw-offload) 在往 eSwitch 写 offload 规则, 内核的 mlx5 软件 steering 写完 ICM 以后死等一个永远不来的完成, CPU 软锁死; 另一个 OVS 线程攥着 RTNL 卡在 <code>rcu_barrier</code> 上, 整个网络控制面冻结.</p>
+<p>推断的根因是 eSwitch 的转发表有两个主人: OVS 通过内核 tc 写, 我们的 DPDK 通过 <code>rte_flow</code> 写. 之前我为了做对照实验, 把 VF representor 加进 OVS 又删掉, 制造了一大波规则增删; 每次重启 shaper 还会有一个 transfer rule 的空窗, RoCE 帧掉进内核网桥, OVS 又学到新流. 这些都没被单独证实是触发器, 所以规避方法比较保守: shaper 跑着的时候不碰 OVS 端口, 更彻底的做法是关掉 OVS 的 hw-offload.</p>
+<h2 id="bug-3-发送方看不见中间盒">Bug 3: 发送方看不见中间盒</h2>
+<p>接下来两个问题本质是同一件事: 真网卡的发送调度器就在 QP 旁边, 而现在它变成了 QP 看不见的一个软件盒子.</p>
+<p><img src="/images/dpu-shaper-bug3.png" alt="dpu-shaper-bug3.png"></p>
+<p><strong>没法反压.</strong> 真网卡缺带宽时只是不出队, QP 自己等着, 永远不会在发送调度器里丢包. 现在 VF 根本不知道后面有人排队, 只管把 NCCL 贴上来的东西往 Arm 里倒. 一个节点 3 个 VF, Arm 入口总共 40G, 倒多了就在入口丢帧 (<code>imissed</code>). RoCE RC 是 go-back-N, 丢一帧整窗超时重传, 上万帧就是几百 ms.</p>
+<p>能用的手段只有在 VF 上再加一道 <code>devlink tx_max</code> 当 “阀门”, 结果两头不是人: 开小了每一步进 Arm 变慢, ring 慢 6%; 开大了 (3x) 又超 40G 接着丢; 更讽刺的是这个阀门自己就是 token bucket. 最后 40 MiB 以下的 buffer 靠加大队列 (262144 帧) 修好了, 80 MiB 那一档仍然会随机丢, 触发条件至今没钉死, 那一档只认 0 丢包的运行.</p>
+<p><strong>假重传.</strong> 第二天发现, buffer 一大 (&gt;= 1 MiB), 慢节点的端口就比模型多发 10-38% 的字节, 但 VF 上所有 RDMA 错误计数都是 0. 原因是 <code>NCCL_IB_TIMEOUT=6</code>, ACK 超时只有约 268 µs, 而一个 MB 级的写在 shaper 的队列里要排毫秒级. ACK 只是来晚了, 网卡却判定丢包, 重传整段. VF 上又没有重传计数器, 所以表面上一切正常. 改成 14 (约 67 ms) 以后多发的字节消失, 2.5 MiB buffer 还快了 20%.</p>
+<h2 id="bug-4-追赶深度给多少都不对">Bug 4: 追赶深度给多少都不对</h2>
+<p>到这里 shaper 能用了, 但有一个数一直很别扭: 裸 RDMA 跑 10G 只有 9.18G, NCCL 对称 ring 只到理想时间的 1.17 倍.</p>
+<p>回头看最初的设计, 空闲之后线最多允许领先现实 <code>depth</code> = 2 帧, 这本来是为了不攒额度. 但它有一个副作用: Arm 是个普通 CPU, 轮询偶尔会晚到. 晚到的这段时间里, 帧其实已经到了, 真实的网线早就把它们发出去了, 而 shaper 只允许追回 2 帧, 剩下的线时间永久丢失.</p>
+<p><img src="/images/dpu-shaper-bug4.png" alt="dpu-shaper-bug4.png"></p>
+<p>第一反应是把 depth 加到 16 帧. 线速确实跑满了, 但空闲之后会先冲一段, 瞬时 18.9G, 等于又把空闲时间当成额度攒起来了. 这是在 shaper 里重新发明 token bucket, 否掉.</p>
+<p>最后的改法是给每一帧盖一个到达时间戳 (<code>rx_burst</code> 返回后读的 TSC), 出发时刻改成:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">start = max(next_free, arrive, now - 64 帧)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>卡顿期间已经到达的帧可以补发, 因为真实的线这时候本来就在发它们. 补发时局部看会快一点, 但任何时刻累计发出的字节都不超过一根真线面对同样到达序列时能发的量.</li>
+<li>线空着的时候没有帧到达, 就没有东西可补, 也就攒不出额度. 空闲后 64 KiB 的瞬时速率实测 9.55G.</li>
+<li><code>now - 64 帧</code> 只是一个安全上限: Arm 真卡上几毫秒, 也不能一下子放出几毫秒的帧.</li>
+</ul>
+<p>结果裸 RDMA 9.80G (满速), ring 从 1.172 倍降到 1.005 倍. 顺带的代价是, 之前在旧 shaper 上得出的好几个结论 (比如 “小 buffer 更快”) 其实主要来自 ring 被旧 shaper 拖慢, 全部作废重做.</p>
+<h2 id="bug-5-两个-qp-撞进同一个子队列">Bug 5: 两个 QP 撞进同一个子队列</h2>
+<p>10-27 跑另一套实现 (MSCCL++) 时, 同一个配置一会儿快一会儿慢, 呈双峰, 慢的那几次还伴随着上千个重复包, 但 Arm 的丢帧计数一直是 0.</p>
+<p><img src="/images/dpu-shaper-bug5.png" alt="dpu-shaper-bug5.png"></p>
+<p>问题出在 bug 1 修出来的那 64 个子队列: 子队列号 = (目的 QP + 1) % 64. 两个 QP 号差 64 的倍数, 就撞进同一个 FIFO, 一个几十字节的原子回执排在另一个 QP 几 MB 的数据后面. 流水线等回执, 这一次就慢了; 回执迟到又让网卡的自适应重传误判, 于是有了重复包. 每次运行建出来的 QP 号都不一样, 撞不撞全看运气, 所以是双峰.</p>
+<p>怀疑归怀疑, 得钉死. 做法是用 loopback 的 perftest QP 先占掉一些 QP 号, 把 NCCL 的 QP 号固定成一组一定会撞的组合, 新旧 shaper 交替 A/B: 旧版 8 次全慢, 新版全快. 再故意改成 key % 4 让它多撞, 直接慢到 1.3-1.5 倍.</p>
+<p>修法是每个 key 独占一个子队列, 子队列空了才让给别的 key; 只有同时积压的 key 超过 64 个, 才退回 key % 64 当 guest (O(1), 并计数). 真网卡本来就是按 QP 仲裁的, 这只是让 shaper 更像真网卡.</p>
+<h2 id="回头看">回头看</h2>
+<p>五个 bug 摆在一起, 共同的根其实就一个: 限速原来住在网卡的调度器里, 现在被搬到了一个发送方看不见的软件中间盒里. 于是 RTT 被拉长 (ECE 误判, ACK 超时), 没有反压 (丢包), “交给网卡” 不再等于 “上了线”, QP 之间的仲裁得自己重写 (FIFO, 子队列冲突).</p>
+<p>修的过程中我们一直用同一把尺子: <strong>一块真实的物理网卡会怎么做.</strong> 它没有突发额度, 它的发送调度器不丢包, 它按 QP 仲裁. 每一次改动都是在补 shaper 和真网卡之间的一个差距, 而不是为了让某个算法跑得更快. 反过来, 也不能为了让实验结果好看去调 shaper, 否则就是作弊了. 另外, shaper 每改一次, 之前的数据都要整体作废, 不能和新数据混在一起比.</p>
+<p>还没收尾的:</p>
+<ul>
+<li>80 MiB buffer 那一档的随机丢包, 触发条件没查清.</li>
+<li>CX-5 上 switchdev 的 representor 路径没走通.</li>
+<li>讨论过但没做的: 按目的 IP 分别限速, 运行时动态改速率, 以及在 Arm 上给拥塞的帧打 ECN 标记, 让真正的 DCQCN 去降速.</li>
+</ul>
+<div class="obsidian-callout callout-图源" style="border-left: 4px solid #448aff; background: #448aff11; border-radius: 4px; padding: 0; margin: 1em 0;">
+  <div style="padding: 8px 16px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+    <span>📝</span> <span><br></span>
+  </div>
+  <div style="padding: 4px 16px 12px 16px;">文中的图都用 Excalidraw 画, 源文件在 <code>source/_assets/excalidraw/dpu-shaper/</code>, 可以在 Obsidian 的 Excalidraw 插件里直接打开改.</p></div>
+</div>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">Yuchen You (Wesley)</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2026/11/05/computer_system_basics/network/dpdk-dpu-shaper/">http://example.com/2026/11/05/computer_system_basics/network/dpdk-dpu-shaper/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/network/">network</a><a class="post-meta__tags" href="/tags/dpdk/">dpdk</a><a class="post-meta__tags" href="/tags/rdma/">rdma</a><a class="post-meta__tags" href="/tags/bluefield/">bluefield</a></div><div class="post_share"><div class="social-share" data-image="/img/me_new.jpeg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2026/11/04/computer_system_basics/structure_algorithm/milp-smt/" title="MILP 与 SMT"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Next</div><div class="next_info">MILP 与 SMT</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2026/10/19/computer_system_basics/network/rdma-basics/" title="RDMA 基础"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-19</div><div class="title">RDMA 基础</div></div></a></div><div><a href="/2026/10/19/computer_system_basics/network/nccl-init-connections/" title="NCCL 初始化与连接建立"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-19</div><div class="title">NCCL 初始化与连接建立</div></div></a></div><div><a href="/2025/02/13/computer_system_basics/network/2.%20%E4%BC%A0%E8%BE%93%E5%B1%82/" title="2. 传输层"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-13</div><div class="title">2. 传输层</div></div></a></div><div><a href="/2025/01/13/computer_system_basics/network/1.%20OSI%20%E6%A6%82%E8%BF%B0%E4%B8%8E%E5%BA%94%E7%94%A8%E5%B1%82/" title="1. OSI 概述与应用层"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-01-13</div><div class="title">1. OSI 概述与应用层</div></div></a></div><div><a href="/2025/03/11/computer_system_basics/network/3.%20%E7%BD%91%E7%BB%9C%E5%B1%82/" title="3. 网络层"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-03-11</div><div class="title">3. 网络层</div></div></a></div><div><a href="/2025/04/02/computer_system_basics/network/4.%20%E6%95%B0%E6%8D%AE%E9%93%BE%E8%B7%AF%E5%B1%82/" title="4. 数据链路层"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-04-02</div><div class="title">4. 数据链路层</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/me_new.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Yuchen You (Wesley)</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">140</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">87</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">2</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/1WesleyYou"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/1Wesleyyou" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:yuchenxr@umich.edu" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://www.linkedin.com/in/yuchen-you-a74940314/?locale=en_US" target="_blank" title="LinkedIn"><i class="fab fa-linkedin" style="color: #4a4dbe;"></i></a><a class="social-icon" href="/Yuchen_CV.pdf" target="_blank" title="CV"><i class="fas fa-address-card" style="color: #251456;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B5%B7%E5%9B%A0-vf-%E9%99%90%E9%80%9F%E6%98%AF%E4%B8%AA%E5%81%87%E7%9A%84-25g"><span class="toc-number">1.</span> <span class="toc-text">起因: VF 限速是个假的 25G</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#dpdk-%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">2.</span> <span class="toc-text">DPDK 是什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#dpu-shaper-%E7%9A%84%E8%AE%BE%E8%AE%A1"><span class="toc-number">3.</span> <span class="toc-text">dpu_shaper 的设计</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%88%E5%9C%A8%E6%B2%A1%E6%9C%89-bf-%E7%9A%84%E6%9C%BA%E5%99%A8%E4%B8%8A%E9%AA%8C%E8%AF%81-10-16"><span class="toc-number">3.1.</span> <span class="toc-text">先在没有 BF 的机器上验证 (10-16)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#bug-1-%E4%B8%8A%E4%BA%86-bf2-nccl-%E7%9B%B4%E6%8E%A5%E5%86%BB%E4%BD%8F"><span class="toc-number">4.</span> <span class="toc-text">Bug 1: 上了 BF2, NCCL 直接冻住</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#bug-2-%E4%B8%A4%E5%9D%97-arm-%E5%89%8D%E5%90%8E%E8%84%9A%E5%AE%95%E6%9C%BA"><span class="toc-number">5.</span> <span class="toc-text">Bug 2: 两块 Arm 前后脚宕机</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#bug-3-%E5%8F%91%E9%80%81%E6%96%B9%E7%9C%8B%E4%B8%8D%E8%A7%81%E4%B8%AD%E9%97%B4%E7%9B%92"><span class="toc-number">6.</span> <span class="toc-text">Bug 3: 发送方看不见中间盒</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#bug-4-%E8%BF%BD%E8%B5%B6%E6%B7%B1%E5%BA%A6%E7%BB%99%E5%A4%9A%E5%B0%91%E9%83%BD%E4%B8%8D%E5%AF%B9"><span class="toc-number">7.</span> <span class="toc-text">Bug 4: 追赶深度给多少都不对</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#bug-5-%E4%B8%A4%E4%B8%AA-qp-%E6%92%9E%E8%BF%9B%E5%90%8C%E4%B8%80%E4%B8%AA%E5%AD%90%E9%98%9F%E5%88%97"><span class="toc-number">8.</span> <span class="toc-text">Bug 5: 两个 QP 撞进同一个子队列</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9E%E5%A4%B4%E7%9C%8B"><span class="toc-number">9.</span> <span class="toc-text">回头看</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/05/computer_system_basics/network/dpdk-dpu-shaper/" title="DPDK 和 dpu_shaper">DPDK 和 dpu_shaper</a><time datetime="2026-11-05T12:00:00.000Z" title="Created 2026-11-05 20:00:00">2026-11-05</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/04/computer_system_basics/structure_algorithm/milp-smt/" title="MILP 与 SMT">MILP 与 SMT</a><time datetime="2026-11-03T16:00:00.000Z" title="Created 2026-11-04 00:00:00">2026-11-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/04/mlsys/theseus/" title="Theseus">Theseus</a><time datetime="2026-11-03T16:00:00.000Z" title="Created 2026-11-04 00:00:00">2026-11-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/02/mlsys/lora-qlora/" title="LoRA 与 QLoRA">LoRA 与 QLoRA</a><time datetime="2026-11-01T16:00:00.000Z" title="Created 2026-11-02 00:00:00">2026-11-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/10/19/computer_system_basics/network/nccl-init-connections/" title="NCCL 初始化与连接建立">NCCL 初始化与连接建立</a><time datetime="2026-10-19T12:10:00.000Z" title="Created 2026-10-19 20:10:00">2026-10-19</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2026 By Yuchen You (Wesley)</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">welcome to my blog!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/fireworks.min.js"></script><script defer="defer" id="fluttering_ribbon" mobile="false" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/canvas-fluttering-ribbon.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading the Database</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="Search for Posts" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=4.13.0"></script></div></div></body></html>

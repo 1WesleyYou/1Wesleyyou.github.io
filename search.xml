@@ -4,27 +4,29 @@
   
     
     <entry>
-      <title>Theseus</title>
-      <link href="//2026/11/04/mlsys/theseus/"/>
-      <url>//2026/11/04/mlsys/theseus/</url>
+      <title>DPDK 和 dpu_shaper</title>
+      <link href="//2026/11/05/computer_system_basics/network/dpdk-dpu-shaper/"/>
+      <url>//2026/11/05/computer_system_basics/network/dpdk-dpu-shaper/</url>
       
-        <content type="html"><![CDATA[<h2 id="motivation-与-method">Motivation 与 Method</h2><p>Motivation → Limitation → Gaps of SOTA → ideal → Solution;</p><p>只能在 init phase 定义, 选择 schedule, 而 runtime condition 在 evolving:</p><ul><li>workload characteristic;</li><li>hw health status;</li></ul><p>Method: schedule level adapter;</p><span id="more"></span><h2 id="4-个-challenge">4 个 Challenge</h2><ol><li>Flexible (可变 / 增改), Informed (观测层): 基于一个 cluster-wide runtime;</li><li>Schedule Consistency: 分布一致, 要求快收敛;</li><li>资源管理: GPU 显存;</li><li>Seamlessly 切换调度: 低时间性能 overhead;</li></ol><p>前两个对应 Dynamic Selection, 后两个对应 Hot Swapping;</p><h2 id="schedule-特征">Schedule 特征</h2><h3 id="4-层-schedule-分类">4 层 schedule 分类</h3><p>Global (Cluster) → GPU → TB → OP;</p><p>原稿在 Global 上标了 communicator, 在 TB 上标了 buffer;</p><h3 id="资源与-op">资源与 OP</h3><ul><li>Scratch Buffer;</li><li>Channels: MSCCL++ 核心抽象, RDMA 资源; PortChannel 旁标了 QP, MR;</li><li>Semaphore;</li></ul><p>4 类 OP: Local OP, Remote OP, Sync, Fusion;</p><h2 id="4-个问题场景">4 个问题场景</h2><ol><li>Shifting Load: MoE training AlltoAll;</li><li>Fail-slow ↔ OptCC;</li><li>Slow Synthesis:<ul><li>Scalability 问题: 大集群求解复杂度太大;</li><li>Comm Demands change frequently;</li></ul></li><li>Suboptimal: 即使用 α-β 估测, 仍局限于 off-the-shelf 估测而非实际, 有偏差效果;</li></ol><p>旁注: TECCL vs NCCL, 32 GPU; MILP vs α-β model tuning; 13 h;</p><h2 id="接口">接口</h2><table><thead><tr><th>接口</th><th>原稿写法</th></tr></thead><tbody><tr><td>endo attr</td><td><code>NewAttr(·)</code></td></tr><tr><td>exo attr</td><td><code>SetExo(·)</code></td></tr><tr><td>New Schedule</td><td><code>NewSched(·)</code></td></tr></tbody></table><p>New Schedule 要能支持:</p><ul><li>usability: 用 0-1 快速 Filter 一些不可用方案;</li><li>score;</li><li>replacement: 轻量级更换 → 可试错 / 逐步进步;</li></ul><p>Persistent: Replicate Log;</p><h2 id="context-consistency">Context Consistency</h2><h3 id="strawman-方法">Strawman 方法</h3><ul><li>Global Barrier: overhead 太大了;</li><li>Paxos / Raft: 多 stage 来收敛;</li><li>Centralized: hotspot, per rank tracking progress;</li></ul><h3 id="allreduce-与-agreement">AllReduce 与 Agreement</h3><p>利用 AllReduce 做集合操作 (原稿写 “并集”, 符号记为 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>∩</mo></mrow><annotation encoding="application/x-tex">\cap</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.55556em;vertical-align:0em;"></span><span class="mord">∩</span></span></span></span>), 以及 min 版本;</p><p>要求只达成 Agreement, 不要求最新版, 且是 Read Only. 因此确实需要 log 来 persist 所有版本;</p><p>同时仍采用 RSM 对称实现 → 没有相对热点;</p><ul><li>可以接受 Fail-Slow;</li><li>不可接受 Fail-Stop → 要额外支持;</li></ul><h2 id="materialization-与资源树">Materialization 与资源树</h2><p>Materialization: JSON() → 建连 + 发包 + 计算;</p><p>资源树: L0 Communicator → L1 Schedule → L2 Buffer → L3 Range;</p><table><thead><tr><th>层级</th><th>资源与原稿说明</th></tr></thead><tbody><tr><td>L0 Communicator</td><td>Scratch Buffer: 例如存中间结果用于 Reduce 的, 不同 schedule 可以共享之; FIFO queue: 指 NCCL 中 host 侧 proxy / progress 线程;</td></tr><tr><td>L1 Schedule</td><td>Sync primitive (semaphore): 同步原语对调度中 “谁来解锁” 完全且强烈依赖;</td></tr><tr><td>L2 Buffer</td><td>Buffer handle; Comm Channel: 主要指远端节点 Buffer, 如 <code>next-&gt;buf</code>; 更换连接;</td></tr><tr><td>L3 Range</td><td>Low level OP: 数据分段, 如 0-1 MiB, 1-2 MiB;</td></tr></tbody></table><h2 id="delta-migration-与-lazy-migration">Delta Migration 与 Lazy Migration</h2><p>Delta Migration: <strong>假设 (无验证)</strong> 新旧 schedule 之间很相似, 有资源可以复用;</p><p>Lazy Migration: 对于 RecTree 采用只改 path + tag 的方式, 不影响子树其余分支;</p><ul><li>path: 范围小很多 → efficiency;</li><li>tag: 低层级要知道上层换了而去更新 → correctness;</li></ul><p>例如 buffer handle: schedule 换了, peer 已不同 → remote buffer 要更新;</p><h2 id="tree-maintenance">Tree Maintenance</h2><p>实际遍历 tree + 复用资源;</p><table><thead><tr><th>状态</th><th>action</th></tr></thead><tbody><tr><td>Hit</td><td>资源都有, 按节点映射即可;</td></tr><tr><td>Miss</td><td>从缺失处新建分支;</td></tr><tr><td>tag 过期</td><td>迁移资源, 更新 tag (Delta Migration);</td></tr><tr><td>L0 变了</td><td>scratch 扩容;</td></tr></tbody></table><p>有 4 个状态, 且各自有 action → FSM 即可, 即 L0 → L1 → L2 → L3 traversal;</p><p>额外加一层 tag / scratch 检查 → 查找, 建立 kernel (填写 template) → 执行 kernel;</p><h2 id="eval">Eval</h2><p>2 MB 跑 PoC: 太小, 处于 α-β 性能边界;</p><p>Metrics: Init Time (IT), 初始资源的 Materialization 步骤推到 Runtime;</p><p>旁注: 对比的 NCCL v2.19 不支持 Runtime 扩张, 且从 s 级到 ms 级区别不会太大, 就只跑一次而已;</p><h2 id="手写原稿扫描版">手写原稿扫描版</h2><p><a href="/attachments/theseus_notes_scan.pdf?v=high-contrast">下载两页合并 PDF</a></p><h3 id="第-1-页">第 1 页</h3><p><img src="/images/theseus_notes_page_1_scan.jpg" alt="theseus_notes_page_1_scan.jpg"></p><h3 id="第-2-页">第 2 页</h3><p><img src="/images/theseus_notes_page_2_scan.jpg" alt="theseus_notes_page_2_scan.jpg"></p>]]></content>
+        <content type="html"><![CDATA[<p>这篇记录 10 月中下旬折腾的一个小东西: 在 BlueField-2 的 Arm 上用 DPDK 写一个逐帧严格限速的整形器 <code>dpu_shaper</code>, 让一张 100G 的网卡老老实实地扮演一根 10G / 25G 的网线. 代码一共 800 来行 C, 但前后修了五个大 bug, 每个 bug 背后都是同一句话: <strong>把限速从网卡里搬出来以后, 发送方就看不见它了</strong>.</p><p>前半篇讲为什么要做这件事以及 DPDK 是什么, 后半篇按时间顺序讲每个 bug 怎么发现, 怎么修.</p><h2 id="起因-vf-限速是个假的-25g">起因: VF 限速是个假的 25G</h2><p>我们的实验需要模拟 “某个节点网卡变慢了” 的场景 (straggler). 最省事的做法是给这个节点的 VF 设 <code>max_tx_rate</code>, 比如 25G. 长期平均看, 它确实是 25G.</p><p>问题出在短时间尺度. VF 的限速器是一个 token bucket: 额度按 cap 的速度补充, 这一点很正常; 离谱的是两件事:</p><ul><li><strong>桶很深.</strong> 6.25G 下空闲 100 ms 能攒 60-110 MiB 的额度.</li><li><strong>冲的速度不设上限.</strong> 有额度时, VF 以网卡内部的速度 (约 98G) 把数据整块冲出去.</li></ul><p>NCCL 的每一步之间恰好有几百微秒的空档. 25G 下空 356 µs 就攒出约 1 MB, 正好够下一个 1 MiB 的 step 整块冲出去. 于是 “25G 的慢节点” 每一步都在用 98G 发, <s>这 straggler 比健康节点还快</s>.</p><p><img src="/images/dpu-shaper-bucket.png" alt="dpu-shaper-bucket.png"></p><p>一开始想的是绕过去: 在同一个 VF 上挂一条背景填充流, 把空档填满, 让桶攒不下额度. 实测下来, 1G 的常驻小流几乎没用 (攒额度的速度只慢了 4%); 要压住 burst, 填充流必须在 NCCL 不发的时候顶满速, 再把 cap 调高来补偿. 调到最好也只能把 burst 压到 1.1-1.6 倍, 做不到逐包严格.</p><p>所以结论很简单: 真实的 25G 网线物理上就不可能超过 25G, 要模拟它, 限速只能挪到网卡外面去做, 而且要逐帧做.</p><h2 id="dpdk-是什么">DPDK 是什么</h2><p>正好 BF2 不只是网卡, 它是一张 DPU: 卡上自带 8 个 Cortex-A72 核, 能跑完整的 Linux. 切到 DPU 模式以后, 主机上每个 VF 在 Arm 这边都有一个代表端口 (representor), VF 发出来的帧可以被引到 Arm 上, 由 Arm 决定什么时候放上线. 在 Arm 上做转发, 有两条路:</p><ul><li>内核 <code>tc</code> (htb + 队列): 不用写代码, 但 A72 的内核转发大概率扛不住几十 G 的 RoCE.</li><li>DPDK: 自己写一个用户态转发程序.</li></ul><p>我们选了 DPDK. 那 DPDK 到底是什么?</p><p>一句话: <strong>DPDK 把网卡驱动搬到用户态, 用一个独占的 CPU 核死循环轮询网卡, 绕开整个内核协议栈.</strong> 内核收一个包要经过中断, 分配 <code>sk_buff</code>, 协议栈, 拷贝, 系统调用, 包小速率高的时候 CPU 先被这些开销吃满了. DPDK 的路径短得多: 网卡 DMA 直接把帧写进用户态的内存池, 应用拿到的是指针.</p><p><img src="/images/dpu-shaper-dpdk.png" alt="dpu-shaper-dpdk.png"></p><p>写 DPDK 程序会碰到的几个概念:</p><table><thead><tr><th>概念</th><th>是什么</th></tr></thead><tbody><tr><td>EAL (<code>rte_eal_init</code>)</td><td>环境抽象层. 程序第一件事就是调它, 它负责解析 <code>-l 0-5</code> 这类参数, 绑核, 映射大页, 探测网卡</td></tr><tr><td>lcore</td><td>DPDK 的 “逻辑核”, 一个 lcore 对应一个被钉死的线程. 和 <code>taskset</code> 的区别是 EAL 会把线程直接创建在指定核上, 并且约定这个核不干别的</td></tr><tr><td>hugepage</td><td>2 MB / 1 GB 的大页. mbuf 内存池放在这里, TLB miss 少, 物理地址连续, 网卡能直接 DMA</td></tr><tr><td><code>rte_mbuf</code> / mempool</td><td>每个帧一个 mbuf, 由 <code>rte_pktmbuf_pool_create</code> 预先分配好, 收发时只在池子里借还, 不 malloc</td></tr><tr><td>PMD</td><td>Poll Mode Driver, 用户态驱动. Mellanox 的是 mlx5, 它比较特殊, 是和内核驱动共存的 (bifurcated), 不需要把网卡从内核解绑</td></tr><tr><td><code>rte_eth_rx_burst</code> / <code>tx_burst</code></td><td>一次收发一批帧 (我们用 32). 所有 DPDK 程序的主循环都长这个样</td></tr><tr><td><code>rte_flow</code></td><td>往网卡硬件里写匹配规则. 我们用它让 RX 方向的帧在 eSwitch 里直接送到 VF, 不进 Arm</td></tr><tr><td>representor</td><td>DPU 模式下, Arm 侧代表某个主机 VF 的端口. 用 <code>-a &lt;PCI&gt;,representor=vf[0-4]</code> 打开</td></tr></tbody></table><p>DPDK 本身只管 “把包高效地搬进搬出”, 不带 TCP/IP 协议栈. 学术界那一串内核旁路的工作 (IX, Arrakis, 再到 Shenango, Shinjuku 这些调度系统) 大多是站在 DPDK 或类似机制上往上搭的. 另外, DPDK 官方没有 Rust 接口 (截至写这篇时只有一个 RFC), 所以老老实实写 C.</p><h2 id="dpu-shaper-的设计">dpu_shaper 的设计</h2><p>整体结构如下: 主机上每个 rank 一个容器, 一个 VF. TX 方向的每一帧都先绕进 Arm 内存, 在 Arm 上按一根虚拟网线的时钟出队, 再上线; RX 方向不整形, 用 eSwitch 的 transfer rule 按目的 MAC 直接送到 VF, 不碰 Arm CPU.</p><p><img src="/images/dpu-shaper-arch.png" alt="dpu-shaper-arch.png"></p><p>整形的核心是一根 “虚拟网线”: 每个 VF 维护 <code>next_free_ps</code>, 也就是这根线下一次空闲的时刻. 每帧占用 <code>(len + 24 B) x 8 / rate</code> 的线时间 (24 B = FCS + 前导码 + 帧间隙). 帧的出发时刻 = max(线空闲时刻, 帧到达时刻). 这和 token bucket 的本质区别是: 线空着的时候什么也攒不下.</p><p>整形逻辑 <code>shaper.c</code> 不依赖 DPDK, 帧对它来说只是不透明指针, 可以单独写单测. 主循环每次 poll 做三件事:</p><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">uint16_t</span> n = rte_eth_rx_burst(p-&gt;cfg.port, <span class="number">0</span>, pkts, want);  <span class="comment">// want = 队列剩余空间</span></span><br><span class="line"><span class="type">uint64_t</span> now = now_ps();                                     <span class="comment">// rx 返回后才读时钟</span></span><br><span class="line"><span class="keyword">for</span> (<span class="type">uint16_t</span> i = <span class="number">0</span>; i &lt; n; i++)</span><br><span class="line">  shaper_enqueue(&amp;p-&gt;sh, pkts[i], rte_pktmbuf_pkt_len(pkts[i]),</span><br><span class="line">                 flow_of(pkts[i]), now);                     <span class="comment">// flow = RoCE dst QP</span></span><br><span class="line"><span class="type">uint32_t</span> k = shaper_peek_due(&amp;p-&gt;sh, now, due, BURST);       <span class="comment">// 只看, 不动时钟</span></span><br><span class="line"><span class="type">uint16_t</span> sent = send_in_order(due, k, p-&gt;cfg.egress, txq);</span><br><span class="line">shaper_commit(&amp;p-&gt;sh, now, sent);                            <span class="comment">// 网卡收了几个才提交几个</span></span><br></pre></td></tr></table></figure><p>peek / commit 拆开是因为 <code>tx_burst</code> 可能只收下一部分. 网卡没收的帧留在队头, 时钟只为真正发出去的帧前进, 顺序和时钟都不会乱. 队列满了就不收 (<code>want</code> 变小), 积压留在网卡的 RX ring 里, 整形器自己从不主动丢包.</p><h3 id="先在没有-bf-的机器上验证-10-16">先在没有 BF 的机器上验证 (10-16)</h3><p>BF2 的预约要等到 10-20, 先在 CloudLab 一台 CX-5 的 r7525 上验证整形逻辑. 没有 Arm, 就在 x86 上跑 shaper, 用 4 个 VF 拼一个 “bump in the wire”: 发送方的帧先被引到 shaper 占着的 VF, 整形以后再转给接收方.</p><p>这里先踩了两个小坑:</p><ul><li>switchdev 模式下, 这块 CX-5 上 VF 发的帧到不了 representor 的收队列, 连内核 bridge 都不通, 只好退回 legacy 模式手搭.</li><li>shaper 占着的 VF 要用 devlink 关掉 RoCE (<code>enable_roce=false</code>), 否则网卡把 UDP 4791 直接交给 RDMA 引擎, DPDK 根本收不到.</li></ul><p>结果是: shaper 限 25G 时, 空闲任意久之后发 1 MiB 都稳定在 22.6 Gb/s, 同条件下 VF cap 冲到 98 Gb/s; 限 10G 时所有点都在 9.2-9.3 Gb/s. 另外队列 8192 帧在大流量下会丢, 默认改成了 32768. 逻辑是对的, 剩下就是上真机.</p><h2 id="bug-1-上了-bf2-nccl-直接冻住">Bug 1: 上了 BF2, NCCL 直接冻住</h2><p>10-20 上了真 BF2, 切 DPU 模式, perftest 跑整形一切完美. 然后换 NCCL, 64 KiB 的 AllReduce 要 137.6 ms, 基本等于死了.</p><p><img src="/images/dpu-shaper-bug1.png" alt="dpu-shaper-bug1.png"></p><p>查下来是三个根因叠在一起, 按影响大小排:</p><ol><li><strong>ECE.</strong> NCCL 会和对端协商 ECE, 协商成功后 QP 用上固件基于 RTT 的拥塞控制. RTT 探测包也要绕 Arm 的软件队列, 测出来的 RTT 虚高, 固件以为网络堵死了, 把每个 QP 压到最低速. perftest 不协商 ECE, 所以它测不出来. <code>NCCL_IB_ECE_ENABLE=0</code> 以后, 137.6 ms 变成 0.26 ms.</li><li><strong>一个 VF 一条 FIFO.</strong> VF 会把所有 QP 贴上来的数据一口气倒进 Arm, 一个几十字节的 ACK 或者 NCCL 的 CTS 排在别的 QP 几 MB 数据后面, 时延从 5.6 µs 变成 1187 µs. 真网卡是按 QP 仲裁的, 所以 shaper 也照做: 每个 VF 下 64 个子队列, 按 RoCE 目的 QP 分流, 逐帧轮转, 总速率仍然是一根线的时钟. ACK 回到 7.2 µs.</li><li><strong>RX ring 太小.</strong> 1024 帧, VF 一波 burst 就溢出, 丢包触发 RoCE 重传, NCCL 卡在重传超时上. 加到 8192, 最后加到网卡上限 32768.</li></ol><p>修完以后对称 ring 跑 640 MiB, 抖动只有 0.2%. 不过 Arm 的软件转发总共只能扛约 40 Gb/s, 一个节点上 3 个 rank, 所以每个 rank 只能降到 10G 跑.</p><h2 id="bug-2-两块-arm-前后脚宕机">Bug 2: 两块 Arm 前后脚宕机</h2><p>同一天下午, 两块 Arm 前后脚失联, 主机之间的网络也跟着断了 (DPU 模式下 eSwitch 归 Arm 管, Arm 死了大家一起死). 我当时正好在 Arm 上编一个诊断版本, 第一反应是 “诊断版本把 Arm 搞崩了”. 翻了 <code>journalctl -b -1</code> 才发现冤枉它了: 崩的时候诊断版本根本没在跑.</p><p><img src="/images/dpu-shaper-bug2.png" alt="dpu-shaper-bug2.png"></p><p>日志里是 BFB 自带的 OVS (开着 hw-offload) 在往 eSwitch 写 offload 规则, 内核的 mlx5 软件 steering 写完 ICM 以后死等一个永远不来的完成, CPU 软锁死; 另一个 OVS 线程攥着 RTNL 卡在 <code>rcu_barrier</code> 上, 整个网络控制面冻结.</p><p>推断的根因是 eSwitch 的转发表有两个主人: OVS 通过内核 tc 写, 我们的 DPDK 通过 <code>rte_flow</code> 写. 之前我为了做对照实验, 把 VF representor 加进 OVS 又删掉, 制造了一大波规则增删; 每次重启 shaper 还会有一个 transfer rule 的空窗, RoCE 帧掉进内核网桥, OVS 又学到新流. 这些都没被单独证实是触发器, 所以规避方法比较保守: shaper 跑着的时候不碰 OVS 端口, 更彻底的做法是关掉 OVS 的 hw-offload.</p><h2 id="bug-3-发送方看不见中间盒">Bug 3: 发送方看不见中间盒</h2><p>接下来两个问题本质是同一件事: 真网卡的发送调度器就在 QP 旁边, 而现在它变成了 QP 看不见的一个软件盒子.</p><p><img src="/images/dpu-shaper-bug3.png" alt="dpu-shaper-bug3.png"></p><p><strong>没法反压.</strong> 真网卡缺带宽时只是不出队, QP 自己等着, 永远不会在发送调度器里丢包. 现在 VF 根本不知道后面有人排队, 只管把 NCCL 贴上来的东西往 Arm 里倒. 一个节点 3 个 VF, Arm 入口总共 40G, 倒多了就在入口丢帧 (<code>imissed</code>). RoCE RC 是 go-back-N, 丢一帧整窗超时重传, 上万帧就是几百 ms.</p><p>能用的手段只有在 VF 上再加一道 <code>devlink tx_max</code> 当 “阀门”, 结果两头不是人: 开小了每一步进 Arm 变慢, ring 慢 6%; 开大了 (3x) 又超 40G 接着丢; 更讽刺的是这个阀门自己就是 token bucket. 最后 40 MiB 以下的 buffer 靠加大队列 (262144 帧) 修好了, 80 MiB 那一档仍然会随机丢, 触发条件至今没钉死, 那一档只认 0 丢包的运行.</p><p><strong>假重传.</strong> 第二天发现, buffer 一大 (&gt;= 1 MiB), 慢节点的端口就比模型多发 10-38% 的字节, 但 VF 上所有 RDMA 错误计数都是 0. 原因是 <code>NCCL_IB_TIMEOUT=6</code>, ACK 超时只有约 268 µs, 而一个 MB 级的写在 shaper 的队列里要排毫秒级. ACK 只是来晚了, 网卡却判定丢包, 重传整段. VF 上又没有重传计数器, 所以表面上一切正常. 改成 14 (约 67 ms) 以后多发的字节消失, 2.5 MiB buffer 还快了 20%.</p><h2 id="bug-4-追赶深度给多少都不对">Bug 4: 追赶深度给多少都不对</h2><p>到这里 shaper 能用了, 但有一个数一直很别扭: 裸 RDMA 跑 10G 只有 9.18G, NCCL 对称 ring 只到理想时间的 1.17 倍.</p><p>回头看最初的设计, 空闲之后线最多允许领先现实 <code>depth</code> = 2 帧, 这本来是为了不攒额度. 但它有一个副作用: Arm 是个普通 CPU, 轮询偶尔会晚到. 晚到的这段时间里, 帧其实已经到了, 真实的网线早就把它们发出去了, 而 shaper 只允许追回 2 帧, 剩下的线时间永久丢失.</p><p><img src="/images/dpu-shaper-bug4.png" alt="dpu-shaper-bug4.png"></p><p>第一反应是把 depth 加到 16 帧. 线速确实跑满了, 但空闲之后会先冲一段, 瞬时 18.9G, 等于又把空闲时间当成额度攒起来了. 这是在 shaper 里重新发明 token bucket, 否掉.</p><p>最后的改法是给每一帧盖一个到达时间戳 (<code>rx_burst</code> 返回后读的 TSC), 出发时刻改成:</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">start = max(next_free, arrive, now - 64 帧)</span><br></pre></td></tr></table></figure><ul><li>卡顿期间已经到达的帧可以补发, 因为真实的线这时候本来就在发它们. 补发时局部看会快一点, 但任何时刻累计发出的字节都不超过一根真线面对同样到达序列时能发的量.</li><li>线空着的时候没有帧到达, 就没有东西可补, 也就攒不出额度. 空闲后 64 KiB 的瞬时速率实测 9.55G.</li><li><code>now - 64 帧</code> 只是一个安全上限: Arm 真卡上几毫秒, 也不能一下子放出几毫秒的帧.</li></ul><p>结果裸 RDMA 9.80G (满速), ring 从 1.172 倍降到 1.005 倍. 顺带的代价是, 之前在旧 shaper 上得出的好几个结论 (比如 “小 buffer 更快”) 其实主要来自 ring 被旧 shaper 拖慢, 全部作废重做.</p><h2 id="bug-5-两个-qp-撞进同一个子队列">Bug 5: 两个 QP 撞进同一个子队列</h2><p>10-27 跑另一套实现 (MSCCL++) 时, 同一个配置一会儿快一会儿慢, 呈双峰, 慢的那几次还伴随着上千个重复包, 但 Arm 的丢帧计数一直是 0.</p><p><img src="/images/dpu-shaper-bug5.png" alt="dpu-shaper-bug5.png"></p><p>问题出在 bug 1 修出来的那 64 个子队列: 子队列号 = (目的 QP + 1) % 64. 两个 QP 号差 64 的倍数, 就撞进同一个 FIFO, 一个几十字节的原子回执排在另一个 QP 几 MB 的数据后面. 流水线等回执, 这一次就慢了; 回执迟到又让网卡的自适应重传误判, 于是有了重复包. 每次运行建出来的 QP 号都不一样, 撞不撞全看运气, 所以是双峰.</p><p>怀疑归怀疑, 得钉死. 做法是用 loopback 的 perftest QP 先占掉一些 QP 号, 把 NCCL 的 QP 号固定成一组一定会撞的组合, 新旧 shaper 交替 A/B: 旧版 8 次全慢, 新版全快. 再故意改成 key % 4 让它多撞, 直接慢到 1.3-1.5 倍.</p><p>修法是每个 key 独占一个子队列, 子队列空了才让给别的 key; 只有同时积压的 key 超过 64 个, 才退回 key % 64 当 guest (O(1), 并计数). 真网卡本来就是按 QP 仲裁的, 这只是让 shaper 更像真网卡.</p><h2 id="回头看">回头看</h2><p>五个 bug 摆在一起, 共同的根其实就一个: 限速原来住在网卡的调度器里, 现在被搬到了一个发送方看不见的软件中间盒里. 于是 RTT 被拉长 (ECE 误判, ACK 超时), 没有反压 (丢包), “交给网卡” 不再等于 “上了线”, QP 之间的仲裁得自己重写 (FIFO, 子队列冲突).</p><p>修的过程中我们一直用同一把尺子: <strong>一块真实的物理网卡会怎么做.</strong> 它没有突发额度, 它的发送调度器不丢包, 它按 QP 仲裁. 每一次改动都是在补 shaper 和真网卡之间的一个差距, 而不是为了让某个算法跑得更快. 反过来, 也不能为了让实验结果好看去调 shaper, 否则就是作弊了. 另外, shaper 每改一次, 之前的数据都要整体作废, 不能和新数据混在一起比.</p><p>还没收尾的:</p><ul><li>80 MiB buffer 那一档的随机丢包, 触发条件没查清.</li><li>CX-5 上 switchdev 的 representor 路径没走通.</li><li>讨论过但没做的: 按目的 IP 分别限速, 运行时动态改速率, 以及在 Arm 上给拥塞的帧打 ECN 标记, 让真正的 DCQCN 去降速.</li></ul><div class="obsidian-callout callout-图源" style="border-left: 4px solid #448aff; background: #448aff11; border-radius: 4px; padding: 0; margin: 1em 0;">  <div style="padding: 8px 16px; font-weight: 600; display: flex; align-items: center; gap: 8px;">    <span>📝</span> <span><br></span>  </div>  <div style="padding: 4px 16px 12px 16px;">文中的图都用 Excalidraw 画, 源文件在 <code>source/_assets/excalidraw/dpu-shaper/</code>, 可以在 Obsidian 的 Excalidraw 插件里直接打开改.</p></div></div>]]></content>
       
       
       <categories>
           
-          <category> papers </category>
+          <category> notes </category>
           
       </categories>
       
       
         <tags>
             
-            <tag> mlsys </tag>
+            <tag> network </tag>
             
-            <tag> collective_communication </tag>
+            <tag> dpdk </tag>
             
-            <tag> runtime </tag>
+            <tag> rdma </tag>
+            
+            <tag> bluefield </tag>
             
         </tags>
       
@@ -52,6 +54,35 @@
             <tag> computability </tag>
             
             <tag> optimization </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Theseus</title>
+      <link href="//2026/11/04/mlsys/theseus/"/>
+      <url>//2026/11/04/mlsys/theseus/</url>
+      
+        <content type="html"><![CDATA[<h2 id="motivation-与-method">Motivation 与 Method</h2><p>Motivation → Limitation → Gaps of SOTA → ideal → Solution;</p><p>只能在 init phase 定义, 选择 schedule, 而 runtime condition 在 evolving:</p><ul><li>workload characteristic;</li><li>hw health status;</li></ul><p>Method: schedule level adapter;</p><span id="more"></span><h2 id="4-个-challenge">4 个 Challenge</h2><ol><li>Flexible (可变 / 增改), Informed (观测层): 基于一个 cluster-wide runtime;</li><li>Schedule Consistency: 分布一致, 要求快收敛;</li><li>资源管理: GPU 显存;</li><li>Seamlessly 切换调度: 低时间性能 overhead;</li></ol><p>前两个对应 Dynamic Selection, 后两个对应 Hot Swapping;</p><h2 id="schedule-特征">Schedule 特征</h2><h3 id="4-层-schedule-分类">4 层 schedule 分类</h3><p>Global (Cluster) → GPU → TB → OP;</p><p>原稿在 Global 上标了 communicator, 在 TB 上标了 buffer;</p><h3 id="资源与-op">资源与 OP</h3><ul><li>Scratch Buffer;</li><li>Channels: MSCCL++ 核心抽象, RDMA 资源; PortChannel 旁标了 QP, MR;</li><li>Semaphore;</li></ul><p>4 类 OP: Local OP, Remote OP, Sync, Fusion;</p><h2 id="4-个问题场景">4 个问题场景</h2><ol><li>Shifting Load: MoE training AlltoAll;</li><li>Fail-slow ↔ OptCC;</li><li>Slow Synthesis:<ul><li>Scalability 问题: 大集群求解复杂度太大;</li><li>Comm Demands change frequently;</li></ul></li><li>Suboptimal: 即使用 α-β 估测, 仍局限于 off-the-shelf 估测而非实际, 有偏差效果;</li></ol><p>旁注: TECCL vs NCCL, 32 GPU; MILP vs α-β model tuning; 13 h;</p><h2 id="接口">接口</h2><table><thead><tr><th>接口</th><th>原稿写法</th></tr></thead><tbody><tr><td>endo attr</td><td><code>NewAttr(·)</code></td></tr><tr><td>exo attr</td><td><code>SetExo(·)</code></td></tr><tr><td>New Schedule</td><td><code>NewSched(·)</code></td></tr></tbody></table><p>New Schedule 要能支持:</p><ul><li>usability: 用 0-1 快速 Filter 一些不可用方案;</li><li>score;</li><li>replacement: 轻量级更换 → 可试错 / 逐步进步;</li></ul><p>Persistent: Replicate Log;</p><h2 id="context-consistency">Context Consistency</h2><h3 id="strawman-方法">Strawman 方法</h3><ul><li>Global Barrier: overhead 太大了;</li><li>Paxos / Raft: 多 stage 来收敛;</li><li>Centralized: hotspot, per rank tracking progress;</li></ul><h3 id="allreduce-与-agreement">AllReduce 与 Agreement</h3><p>利用 AllReduce 做集合操作 (原稿写 “并集”, 符号记为 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>∩</mo></mrow><annotation encoding="application/x-tex">\cap</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.55556em;vertical-align:0em;"></span><span class="mord">∩</span></span></span></span>), 以及 min 版本;</p><p>要求只达成 Agreement, 不要求最新版, 且是 Read Only. 因此确实需要 log 来 persist 所有版本;</p><p>同时仍采用 RSM 对称实现 → 没有相对热点;</p><ul><li>可以接受 Fail-Slow;</li><li>不可接受 Fail-Stop → 要额外支持;</li></ul><h2 id="materialization-与资源树">Materialization 与资源树</h2><p>Materialization: JSON() → 建连 + 发包 + 计算;</p><p>资源树: L0 Communicator → L1 Schedule → L2 Buffer → L3 Range;</p><table><thead><tr><th>层级</th><th>资源与原稿说明</th></tr></thead><tbody><tr><td>L0 Communicator</td><td>Scratch Buffer: 例如存中间结果用于 Reduce 的, 不同 schedule 可以共享之; FIFO queue: 指 NCCL 中 host 侧 proxy / progress 线程;</td></tr><tr><td>L1 Schedule</td><td>Sync primitive (semaphore): 同步原语对调度中 “谁来解锁” 完全且强烈依赖;</td></tr><tr><td>L2 Buffer</td><td>Buffer handle; Comm Channel: 主要指远端节点 Buffer, 如 <code>next-&gt;buf</code>; 更换连接;</td></tr><tr><td>L3 Range</td><td>Low level OP: 数据分段, 如 0-1 MiB, 1-2 MiB;</td></tr></tbody></table><h2 id="delta-migration-与-lazy-migration">Delta Migration 与 Lazy Migration</h2><p>Delta Migration: <strong>假设 (无验证)</strong> 新旧 schedule 之间很相似, 有资源可以复用;</p><p>Lazy Migration: 对于 RecTree 采用只改 path + tag 的方式, 不影响子树其余分支;</p><ul><li>path: 范围小很多 → efficiency;</li><li>tag: 低层级要知道上层换了而去更新 → correctness;</li></ul><p>例如 buffer handle: schedule 换了, peer 已不同 → remote buffer 要更新;</p><h2 id="tree-maintenance">Tree Maintenance</h2><p>实际遍历 tree + 复用资源;</p><table><thead><tr><th>状态</th><th>action</th></tr></thead><tbody><tr><td>Hit</td><td>资源都有, 按节点映射即可;</td></tr><tr><td>Miss</td><td>从缺失处新建分支;</td></tr><tr><td>tag 过期</td><td>迁移资源, 更新 tag (Delta Migration);</td></tr><tr><td>L0 变了</td><td>scratch 扩容;</td></tr></tbody></table><p>有 4 个状态, 且各自有 action → FSM 即可, 即 L0 → L1 → L2 → L3 traversal;</p><p>额外加一层 tag / scratch 检查 → 查找, 建立 kernel (填写 template) → 执行 kernel;</p><h2 id="eval">Eval</h2><p>2 MB 跑 PoC: 太小, 处于 α-β 性能边界;</p><p>Metrics: Init Time (IT), 初始资源的 Materialization 步骤推到 Runtime;</p><p>旁注: 对比的 NCCL v2.19 不支持 Runtime 扩张, 且从 s 级到 ms 级区别不会太大, 就只跑一次而已;</p><h2 id="手写原稿扫描版">手写原稿扫描版</h2><p><a href="/attachments/theseus_notes_scan.pdf?v=high-contrast">下载两页合并 PDF</a></p><h3 id="第-1-页">第 1 页</h3><p><img src="/images/theseus_notes_page_1_scan.jpg" alt="theseus_notes_page_1_scan.jpg"></p><h3 id="第-2-页">第 2 页</h3><p><img src="/images/theseus_notes_page_2_scan.jpg" alt="theseus_notes_page_2_scan.jpg"></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> papers </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> mlsys </tag>
+            
+            <tag> collective_communication </tag>
+            
+            <tag> runtime </tag>
             
         </tags>
       
@@ -111,9 +142,9 @@
             
             <tag> network </tag>
             
-            <tag> nccl </tag>
-            
             <tag> rdma </tag>
+            
+            <tag> nccl </tag>
             
         </tags>
       
@@ -615,9 +646,9 @@
             
             <tag> distributed_sys </tag>
             
-            <tag> kubernetes </tag>
-            
             <tag> Consensus </tag>
+            
+            <tag> kubernetes </tag>
             
             <tag> ZooKeeper </tag>
             
@@ -708,9 +739,9 @@
             
             <tag> distributed_sys </tag>
             
-            <tag> kubernetes </tag>
-            
             <tag> Consensus </tag>
+            
+            <tag> kubernetes </tag>
             
             <tag> Chubby </tag>
             
@@ -739,9 +770,9 @@
             
             <tag> distributed_sys </tag>
             
-            <tag> kubernetes </tag>
-            
             <tag> Consensus </tag>
+            
+            <tag> kubernetes </tag>
             
             <tag> etcd </tag>
             
@@ -1176,9 +1207,9 @@
       
         <tags>
             
-            <tag> container </tag>
-            
             <tag> network </tag>
+            
+            <tag> container </tag>
             
             <tag> docker </tag>
             
@@ -1696,13 +1727,13 @@
       
         <tags>
             
+            <tag> container </tag>
+            
             <tag> operating_system </tag>
             
             <tag> kernel </tag>
             
             <tag> virtual_machine </tag>
-            
-            <tag> container </tag>
             
         </tags>
       
@@ -3675,9 +3706,9 @@
       
         <tags>
             
-            <tag> structure </tag>
-            
             <tag> algorithm </tag>
+            
+            <tag> structure </tag>
             
         </tags>
       
@@ -3702,9 +3733,9 @@
       
         <tags>
             
-            <tag> structure </tag>
-            
             <tag> algorithm </tag>
+            
+            <tag> structure </tag>
             
         </tags>
       
