@@ -4,7 +4,7 @@
   
     
     <entry>
-      <title>DPDK 和 dpu_shaper</title>
+      <title>DPDK 模拟物理网卡实现</title>
       <link href="//2026/11/05/computer_system_basics/network/dpdk-dpu-shaper/"/>
       <url>//2026/11/05/computer_system_basics/network/dpdk-dpu-shaper/</url>
       
@@ -217,11 +217,11 @@
             
             <tag> llm </tag>
             
+            <tag> moe </tag>
+            
             <tag> mlsys </tag>
             
             <tag> linear_attention </tag>
-            
-            <tag> moe </tag>
             
         </tags>
       
@@ -248,9 +248,9 @@
             
             <tag> llm_inference </tag>
             
-            <tag> mlsys </tag>
-            
             <tag> moe </tag>
+            
+            <tag> mlsys </tag>
             
             <tag> edge_inference </tag>
             
