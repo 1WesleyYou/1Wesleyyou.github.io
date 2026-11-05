@@ -8,7 +8,7 @@
       <link href="//2026/11/05/computer_system_basics/network/dpdk-dpu-shaper/"/>
       <url>//2026/11/05/computer_system_basics/network/dpdk-dpu-shaper/</url>
       
-        <content type="html"><![CDATA[<p>这篇记录折腾过的一个小东西: 在 BlueField-2 的 Arm 上用 DPDK 写一个逐帧严格限速的整形器 <code>dpu_shaper</code>, 让一张 100G 的网卡老老实实地扮演一根 10G / 25G 的网线. 代码一共 800 来行 C, 但前后修了四个大 bug, 每个 bug 背后都是同一句话: <strong>把限速从网卡里搬出来以后, 发送方就看不见它了</strong>.</p><p>前半篇讲为什么要做这件事以及 DPDK 是什么, 后半篇按时间顺序讲每个 bug 怎么发现, 怎么修.</p><h2 id="起因-vf-限速是个假的-25g">起因: VF 限速是个假的 25G</h2><p>我们的实验需要模拟 “某个节点网卡变慢了” 的场景 (straggler). 最省事的做法是给这个节点的 VF 设 <code>max_tx_rate</code>, 比如 25G. 长期平均看, 它确实是 25G.</p><p>问题出在短时间尺度. VF 的限速器是一个 token bucket: 额度按 cap 的速度补充, 这一点很正常; 离谱的是两件事:</p><ul><li><strong>桶很深.</strong> 6.25G 下空闲 100 ms 能攒 60-110 MiB 的额度.</li><li><strong>冲的速度不设上限.</strong> 有额度时, VF 以网卡内部的速度 (约 98G) 把数据整块冲出去.</li></ul><p>NCCL 的每一步之间恰好有几百微秒的空档. 25G 下空 356 µs 就攒出约 1 MB, 正好够下一个 1 MiB 的 step 整块冲出去. 于是 “25G 的慢节点” 每一步都在用 98G 发, <s>这 straggler 比健康节点还快</s>.</p><p><img src="/images/dpu-shaper-bucket.png" alt="dpu-shaper-bucket.png"></p><p>一开始想的是绕过去: 在同一个 VF 上挂一条背景填充流, 把空档填满, 让桶攒不下额度. 实测下来, 1G 的常驻小流几乎没用 (攒额度的速度只慢了 4%); 要压住 burst, 填充流必须在 NCCL 不发的时候顶满速, 再把 cap 调高来补偿. 调到最好也只能把 burst 压到 1.1-1.6 倍, 做不到逐包严格.</p><p>所以结论很简单: 真实的 25G 网线物理上就不可能超过 25G, 要模拟它, 限速只能挪到网卡外面去做, 而且要逐帧做.</p><h2 id="dpdk-是什么">DPDK 是什么</h2><p>正好 BF2 不只是网卡, 它是一张 DPU: 卡上自带 8 个 Cortex-A72 核, 能跑完整的 Linux. 切到 DPU 模式以后, 主机上每个 VF 在 Arm 这边都有一个代表端口 (representor), VF 发出来的帧可以被引到 Arm 上, 由 Arm 决定什么时候放上线. 在 Arm 上做转发, 有两条路:</p><ul><li>内核 <code>tc</code> (htb + 队列): 不用写代码, 但 A72 的内核转发大概率扛不住几十 G 的 RoCE.</li><li>DPDK: 自己写一个用户态转发程序.</li></ul><p>我们选了 DPDK. 那 DPDK 到底是什么?</p><p>一句话: <strong>DPDK 把网卡驱动搬到用户态, 用一个独占的 CPU 核死循环轮询网卡, 绕开整个内核协议栈.</strong> 内核收一个包要经过中断, 分配 <code>sk_buff</code>, 协议栈, 拷贝, 系统调用, 包小速率高的时候 CPU 先被这些开销吃满了. DPDK 的路径短得多: 网卡 DMA 直接把帧写进用户态的内存池, 应用拿到的是指针.</p><p><img src="/images/dpu-shaper-dpdk.png" alt="dpu-shaper-dpdk.png"></p><p>写 DPDK 程序会碰到的几个概念:</p><table><thead><tr><th>概念</th><th>是什么</th></tr></thead><tbody><tr><td>EAL (<code>rte_eal_init</code>)</td><td>环境抽象层. 程序第一件事就是调它, 它负责解析 <code>-l 0-5</code> 这类参数, 绑核, 映射大页, 探测网卡</td></tr><tr><td>lcore</td><td>DPDK 的 “逻辑核”, 一个 lcore 对应一个被钉死的线程. 和 <code>taskset</code> 的区别是 EAL 会把线程直接创建在指定核上, 并且约定这个核不干别的</td></tr><tr><td>hugepage</td><td>2 MB / 1 GB 的大页. mbuf 内存池放在这里, TLB miss 少, 物理地址连续, 网卡能直接 DMA</td></tr><tr><td><code>rte_mbuf</code> / mempool</td><td>每个帧一个 mbuf, 由 <code>rte_pktmbuf_pool_create</code> 预先分配好, 收发时只在池子里借还, 不 malloc</td></tr><tr><td>PMD</td><td>Poll Mode Driver, 用户态驱动. Mellanox 的是 mlx5, 它比较特殊, 是和内核驱动共存的 (bifurcated), 不需要把网卡从内核解绑</td></tr><tr><td><code>rte_eth_rx_burst</code> / <code>tx_burst</code></td><td>一次收发一批帧 (我们用 32). 所有 DPDK 程序的主循环都长这个样</td></tr><tr><td><code>rte_flow</code></td><td>往网卡硬件里写匹配规则. 我们用它让 RX 方向的帧在 eSwitch 里直接送到 VF, 不进 Arm</td></tr><tr><td>representor</td><td>DPU 模式下, Arm 侧代表某个主机 VF 的端口. 用 <code>-a &lt;PCI&gt;,representor=vf[0-4]</code> 打开</td></tr></tbody></table><p>DPDK 本身只管 “把包高效地搬进搬出”, 不带 TCP/IP 协议栈. 学术界那一串内核旁路的工作 (IX, Arrakis, 再到 Shenango, Shinjuku 这些调度系统) 大多是站在 DPDK 或类似机制上往上搭的. 另外, DPDK 官方没有 Rust 接口 (截至写这篇时只有一个 RFC), 所以老老实实写 C.</p><h2 id="dpu-shaper-的设计">dpu_shaper 的设计</h2><p>整体结构如下: 主机上每个 rank 一个容器, 一个 VF. TX 方向的每一帧都先绕进 Arm 内存, 在 Arm 上按一根虚拟网线的时钟出队, 再上线; RX 方向不整形, 用 eSwitch 的 transfer rule 按目的 MAC 直接送到 VF, 不碰 Arm CPU.</p><p><img src="/images/dpu-shaper-arch.png" alt="dpu-shaper-arch.png"></p><p>整形的核心是一根 “虚拟网线”: 每个 VF 维护 <code>next_free_ps</code>, 也就是这根线下一次空闲的时刻. 每帧占用 <code>(len + 24 B) x 8 / rate</code> 的线时间 (24 B = FCS + 前导码 + 帧间隙). 帧的出发时刻 = max(线空闲时刻, 帧到达时刻). 这和 token bucket 的本质区别是: 线空着的时候什么也攒不下.</p><p>整形逻辑 <code>shaper.c</code> 不依赖 DPDK, 帧对它来说只是不透明指针, 可以单独写单测. 主循环每次 poll 做三件事:</p><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">uint16_t</span> n = rte_eth_rx_burst(p-&gt;cfg.port, <span class="number">0</span>, pkts, want);  <span class="comment">// want = 队列剩余空间</span></span><br><span class="line"><span class="type">uint64_t</span> now = now_ps();                                     <span class="comment">// rx 返回后才读时钟</span></span><br><span class="line"><span class="keyword">for</span> (<span class="type">uint16_t</span> i = <span class="number">0</span>; i &lt; n; i++)</span><br><span class="line">  shaper_enqueue(&amp;p-&gt;sh, pkts[i], rte_pktmbuf_pkt_len(pkts[i]),</span><br><span class="line">                 flow_of(pkts[i]), now);                     <span class="comment">// flow = RoCE dst QP</span></span><br><span class="line"><span class="type">uint32_t</span> k = shaper_peek_due(&amp;p-&gt;sh, now, due, BURST);       <span class="comment">// 只看, 不动时钟</span></span><br><span class="line"><span class="type">uint16_t</span> sent = send_in_order(due, k, p-&gt;cfg.egress, txq);</span><br><span class="line">shaper_commit(&amp;p-&gt;sh, now, sent);                            <span class="comment">// 网卡收了几个才提交几个</span></span><br></pre></td></tr></table></figure><p>peek / commit 拆开是因为 <code>tx_burst</code> 可能只收下一部分. 网卡没收的帧留在队头, 时钟只为真正发出去的帧前进, 顺序和时钟都不会乱. 队列满了就不收 (<code>want</code> 变小), 积压留在网卡的 RX ring 里, 整形器自己从不主动丢包.</p><h3 id="先在没有-bf-的机器上验证">先在没有 BF 的机器上验证</h3><p>BF2 的预约还没排到, 先在 CloudLab 一台 CX-5 的 r7525 上验证整形逻辑. 没有 Arm, 就在 x86 上跑 shaper, 用 4 个 VF 拼一个 “bump in the wire”: 发送方的帧先被引到 shaper 占着的 VF, 整形以后再转给接收方.</p><p>这里先踩了两个小坑:</p><ul><li>switchdev 模式下, 这块 CX-5 上 VF 发的帧到不了 representor 的收队列, 连内核 bridge 都不通, 只好退回 legacy 模式手搭.</li><li>shaper 占着的 VF 要用 devlink 关掉 RoCE (<code>enable_roce=false</code>), 否则网卡把 UDP 4791 直接交给 RDMA 引擎, DPDK 根本收不到.</li></ul><p>结果是: shaper 限 25G 时, 空闲任意久之后发 1 MiB 都稳定在 22.6 Gb/s, 同条件下 VF cap 冲到 98 Gb/s; 限 10G 时所有点都在 9.2-9.3 Gb/s. 另外队列 8192 帧在大流量下会丢, 默认改成了 32768. 逻辑是对的, 剩下就是上真机.</p><h2 id="bug-1-上了-bf2-nccl-直接冻住">Bug 1: 上了 BF2, NCCL 直接冻住</h2><p>上了真 BF2, 切 DPU 模式, perftest 跑整形一切完美. 然后换 NCCL, 64 KiB 的 AllReduce 要 137.6 ms, 基本等于死了.</p><p><img src="/images/dpu-shaper-bug1.png" alt="dpu-shaper-bug1.png"></p><p>查下来是三个根因叠在一起, 按影响大小排:</p><ol><li><strong>ECE.</strong> NCCL 会和对端协商 ECE, 协商成功后 QP 用上固件基于 RTT 的拥塞控制. RTT 探测包也要绕 Arm 的软件队列, 测出来的 RTT 虚高, 固件以为网络堵死了, 把每个 QP 压到最低速. perftest 不协商 ECE, 所以它测不出来. <code>NCCL_IB_ECE_ENABLE=0</code> 以后, 137.6 ms 变成 0.26 ms.</li><li><strong>一个 VF 一条 FIFO.</strong> VF 会把所有 QP 贴上来的数据一口气倒进 Arm, 一个几十字节的 ACK 或者 NCCL 的 CTS 排在别的 QP 几 MB 数据后面, 时延从 5.6 µs 变成 1187 µs. 真网卡是按 QP 仲裁的, 所以 shaper 也照做: 每个 VF 下 64 个子队列, 按 RoCE 目的 QP 分流, 逐帧轮转, 总速率仍然是一根线的时钟. ACK 回到 7.2 µs.</li><li><strong>RX ring 太小.</strong> 1024 帧, VF 一波 burst 就溢出, 丢包触发 RoCE 重传, NCCL 卡在重传超时上. 加到 8192, 最后加到网卡上限 32768.</li></ol><p>修完以后对称 ring 跑 640 MiB, 抖动只有 0.2%. 不过 Arm 的软件转发总共只能扛约 40 Gb/s, 一个节点上 3 个 rank, 所以每个 rank 只能降到 10G 跑.</p><h2 id="bug-2-发送方看不见中间盒">Bug 2: 发送方看不见中间盒</h2><p>接下来两个问题本质是同一件事: 真网卡的发送调度器就在 QP 旁边, 而现在它变成了 QP 看不见的一个软件盒子.</p><p><img src="/images/dpu-shaper-bug2.png" alt="dpu-shaper-bug2.png"></p><p><strong>没法反压.</strong> 真网卡缺带宽时只是不出队, QP 自己等着, 永远不会在发送调度器里丢包. 现在 VF 根本不知道后面有人排队, 只管把 NCCL 贴上来的东西往 Arm 里倒. 一个节点 3 个 VF, Arm 入口总共 40G, 倒多了就在入口丢帧 (<code>imissed</code>). RoCE RC 是 go-back-N, 丢一帧整窗超时重传, 上万帧就是几百 ms.</p><p>能用的手段只有在 VF 上再加一道 <code>devlink tx_max</code> 当 “阀门”, 结果两头不是人: 开小了每一步进 Arm 变慢, ring 慢 6%; 开大了 (3x) 又超 40G 接着丢; 更讽刺的是这个阀门自己就是 token bucket. 最后 40 MiB 以下的 buffer 靠加大队列 (262144 帧) 修好了, 80 MiB 那一档仍然会随机丢, 触发条件至今没钉死, 那一档只认 0 丢包的运行.</p><p><strong>假重传.</strong> 后来又发现, buffer 一大 (&gt;= 1 MiB), 慢节点的端口就比模型多发 10-38% 的字节, 但 VF 上所有 RDMA 错误计数都是 0. 原因是 <code>NCCL_IB_TIMEOUT=6</code>, ACK 超时只有约 268 µs, 而一个 MB 级的写在 shaper 的队列里要排毫秒级. ACK 只是来晚了, 网卡却判定丢包, 重传整段. VF 上又没有重传计数器, 所以表面上一切正常. 改成 14 (约 67 ms) 以后多发的字节消失, 2.5 MiB buffer 还快了 20%.</p><h2 id="bug-3-追赶深度给多少都不对">Bug 3: 追赶深度给多少都不对</h2><p>到这里 shaper 能用了, 但有一个数一直很别扭: 裸 RDMA 跑 10G 只有 9.18G, NCCL 对称 ring 只到理想时间的 1.17 倍.</p><p>回头看最初的设计, 空闲之后线最多允许领先现实 <code>depth</code> = 2 帧, 这本来是为了不攒额度. 但它有一个副作用: Arm 是个普通 CPU, 轮询偶尔会晚到. 晚到的这段时间里, 帧其实已经到了, 真实的网线早就把它们发出去了, 而 shaper 只允许追回 2 帧, 剩下的线时间永久丢失.</p><p><img src="/images/dpu-shaper-bug3.png" alt="dpu-shaper-bug3.png"></p><p>第一反应是把 depth 加到 16 帧. 线速确实跑满了, 但空闲之后会先冲一段, 瞬时 18.9G, 等于又把空闲时间当成额度攒起来了. 这是在 shaper 里重新发明 token bucket, 否掉.</p><p>最后的改法是给每一帧盖一个到达时间戳 (<code>rx_burst</code> 返回后读的 TSC), 出发时刻改成:</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">start = max(next_free, arrive, now - 64 帧)</span><br></pre></td></tr></table></figure><ul><li>卡顿期间已经到达的帧可以补发, 因为真实的线这时候本来就在发它们. 补发时局部看会快一点, 但任何时刻累计发出的字节都不超过一根真线面对同样到达序列时能发的量.</li><li>线空着的时候没有帧到达, 就没有东西可补, 也就攒不出额度. 空闲后 64 KiB 的瞬时速率实测 9.55G.</li><li><code>now - 64 帧</code> 只是一个安全上限: Arm 真卡上几毫秒, 也不能一下子放出几毫秒的帧.</li></ul><p>结果裸 RDMA 9.80G (满速), ring 从 1.172 倍降到 1.005 倍. 顺带的代价是, 之前在旧 shaper 上得出的好几个结论 (比如 “小 buffer 更快”) 其实主要来自 ring 被旧 shaper 拖慢, 全部作废重做.</p><h2 id="bug-4-两个-qp-撞进同一个子队列">Bug 4: 两个 QP 撞进同一个子队列</h2><p>后来跑另一套实现 (MSCCL++) 时, 同一个配置一会儿快一会儿慢, 呈双峰, 慢的那几次还伴随着上千个重复包, 但 Arm 的丢帧计数一直是 0.</p><p><img src="/images/dpu-shaper-bug4.png" alt="dpu-shaper-bug4.png"></p><p>问题出在 bug 1 修出来的那 64 个子队列: 子队列号 = (目的 QP + 1) % 64. 两个 QP 号差 64 的倍数, 就撞进同一个 FIFO, 一个几十字节的原子回执排在另一个 QP 几 MB 的数据后面. 流水线等回执, 这一次就慢了; 回执迟到又让网卡的自适应重传误判, 于是有了重复包. 每次运行建出来的 QP 号都不一样, 撞不撞全看运气, 所以是双峰.</p><p>怀疑归怀疑, 得钉死. 做法是用 loopback 的 perftest QP 先占掉一些 QP 号, 把 NCCL 的 QP 号固定成一组一定会撞的组合, 新旧 shaper 交替 A/B: 旧版 8 次全慢, 新版全快. 再故意改成 key % 4 让它多撞, 直接慢到 1.3-1.5 倍.</p><p>修法是每个 key 独占一个子队列, 子队列空了才让给别的 key; 只有同时积压的 key 超过 64 个, 才退回 key % 64 当 guest (O(1), 并计数). 真网卡本来就是按 QP 仲裁的, 这只是让 shaper 更像真网卡.</p><h2 id="回头看">回头看</h2><p>四个 bug 摆在一起, 共同的根其实就一个: 限速原来住在网卡的调度器里, 现在被搬到了一个发送方看不见的软件中间盒里. 于是 RTT 被拉长 (ECE 误判, ACK 超时), 没有反压 (丢包), “交给网卡” 不再等于 “上了线”, QP 之间的仲裁得自己重写 (FIFO, 子队列冲突).</p><p>修的过程中我们一直用同一把尺子: <strong>一块真实的物理网卡会怎么做.</strong> 它没有突发额度, 它的发送调度器不丢包, 它按 QP 仲裁. 每一次改动都是在补 shaper 和真网卡之间的一个差距, 而不是为了让某个算法跑得更快. 反过来, 也不能为了让实验结果好看去调 shaper, 否则就是作弊了. 另外, shaper 每改一次, 之前的数据都要整体作废, 不能和新数据混在一起比.</p><p>还没收尾的:</p><ul><li>80 MiB buffer 那一档的随机丢包, 触发条件没查清.</li><li>CX-5 上 switchdev 的 representor 路径没走通.</li><li>讨论过但没做的: 按目的 IP 分别限速, 运行时动态改速率, 以及在 Arm 上给拥塞的帧打 ECN 标记, 让真正的 DCQCN 去降速.</li></ul>]]></content>
+        <content type="html"><![CDATA[<p>这篇记录一个小东西: 在 BlueField-2 (BF2) 的 Arm 上用 DPDK 写一个逐帧严格限速的整形器 <code>dpu_shaper</code>, 让一张 100G 的网卡老老实实地扮演一根 10G / 25G 的网线. 代码 800 来行 C, 修了四个大 bug, 背后都是同一句话: <strong>把限速从网卡里搬出来以后, 发送方就看不见它了</strong>.</p><h2 id="起因-vf-限速是个假的-25g">起因: VF 限速是个假的 25G</h2><p>实验要模拟 “某个节点网卡变慢了” (straggler). 最省事的做法是给它的 VF 设 <code>max_tx_rate</code>, 长期平均看确实是 25G. 问题在短时间尺度: VF 限速器是一个 token bucket, 额度按 cap 补充没毛病, 离谱的是桶很深 (BF2 上空闲超过约 45 ms, 一次能放出 35-100 MB), 而且有额度时 VF 以网卡内部速度 (约 98G) 整块冲出去.</p><p>NCCL 每一步之间恰好有几百微秒的空档, 25G 下空 356 µs 就攒出约 1 MB, 正好够下一个 1 MiB 的 step 整块冲出去. 于是 “25G 的慢节点” 每一步都在用 98G 发, <s>这 straggler 比健康节点还快</s>.</p><p><img src="/images/dpu-shaper-bucket.png" alt="dpu-shaper-bucket.png"></p><p>试过挂一条背景填充流去填空档, 也只能把 burst 压低, 做不到逐包严格. 真实的网线物理上就不可能超速, 要模拟它, 限速只能挪到网卡外面, 逐帧做.</p><h2 id="dpdk-是什么">DPDK 是什么</h2><p>BF2 不只是网卡, 它是 DPU: 卡上自带 8 个 Cortex-A72, 跑完整的 Linux. 切到 DPU 模式后, 主机上每个 VF 在 Arm 侧都有一个代表端口 (representor), VF 发的帧可以先交给 Arm, 由 Arm 决定什么时候上线. Arm 上做转发可以用内核 <code>tc</code>, 但 A72 的内核转发扛不住几十 G 的 RoCE, 所以选了 DPDK.</p><p>一句话: <strong>DPDK 把网卡驱动搬到用户态, 用一个独占的核死循环轮询网卡, 绕开内核协议栈.</strong> 内核收一个包要过中断, 分配 <code>sk_buff</code>, 协议栈, 拷贝, 系统调用; DPDK 让网卡 DMA 直接把帧写进用户态内存池, 应用拿到的是指针.</p><p><img src="/images/dpu-shaper-dpdk.png" alt="dpu-shaper-dpdk.png"></p><table><thead><tr><th>概念</th><th>是什么</th></tr></thead><tbody><tr><td>EAL (<code>rte_eal_init</code>)</td><td>程序第一件事. 解析 <code>-l 0-5</code> 这类参数, 绑核, 映射大页, 探测网卡</td></tr><tr><td>lcore</td><td>被钉死在某个核上的线程, 约定这个核不干别的</td></tr><tr><td>hugepage + mbuf pool</td><td>帧放在大页上的预分配内存池里, 收发只借还, 不 malloc, 网卡直接 DMA</td></tr><tr><td>PMD (mlx5)</td><td>用户态驱动. mlx5 和内核驱动共存 (bifurcated), 不用把网卡从内核解绑</td></tr><tr><td><code>rx_burst</code> / <code>tx_burst</code></td><td>一次收发一批帧, 所有 DPDK 主循环都长这样</td></tr><tr><td><code>rte_flow</code></td><td>往网卡硬件写匹配规则</td></tr><tr><td>representor</td><td>DPU 模式下 Arm 侧代表主机 VF 的端口, 用 <code>-a &lt;PCI&gt;,representor=vf[0-4]</code> 打开</td></tr></tbody></table><p>DPDK 只管把包高效地搬进搬出, 不带协议栈. 官方也没有 Rust 接口, 所以老老实实写 C.</p><h2 id="dpu-shaper-的设计">dpu_shaper 的设计</h2><p>TX 方向的每一帧先绕进 Arm 内存, 按一根虚拟网线的时钟出队再上线; RX 方向不整形, 用 eSwitch 的 transfer rule 按目的 MAC 直接送到 VF, 不碰 Arm CPU.</p><p><img src="/images/dpu-shaper-arch.png" alt="dpu-shaper-arch.png"></p><p>虚拟网线就是每个 VF 一个 <code>next_free_ps</code> (这根线下次空闲的时刻), 每帧占用 <code>(len + 24 B) x 8 / rate</code> 的线时间 (24 B = FCS + 前导码 + 帧间隙), 出发时刻 = max(线空闲时刻, 帧到达时刻). 和 token bucket 的本质区别: 线空着的时候什么也攒不下.</p><p><code>shaper.c</code> 不依赖 DPDK, 可以单独单测. 主循环每次 poll:</p><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">uint16_t</span> n = rte_eth_rx_burst(p-&gt;cfg.port, <span class="number">0</span>, pkts, want);  <span class="comment">// want = 队列剩余空间</span></span><br><span class="line"><span class="type">uint64_t</span> now = now_ps();                                     <span class="comment">// rx 返回后才读时钟</span></span><br><span class="line"><span class="keyword">for</span> (<span class="type">uint16_t</span> i = <span class="number">0</span>; i &lt; n; i++)</span><br><span class="line">  shaper_enqueue(&amp;p-&gt;sh, pkts[i], rte_pktmbuf_pkt_len(pkts[i]),</span><br><span class="line">                 flow_of(pkts[i]), now);                     <span class="comment">// flow = RoCE dst QP</span></span><br><span class="line"><span class="type">uint32_t</span> k = shaper_peek_due(&amp;p-&gt;sh, now, due, BURST);       <span class="comment">// 只看, 不动时钟</span></span><br><span class="line"><span class="type">uint16_t</span> sent = send_in_order(due, k, p-&gt;cfg.egress, txq);</span><br><span class="line">shaper_commit(&amp;p-&gt;sh, now, sent);                            <span class="comment">// 网卡收了几个才提交几个</span></span><br></pre></td></tr></table></figure><p><code>tx_burst</code> 可能只收下一部分, 所以 peek / commit 分开: 没收的帧留在队头, 时钟只为真正发出去的帧前进. 队列满了就少收, 积压留在网卡 RX ring 里, 整形器自己不主动丢包.</p><h2 id="bug-1-nccl-直接冻住">Bug 1: NCCL 直接冻住</h2><p>切到 DPU 模式, perftest 跑整形一切完美, 换 NCCL 以后 64 KiB 的 AllReduce 要 137.6 ms, 基本等于死了.</p><p><img src="/images/dpu-shaper-bug1.png" alt="dpu-shaper-bug1.png"></p><p>三个根因叠在一起:</p><ol><li><strong>ECE.</strong> NCCL 建连接时和对端协商 ECE, QP 因此用上固件基于 RTT 的拥塞控制. RTT 探测包也绕 Arm 的软件队列, RTT 虚高, 固件以为网络堵死, 把 QP 压到最低速. perftest 不协商 ECE 所以测不出来. <code>NCCL_IB_ECE_ENABLE=0</code> 后 137.6 ms 变 0.26 ms.</li><li><strong>一个 VF 一条 FIFO.</strong> VF 把所有 QP 的数据一口气倒进 Arm, 几十字节的 ACK / CTS 排在别的 QP 几 MB 后面, 5.6 µs 变 1187 µs. 真网卡按 QP 仲裁, shaper 也照做: 64 个子队列按目的 QP 分流, 逐帧轮转, 共用一根线的时钟. ACK 回到 7.2 µs.</li><li><strong>RX ring 太小.</strong> 1024 帧, VF 一波 burst 就溢出, 丢包触发重传. 加到网卡上限 32768.</li></ol><p>修完后对称 ring 抖动只有 0.2%. 但 Arm 软件转发总共只扛约 40 Gb/s, 一个节点 3 个 rank, 每个 rank 只能降到 10G.</p><h2 id="bug-2-发送方看不见中间盒">Bug 2: 发送方看不见中间盒</h2><p>真网卡的发送调度器就在 QP 旁边, 现在它变成了 QP 看不见的软件盒子, 带来两个问题.</p><p><img src="/images/dpu-shaper-bug2.png" alt="dpu-shaper-bug2.png"></p><p><strong>没法反压.</strong> 真网卡缺带宽时只是不出队, QP 自己等着. 现在 VF 不知道后面有人排队, 只管往 Arm 里倒, 3 个 VF 挤 40G 的入口, 倒多了就在入口丢帧 (<code>imissed</code>). RoCE RC 是 go-back-N, 丢一帧整窗重传, 上万帧就是几百 ms. 唯一的手段是在 VF 上加一道 <code>devlink tx_max</code> 当阀门, 开小了 ring 慢 6%, 开大了接着丢, <s>而且阀门自己也是 token bucket</s>. 最后 40 MiB 以下的 buffer 靠加大队列修好, 80 MiB 那一档仍会随机丢, 只认 0 丢包的运行.</p><p><strong>假重传.</strong> buffer 一大, 慢节点就比模型多发 10-38% 字节, 但 VF 上 RDMA 错误计数全是 0. 原因是 <code>NCCL_IB_TIMEOUT=6</code> 的 ACK 超时只有约 268 µs, 而 MB 级的写在 shaper 里要排毫秒级, ACK 只是来晚了, 网卡却重传整段 (VF 上没有重传计数器, 所以看不出来). 改成 14 (约 67 ms) 后多发的字节消失, 还快了 20%.</p><h2 id="bug-3-追赶深度给多少都不对">Bug 3: 追赶深度给多少都不对</h2><p>shaper 能用了, 但裸 RDMA 跑 10G 只有 9.18G, ring 只到理想时间的 1.17 倍.</p><p>原设计里空闲后线最多领先现实 <code>depth</code> = 2 帧, 本意是不攒额度. 但 Arm 轮询偶尔晚到, 这段时间帧其实已经到了, 真线早就发出去了, shaper 却只许追回 2 帧, 剩下的线时间永久丢失.</p><p><img src="/images/dpu-shaper-bug3.png" alt="dpu-shaper-bug3.png"></p><p>把 depth 加到 16 帧, 线速跑满了, 但空闲后先冲到 18.9G, 等于在 shaper 里重新发明 token bucket, 否掉. 最终给每帧盖到达时间戳, 出发时刻改成:</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">start = max(next_free, arrive, now - 64 帧)</span><br></pre></td></tr></table></figure><p>卡顿期间已到达的帧可以补发 (真线这时本来就在发它们), 累计发出量永远不超过一根真线面对同样到达序列的量; 线空着时没有帧到达, 也就攒不出额度 (空闲后实测 9.55G); <code>now - 64 帧</code> 只防 Arm 卡太久一下子放太多. 结果裸 RDMA 9.80G 满速, ring 1.172 倍降到 1.005 倍. 代价是旧 shaper 上的好几个结论其实来自 ring 被拖慢, 全部作废重做.</p><h2 id="bug-4-两个-qp-撞进同一个子队列">Bug 4: 两个 QP 撞进同一个子队列</h2><p>跑 MSCCL++ 时, 同一配置一会儿快一会儿慢 (双峰), 慢的时候伴随上千个重复包, Arm 丢帧却一直是 0.</p><p><img src="/images/dpu-shaper-bug4.png" alt="dpu-shaper-bug4.png"></p><p>问题出在 bug 1 的子队列: 编号 = (目的 QP + 1) % 64, 两个 QP 号差 64 的倍数就撞进同一个 FIFO, 几十字节的原子回执排在别人几 MB 后面. 流水线等回执就慢了, 回执迟到又让网卡自适应重传误判, 出现重复包. QP 号每次运行都变, 撞不撞看运气, 所以是双峰.</p><p>验证方法是用 loopback perftest QP 先占掉 QP 号, 把 NCCL 的 QP 固定成一组必撞的组合交替 A/B: 旧版 8 次全慢, 新版全快; 故意改成 key % 4 让它多撞, 直接慢到 1.3-1.5 倍. 修法是每个 key 独占一个子队列, 空了才让给别人, 同时积压超过 64 个 key 才退回取模. 真网卡本来就按 QP 仲裁, 这只是让 shaper 更像真网卡.</p><h2 id="回头看">回头看</h2><p>四个 bug 的根是同一个: 限速从网卡调度器搬到了发送方看不见的软件中间盒. 于是 RTT 被拉长 (ECE, ACK 超时), 没有反压 (丢包), QP 仲裁得自己重写 (FIFO, 子队列冲突).</p><p>修的时候一直用同一把尺子: <strong>一块真实的物理网卡会怎么做.</strong> 没有突发额度, 发送调度器不丢包, 按 QP 仲裁. 每次改动都是补 shaper 和真网卡的差距, 不是为了让某个算法跑得更快, 反过来为了结果好看去调 shaper 就是作弊. shaper 每改一次, 旧数据整体作废.</p><p>还没收尾的: 80 MiB buffer 的随机丢包没查清; 按目的 IP 限速, 运行时改速率, 在 Arm 上打 ECN 让真正的 DCQCN 降速, 这几个只讨论过没做.</p>]]></content>
       
       
       <categories>
@@ -22,9 +22,9 @@
             
             <tag> network </tag>
             
-            <tag> rdma </tag>
-            
             <tag> dpdk </tag>
+            
+            <tag> rdma </tag>
             
             <tag> bluefield </tag>
             
@@ -107,9 +107,9 @@
       
         <tags>
             
-            <tag> mlsys </tag>
-            
             <tag> llm </tag>
+            
+            <tag> mlsys </tag>
             
             <tag> peft </tag>
             
@@ -215,9 +215,9 @@
       
         <tags>
             
-            <tag> mlsys </tag>
-            
             <tag> llm </tag>
+            
+            <tag> mlsys </tag>
             
             <tag> moe </tag>
             
@@ -277,9 +277,9 @@
       
         <tags>
             
-            <tag> mlsys </tag>
-            
             <tag> llm </tag>
+            
+            <tag> mlsys </tag>
             
             <tag> safety </tag>
             
@@ -424,9 +424,9 @@
       
         <tags>
             
-            <tag> cuda </tag>
-            
             <tag> llm </tag>
+            
+            <tag> cuda </tag>
             
             <tag> llm_inference </tag>
             
@@ -646,9 +646,9 @@
             
             <tag> distributed_sys </tag>
             
-            <tag> kubernetes </tag>
-            
             <tag> Consensus </tag>
+            
+            <tag> kubernetes </tag>
             
             <tag> ZooKeeper </tag>
             
@@ -739,9 +739,9 @@
             
             <tag> distributed_sys </tag>
             
-            <tag> kubernetes </tag>
-            
             <tag> Consensus </tag>
+            
+            <tag> kubernetes </tag>
             
             <tag> Chubby </tag>
             
@@ -770,11 +770,11 @@
             
             <tag> distributed_sys </tag>
             
+            <tag> Consensus </tag>
+            
             <tag> kubernetes </tag>
             
             <tag> etcd </tag>
-            
-            <tag> Consensus </tag>
             
         </tags>
       
@@ -2132,9 +2132,9 @@
       
         <tags>
             
-            <tag> operating_system </tag>
-            
             <tag> distributed_sys </tag>
+            
+            <tag> operating_system </tag>
             
             <tag> system_failure </tag>
             
@@ -2161,9 +2161,9 @@
       
         <tags>
             
-            <tag> operating_system </tag>
-            
             <tag> distributed_sys </tag>
+            
+            <tag> operating_system </tag>
             
             <tag> system_failure </tag>
             
@@ -2190,9 +2190,9 @@
       
         <tags>
             
-            <tag> operating_system </tag>
-            
             <tag> distributed_sys </tag>
+            
+            <tag> operating_system </tag>
             
             <tag> system_failure </tag>
             
@@ -2219,9 +2219,9 @@
       
         <tags>
             
-            <tag> operating_system </tag>
-            
             <tag> distributed_sys </tag>
+            
+            <tag> operating_system </tag>
             
             <tag> chaos_system </tag>
             
@@ -2250,9 +2250,9 @@
       
         <tags>
             
-            <tag> operating_system </tag>
-            
             <tag> distributed_sys </tag>
+            
+            <tag> operating_system </tag>
             
             <tag> chaos_system </tag>
             
